@@ -4,18 +4,18 @@
 
 FlexiSplit to prosta, mobilna aplikacja do jednorazowego rozliczania wspólnych kosztów w grupach znajomych i rodzin podczas wyjazdów oraz wydarzeń. MVP koncentruje się na utworzeniu jednego aktywnego rozliczenia, dodawaniu uczestników, rejestrowaniu wydatków z równym podziałem na wybranych członków oraz deterministycznym zamknięciu rozliczenia z minimalną liczbą przelewów.
 
-Zakładany użytkownik: nieformalna grupa, mieszanka osób z kontem i uczestników „offline” dodanych przez administratora. Projekt nastawiony na mobile‑first, wspierany w przeglądarkach iOS Safari i Android Chrome.
+Zakładany użytkownik: nieformalna grupa, mieszanka osób z kontem i uczestników „offline" dodanych przez właściciela. Projekt nastawiony na mobile‑first, wspierany w przeglądarkach iOS Safari i Android Chrome.
 
 Definicje pojęć:
 - Rozliczenie: pojedyncza sesja rozrachunkowa z zestawem uczestników i wydatków.
-- Administrator: osoba, która tworzy rozliczenie; ma pełne uprawnienia edycyjne.
+- Właściciel: osoba, która tworzy rozliczenie; ma pełne uprawnienia edycyjne.
 - Uczestnik: członek rozliczenia (z kontem lub „offline”).
 - Wydatek: pozycja kosztowa z jednym płacącym i listą objętych uczestników.
 
 Wysokopoziomowy przepływ MVP: utworzenie rozliczenia → zdefiniowanie uczestników i nazw → udostępnienie zaproszeń (opcjonalnie) → dodawanie wydatków i wykluczeń → zamknięcie i obliczenie sald metodą Minimum Cash Flow → eksport podsumowania tekstowego.
 
 Założenia kluczowe:
-- Max 3 aktywne rozliczenia na użytkownika‑administratora w danym momencie (archiwum dla zamkniętych).
+- Max 3 aktywne rozliczenia na użytkownika‑właściciela w danym momencie (archiwum dla zamkniętych).
 - PLN, obliczenia w groszach, zaokrąglenia do 0,01; reszty rozdzielane po największych częściach ułamkowych.
 - Minimalizacja PII: imię/pseudonim, pseudonimizowane identyfikatory; pojedyncze linki zaproszeń z TTL 72h.
 
@@ -26,14 +26,14 @@ Ręczne rozliczanie wspólnych wydatków jest czasochłonne, podatne na błędy 
 ## 3. Wymagania funkcjonalne
 
 3.1. Rozliczenie
-1) Utworzenie pojedynczego, aktywnego rozliczenia przez administratora z nazwą (np. „Wyjazd weekendowy”).
-2) Max 3 aktywne rozliczenia per administrator jednocześnie; zamknięte trafiają do archiwum i są tylko do odczytu.
+1) Utworzenie pojedynczego, aktywnego rozliczenia przez właściciela z nazwą (np. „Wyjazd weekendowy").
+2) Max 3 aktywne rozliczenia per właściciel jednocześnie; zamknięte trafiają do archiwum i są tylko do odczytu.
 3) Automatyczne nadanie identyfikatora rozliczenia; pseudonimizacja na potrzeby analityki.
 
 3.2. Uczestnicy i zaproszenia
-1) Administrator definiuje liczbę i nazwy uczestników przy tworzeniu; nazwy są unikalne w ramach rozliczenia.
+1) Właściciel definiuje liczbę i nazwy uczestników przy tworzeniu; nazwy są unikalne w ramach rozliczenia.
 2) Zaproszenia mają formę jednorazowych tokenów z TTL 72h; dołączenie jest opcjonalne.
-3) Administrator może unieważnić i zregenerować token; zdarzenie jest logowane.
+3) Właściciel może unieważnić i zregenerować token; zdarzenie jest logowane.
 4) Uczestnik dołączający po raz pierwszy może zmienić swoją nazwę (przy zachowaniu unikalności); historia zmian nazw jest logowana.
 5) Możliwość dodania uczestników „offline” (bez konta) i późniejszego scalenia z kontem po weryfikacji, bez zmiany participantId.
 
@@ -41,7 +41,7 @@ Ręczne rozliczanie wspólnych wydatków jest czasochłonne, podatne na błędy 
 1) Każdy wydatek ma jednego płacącego, kwotę (PLN), opis i listę objętych uczestników.
 2) Równy podział na wskazanych uczestników; możliwość wykluczenia dowolnych uczestników dla danego wydatku.
 3) Obliczenia w groszach; zaokrąglenie do 0,01; reszty rozdzielane stabilnie według największych części ułamkowych.
-4) Uprawnienia: autor może edytować/usuwać swoje wydatki; administrator może edytować/usuwać wszystkie.
+4) Uprawnienia: autor może edytować/usuwać swoje wydatki; właściciel może edytować/usuwać wszystkie.
 5) Prosty log zmian: kto/co/kiedy dla wydatków i nazw uczestników.
 
 3.4. Współbieżność i wersjonowanie
@@ -49,7 +49,7 @@ Ręczne rozliczanie wspólnych wydatków jest czasochłonne, podatne na błędy 
 2) W przypadku konfliktu użytkownik otrzymuje informację i aplikacja proponuje ponowienie zapisu po odświeżeniu danych.
 
 3.5. Zamknięcie rozliczenia
-1) Tylko administrator może zamknąć rozliczenie; po zamknięciu edycja jest zablokowana.
+1) Tylko właściciel może zamknąć rozliczenie; po zamknięciu edycja jest zablokowana.
 2) Obliczenie sald i minimalizacja liczby przelewów algorytmem Minimum Cash Flow:
    a) deterministyczne sortowanie po wartości bezwzględnej salda, następnie po participantId,
    b) obliczenia w groszach, stabilne rozwiązywanie remisów.
@@ -75,7 +75,7 @@ Ręczne rozliczanie wspólnych wydatków jest czasochłonne, podatne na błędy 
 
 Poza zakresem MVP:
 1) Rozliczenia cykliczne/miesięczne.
-2) Przekazanie roli administratora.
+2) Przekazanie roli właściciela.
 3) Integracja płatności (BLIK, przelewy online) i rozliczenia płatności w aplikacji.
 4) Wielowalutowość i automatyczne kursy.
 5) Zaawansowane statystyki, raporty CSV/PDF.
@@ -103,13 +103,13 @@ ID: US-001
 Tytuł: Utworzenie nowego rozliczenia
 Opis: Jako użytkownik chcę utworzyć jedno aktywne rozliczenie, aby rozpocząć dodawanie uczestników i wydatków.
 Kryteria akceptacji:
-- Podając nazwę i potwierdzając, tworzę rozliczenie z rolą administratora.
+- Podając nazwę i potwierdzając, tworzę rozliczenie z rolą właściciela.
 - Mogę utworzyć max 3 aktywne rozliczenia. Nie mogę utworzyć czwartego aktywnego rozliczenia; otrzymuję komunikat i link do archiwum.
 - Rozliczenie otrzymuje identyfikator; stan = aktywne.
 
 ID: US-002
 Tytuł: Definiowanie uczestników przy tworzeniu
-Opis: Jako administrator chcę zdefiniować listę uczestników i ich nazwy.
+Opis: Jako właściciel chcę zdefiniować listę uczestników i ich nazwy.
 Kryteria akceptacji:
 - Mogę dodać co najmniej 1 uczestnika; nazwy muszą być unikalne.
 - W przypadku konfliktu nazwy widzę komunikat i propozycję zmiany.
@@ -117,11 +117,11 @@ Kryteria akceptacji:
 
 ID: US-003
 Tytuł: Zaproszenia z jednorazowym tokenem
-Opis: Jako administrator chcę generować jednorazowe linki z TTL 72h dla uczestników.
+Opis: Jako właściciel chcę generować jednorazowe linki z TTL 72h dla uczestników.
 Kryteria akceptacji:
 - Dla każdego uczestnika generowany jest unikalny token jednorazowy.
 - Token wygasa po 72h lub po pierwszym użyciu.
-- Administrator może unieważnić i zregenerować token; zdarzenie jest logowane.
+- Właściciel może unieważnić i zregenerować token; zdarzenie jest logowane.
 
 ID: US-004
 Tytuł: Dołączenie przez uczestnika i zmiana własnej nazwy
@@ -130,19 +130,19 @@ Kryteria akceptacji:
 - Wejście przez ważny token dołącza mnie do rozliczenia.
 - Jeśli nazwa koliduje, otrzymuję komunikat i muszę wybrać unikalną.
 - Zmiana nazwy jest logowana w historii.
-- Próba użycia wygasłego/zużytego tokenu skutkuje komunikatem o błędzie i wskazówką kontaktu z administratorem.
+- Próba użycia wygasłego/zużytego tokenu skutkuje komunikatem o błędzie i wskazówką kontaktu z właścicielem.
 
 ID: US-005
-Tytuł: Dodawanie uczestnika „offline”
-Opis: Jako administrator chcę dodać uczestnika bez konta, aby uwzględnić go w rozliczeniu.
+Tytuł: Dodawanie uczestnika „offline"
+Opis: Jako właściciel chcę dodać uczestnika bez konta, aby uwzględnić go w rozliczeniu.
 Kryteria akceptacji:
 - Mogę dodać uczestnika z nazwą, bez wymogu konta.
 - Uczestnik „offline” może być przypisywany do wydatków.
 - Uczestnik ma participantId i może być scalony z kontem później.
 
 ID: US-006
-Tytuł: Scalenie uczestnika „offline” z kontem
-Opis: Jako administrator/uczestnik chcę po weryfikacji połączyć wpis „offline” z kontem użytkownika.
+Tytuł: Scalenie uczestnika „offline" z kontem
+Opis: Jako właściciel/uczestnik chcę po weryfikacji połączyć wpis „offline" z kontem użytkownika.
 Kryteria akceptacji:
 - Po scaleniu pozostaje ten sam participantId i zachowana historia zmian.
 - Uczestnik widzi swoje dotychczasowe wydatki i saldo.
@@ -174,11 +174,11 @@ Kryteria akceptacji:
 - Usunięcie jest możliwe przed zamknięciem rozliczenia.
 
 ID: US-010
-Tytuł: Uprawnienia administratora do edycji
-Opis: Jako administrator chcę edytować/usuwać dowolny wydatek.
+Tytuł: Uprawnienia właściciela do edycji
+Opis: Jako właściciel chcę edytować/usuwać dowolny wydatek.
 Kryteria akceptacji:
-- Administrator ma pełne uprawnienia edycyjne do wszystkich wydatków.
-- Zmiany są logowane z identyfikatorem administratora.
+- Właściciel ma pełne uprawnienia edycyjne do wszystkich wydatków.
+- Zmiany są logowane z identyfikatorem właściciela.
 
 ID: US-011
 Tytuł: Współbieżność i konflikt zapisu
@@ -190,15 +190,15 @@ Kryteria akceptacji:
 
 ID: US-012
 Tytuł: Zamknięcie rozliczenia
-Opis: Jako administrator chcę zamknąć rozliczenie i zablokować dalsze edycje.
+Opis: Jako właściciel chcę zamknąć rozliczenie i zablokować dalsze edycje.
 Kryteria akceptacji:
-- Tylko administrator widzi przycisk Zamknij.
+- Tylko właściciel widzi przycisk Zamknij.
 - Po zamknięciu edycja wydatków/uczestników jest niemożliwa.
 - Stan rozliczenia = zamknięte; przeniesienie do archiwum.
 
 ID: US-013
 Tytuł: Algorytm minimalizacji przelewów (MCF)
-Opis: Jako administrator chcę, aby lista przelewów była deterministyczna i minimalna.
+Opis: Jako właściciel chcę, aby lista przelewów była deterministyczna i minimalna.
 Kryteria akceptacji:
 - Salda liczone w groszach, z zastosowaniem zasad zaokrągleń reszt.
 - Kolejność rozwiązywania remisów: najpierw po |saldo|, następnie participantId.
@@ -222,7 +222,7 @@ Kryteria akceptacji:
 
 ID: US-016
 Tytuł: Historia zmian nazw uczestników
-Opis: Jako administrator chcę mieć dostęp do historii zmian nazw.
+Opis: Jako właściciel chcę mieć dostęp do historii zmian nazw.
 Kryteria akceptacji:
 - Każda zmiana nazwy zapisuje: kto, co, kiedy.
 - Historia jest dostępna w widoku szczegółów uczestnika.
@@ -233,7 +233,7 @@ Opis: Jako uczestnik chcę, aby dostęp do rozliczenia był możliwy wyłącznie
 Kryteria akceptacji:
 - Wejście bez ważnego tokenu kończy się komunikatem o braku dostępu.
 - Użyty token nie działa ponownie.
-- Administrator może unieważnić token w dowolnym momencie.
+- Właściciel może unieważnić token w dowolnym momencie.
 
 ID: US-018
 Tytuł: Analityka kluczowych zdarzeń
