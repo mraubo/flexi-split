@@ -8,10 +8,10 @@ Aplikacja rozwiązuje problem **skomplikowanego i podatnego na błędy ręcznego
 
 W skład MVP wchodzi absolutnie kluczowy, uproszczony proces jednorazowego rozliczenia:
 
-* **Tworzenie pojedynczego rozliczenia:** Użytkownik tworzy jedno, aktywne "rozliczenie" (np. "Wyjazd na weekend"), stając się jego **administratorem**.
-* **Dodawanie uczestników:** Administrator może dodawać nowych uczestników, którzy stają się **członkami** rozliczenia.
+* **Tworzenie pojedynczego rozliczenia:** Użytkownik tworzy jedno, aktywne "rozliczenie" (np. "Wyjazd na weekend"), stając się jego **właścicielem**.
+* **Dodawanie uczestników:** Właściciel może dodawać nowych uczestników, którzy stają się **członkami** rozliczenia.
 * **Rejestrowanie kosztów:** W ramach otwartego rozliczenia wszyscy uczestnicy mogą dodawać wydatki, określając kwotę, opis, kto zapłacił i kogo dotyczy koszt.
-* **Zamknięcie i podsumowanie:** Gdy grupa jest gotowa, **tylko administrator rozliczenia** może kliknąć przycisk "Rozlicz". Aplikacja **zamyka możliwość edycji** dla wszystkich uczestników, generuje ostateczny, prosty bilans (kto komu ile ma oddać) i archiwizuje rozliczenie jako zakończone.
+* **Zamknięcie i podsumowanie:** Gdy grupa jest gotowa, **tylko właściciel rozliczenia** może kliknąć przycisk "Rozlicz". Aplikacja **zamyka możliwość edycji** dla wszystkich uczestników, generuje ostateczny, prosty bilans (kto komu ile ma oddać) i archiwizuje rozliczenie jako zakończone.
 
 
 ## Co NIE wchodzi w zakres MVP
@@ -19,7 +19,7 @@ W skład MVP wchodzi absolutnie kluczowy, uproszczony proces jednorazowego rozli
 Funkcje, które są przydatne, ale zostaną dodane w przyszłości, aby nie komplikować pierwszej wersji produktu:
 
 * **Tworzenie rozliczeń cyklicznych/miesięcznych.**
-* Możliwość przekazania roli administratora.
+* Możliwość przekazania roli właściciela.
 * Integracja z systemami płatności (np. BLIK, przelewy online).
 * Obsługa wielu walut z automatycznym przeliczaniem kursów.
 * Zaawansowane statystyki i generowanie raportów (np. w formacie PDF).

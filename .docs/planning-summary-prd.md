@@ -2,12 +2,12 @@
 
 <decisions>
 1. Mobile‑first dla grup znajomych/rodziny używających aplikacji przy wyjazdach i eventach.
-2. Uczestnicy: miks kont i „offline”; administrator może dodać uczestników po imieniu/ksywie.
-3. Zaproszenia: jednorazowe tokeny per uczestnik, TTL 72h; dołączanie opcjonalne; admin może unieważnić/regenerować.
-4. Przy tworzeniu rozliczenia admin definiuje liczbę i nazwy uczestników; pierwszy raz dołączający może zmienić swoją nazwę.
+2. Uczestnicy: miks kont i „offline"; właściciel może dodać uczestników po imieniu/ksywie.
+3. Zaproszenia: jednorazowe tokeny per uczestnik, TTL 72h; dołączanie opcjonalne; właściciel może unieważnić/regenerować.
+4. Przy tworzeniu rozliczenia właściciel definiuje liczbę i nazwy uczestników; pierwszy raz dołączający może zmienić swoją nazwę.
 5. Unikalność nazw w ramach rozliczenia; tożsamość po participantId; historia zmian nazw w logu.
 6. Podział kosztów równy na wybranych uczestników; jeden płacący per wydatek; możliwość wykluczeń z wydatku.
-7. Uprawnienia edycji: autor edytuje/usuwa swoje wydatki, administrator wszystkie; prosty log zmian (kto/co/kiedy).
+7. Uprawnienia edycji: autor edytuje/usuwa swoje wydatki, właściciel wszystkie; prosty log zmian (kto/co/kiedy).
 8. Współbieżność: optymistyczne blokowanie wersją rekordu; przy konflikcie informacja i ponowna próba zapisu.
 9. Zamknięcie: deterministyczny Minimum Cash Flow (sortowanie po |saldo|, potem participantId), obliczenia w groszach, remisy rozwiązywane stabilnie; brak korekt po zamknięciu; widok tylko do odczytu; rozliczenie trafia do archiwum.
 10. Waluta PLN; zaokrąglanie do 0,01; rozdzielanie reszt po największych częściach ułamkowych; dokumentacja reguł w podsumowaniu.
@@ -18,8 +18,8 @@
 </decisions>
 
 <matched_recommendations>
-1. Mechanizm merge uczestnika „offline” z kontem po weryfikacji, zachowując participantId i historię zmian.
-2. Tokeny zaproszeń jednorazowe z TTL 72h; możliwość unieważnienia/regeneracji przez administratora (z logiem).
+1. Mechanizm merge uczestnika „offline" z kontem po weryfikacji, zachowując participantId i historię zmian.
+2. Tokeny zaproszeń jednorazowe z TTL 72h; możliwość unieważnienia/regeneracji przez właściciela (z logiem).
 3. Unikalność nazw per rozliczenie; nazwy jako atrybut prezentacyjny, tożsamość po participantId; log historii nazw.
 4. Deterministyczny algorytm Minimum Cash Flow; obliczenia w groszach; stabilne rozstrzyganie remisów.
 5. Reguły zaokrągleń: liczenie w groszach, rozdział reszt po największych częściach ułamkowych; jawne raportowanie.
@@ -32,10 +32,10 @@
 
 <prd_planning_summary>
 • Główne wymagania funkcjonalne produktu:
-  - Tworzenie pojedynczego, aktywnego rozliczenia z rolą administratora.
+  - Tworzenie pojedynczego, aktywnego rozliczenia z rolą właściciela.
   - Zarządzanie uczestnikami: dodawanie kont/„offline”, unikalne nazwy, tokeny zaproszeń (jednorazowe, TTL 72h), możliwość unieważniania/regeneracji, opcjonalne dołączanie.
   - Wydatki: jeden płacący, równy podział na wybranych uczestników, możliwość wykluczeń; waluta PLN; rozliczenia w groszach; zasady zaokrągleń i rozdziału reszt.
-  - Uprawnienia i audyt: autor vs administrator; prosty log zmian (kto/co/kiedy) oraz historia zmian nazw.
+  - Uprawnienia i audyt: autor vs właściciel; prosty log zmian (kto/co/kiedy) oraz historia zmian nazw.
   - Współbieżność: optymistyczne blokowanie wersją rekordu i bezpieczna obsługa konfliktów.
   - Zamknięcie: blokada edycji, deterministyczny Minimum Cash Flow, stabilne remisy, przeniesienie do archiwum; widok tylko do odczytu.
   - Eksport: podsumowanie tekstowe do schowka (Copy to clipboard).
@@ -43,11 +43,11 @@
   - Analityka: eventy settlement_created/member_joined/expense_added/settlement_closed; parametry: pseud. settlement_id, member_count, expense_count, device_type.
 
 • Kluczowe historie użytkownika i ścieżki korzystania:
-  1) Administrator tworzy rozliczenie → definiuje uczestników i nazwy → generuje/udostępnia linki (opcjonalne) → uczestnicy dołączają (lub pozostają „offline”).
+  1) Właściciel tworzy rozliczenie → definiuje uczestników i nazwy → generuje/udostępnia linki (opcjonalne) → uczestnicy dołączają (lub pozostają „offline").
   2) Uczestnik dołącza po raz pierwszy → może zmienić swoją nazwę (unikalność wymagana) → widzi listę wydatków i może dodać własne.
   3) Dodanie wydatku → wybór płacącego → wybór uczestników biorących udział → równy podział, zapis w groszach, log zmian.
   4) Równoczesna edycja → konflikt wersji → informacja i ponowienie zapisu po odświeżeniu.
-  5) Zamknięcie rozliczenia przez administratora → obliczenie sald i minimalizacja przelewów (MCF) → zablokowanie edycji → przeniesienie do archiwum → eksport tekstowy (kopiuj).
+  5) Zamknięcie rozliczenia przez właściciela → obliczenie sald i minimalizacja przelewów (MCF) → zablokowanie edycji → przeniesienie do archiwum → eksport tekstowy (kopiuj).
   6) Po zamknięciu uczestnicy mają dostęp tylko do odczytu do podsumowania i historii.
 
 • Ważne kryteria sukcesu i sposoby ich mierzenia:
