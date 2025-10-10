@@ -1,38 +1,45 @@
 # Aplikacja - FlexiSplit (MVP)
 
-## Główny problem
+### Główny problem
 
-Aplikacja rozwiązuje problem **skomplikowanego i podatnego na błędy ręcznego rozliczania wspólnych kosztów** w grupach. Ludzie często mają trudności ze śledzeniem, kto, ile i za co zapłacił, co prowadzi do nieporozumień i poczucia niesprawiedliwości, zwłaszcza po wspólnych wyjazdach, spotkaniach czy wydarzeniach.
+Aplikacja rozwiązuje problem skomplikowanego i podatnego na błędy ręcznego rozliczania wspólnych kosztów po jednorazowych wydarzeniach, minimalizując nieporozumienia i poczucie niesprawiedliwości.
 
-## Najmniejszy zestaw funkcjonalności
+### Najmniejszy zestaw funkcjonalności
 
-W skład MVP wchodzi absolutnie kluczowy, uproszczony proces jednorazowego rozliczenia:
+- Tworzenie pojedynczego rozliczenia: Użytkownik zakłada jedno aktywne rozliczenie i staje się jego właścicielem.
+- Dodawanie uczestników offline (tylko właściciel): Formularz „imię/nick”, nazwy unikalne w ramach rozliczenia.
+- Rejestrowanie kosztów: Podczas dodawania wydatku wybierana jest osoba płacąca, domyślnie wszyscy uczestnicy biorą udział w podziale w równych częściach, możliwe odznaczenie osób wyłączonych z danego kosztu, edycja i usunięcie wydatku przed zamknięciem.
+- Zamknięcie i podsumowanie: Tylko właściciel klika „Rozlicz”, co zamyka edycję i generuje bilans „kto komu ile”, po czym rozliczenie trafia do archiwum.
 
-* **Tworzenie pojedynczego rozliczenia:** Użytkownik tworzy jedno, aktywne "rozliczenie" (np. "Wyjazd na weekend"), stając się jego **właścicielem**.
-* **Dodawanie uczestników:** Właściciel może dodawać nowych uczestników, którzy stają się **członkami** rozliczenia.
-* **Rejestrowanie kosztów:** W ramach otwartego rozliczenia wszyscy uczestnicy mogą dodawać wydatki, określając kwotę, opis, kto zapłacił i kogo dotyczy koszt.
-* **Zamknięcie i podsumowanie:** Gdy grupa jest gotowa, **tylko właściciel rozliczenia** może kliknąć przycisk "Rozlicz". Aplikacja **zamyka możliwość edycji** dla wszystkich uczestników, generuje ostateczny, prosty bilans (kto komu ile ma oddać) i archiwizuje rozliczenie jako zakończone.
+### Co NIE wchodzi w zakres MVP
 
+- Zapraszanie uczestników i dołączanie przez linki, e‑mail lub kody.
+- Rozliczenia cykliczne lub miesięczne.
+- Przekazanie roli właściciela.
+- Integracje płatności, wiele walut i automatyczne kursy.
+- Zaawansowane statystyki, raporty i eksporty.
+- Powiadomienia push oraz rejestracja i logowanie.
+- Dodawanie zdjęć paragonów.
+- Edycja zamkniętych rozliczeń.
+- Niestandardowe podziały kosztów i wielu płacących w jednym wydatku.
 
-## Co NIE wchodzi w zakres MVP
+### Kryteria sukcesu
 
-Funkcje, które są przydatne, ale zostaną dodane w przyszłości, aby nie komplikować pierwszej wersji produktu:
+- Aktywne użytkowanie: Minimum 50 zakończonych rozliczeń w pierwszym miesiącu.
+- Pozytywny feedback: Opinie o prostocie i skuteczności procesu rozliczeń.
+- Powracalność: Co najmniej 20% użytkowników tworzy kolejne rozliczenie w ciągu następnych 3 miesięcy.
 
-* **Tworzenie rozliczeń cyklicznych/miesięcznych.**
-* Możliwość przekazania roli właściciela.
-* Integracja z systemami płatności (np. BLIK, przelewy online).
-* Obsługa wielu walut z automatycznym przeliczaniem kursów.
-* Zaawansowane statystyki i generowanie raportów (np. w formacie PDF).
-* Powiadomienia push.
-* Logowanie za pomocą kont społecznościowych.
-* Dodawanie zdjęć paragonów.
-* Możliwość edytowania zamkniętych rozliczeń.
+### Wskazówki produktowe i projektowe
 
-
-## Kryteria sukcesu
-
-Głównym celem MVP jest **weryfikacja, czy aplikacja jest prosta, użyteczna i czy ludzie chcą z niej korzystać do jednorazowych rozliczeń**. Sukces zmierzymy poprzez:
-
-* **Aktywne użytkowanie:** Stworzenie co najmniej 50 zakończonych rozliczeń przez pierwszych użytkowników w ciągu pierwszego miesiąca.
-* **Pozytywny feedback:** Zebranie opinii od użytkowników potwierdzających, że aplikacja jest intuicyjna i skutecznie rozwiązała ich problem.
-* **Powracalność użytkowników:** Sprawdzenie, czy co najmniej 20% użytkowników, którzy zakończyli jedno rozliczenie, tworzy kolejne w ciągu następnych 3 miesięcy.
+- Formularz kosztu: Preselekcja ostatnio używanego płacącego, domyślna selekcja „wszyscy” z szybkim odznaczaniem pojedynczych osób, podpowiedzi kategorii typu „transport”, „nocleg”, „jedzenie”.
+- Klarowność udziału: Pokazuj udział jednostkowy kosztu przy edycji i w szczegółach wydatku, prezentuj ile płaci każdy i jaka część przypada na osobę.
+- Podsumowanie bilansu: Generuj skróconą listę przelewów minimalizującą liczbę transakcji między uczestnikami, wskazuj kwoty do zapłaty i otrzymania.
+- Stany i uprawnienia: Oznacz rozliczenie jako otwarte lub zamknięte, blokuj wszystkie edycje po zamknięciu, wyświetl badge „Właściciel” przy nicku.
+- Walidacje nazw: Waliduj unikalność „imię/nick” na etapie wpisywania, informuj o kolizji i proponuj alternatywę z sufiksem.
+- Edge cases: Obsłuż koszt z jedną osobą w podziale.
+- Czytelność list: Grupuj koszty po dacie, pokazuj płacącego, kwotę, liczbę osób w podziale i skrót opisu, udostępnij szybkie filtrowanie po osobie lub kategorii.
+- Zamknięcie rozliczenia: Dodaj ekran potwierdzenia z liczbą kosztów i datą, poinformuj, że czynność jest nieodwracalna w MVP, pokaż przycisk „Kopia podsumowania” po zamknięciu.
+- Dostępność i mobile: Duże pola dotykowe, kontrast czytelny, fokus klawiatury na kolejne pole, wsparcie dla wprowadzania liczb z separatorem dziesiętnym.
+- Spójność kwot: Przechowuj wartości w najmniejszych jednostkach waluty, zaokrąglaj dopiero na prezentacji, pokazuj sumę kontrolną wszystkich kosztów i sumę udziałów.
+- Puste stany: Dodaj komunikaty zachęcające do pierwszego działania, np. po utworzeniu rozliczenia przycisk „Dodaj pierwszego uczestnika” i „Dodaj pierwszy koszt”.
+- Nazewnictwo: Utrzymuj proste etykiety „Uczestnicy”, „Koszty”, „Podsumowanie”, „Rozlicz”, unikaj żargonu księgowego.

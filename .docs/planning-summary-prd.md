@@ -1,76 +1,78 @@
 <conversation_summary>
-
 <decisions>
-1. Mobile‑first dla grup znajomych/rodziny używających aplikacji przy wyjazdach i eventach.
-2. Uczestnicy: miks kont i „offline"; właściciel może dodać uczestników po imieniu/ksywie.
-3. Zaproszenia: jednorazowe tokeny per uczestnik, TTL 72h; dołączanie opcjonalne; właściciel może unieważnić/regenerować.
-4. Przy tworzeniu rozliczenia właściciel definiuje liczbę i nazwy uczestników; pierwszy raz dołączający może zmienić swoją nazwę.
-5. Unikalność nazw w ramach rozliczenia; tożsamość po participantId; historia zmian nazw w logu.
-6. Podział kosztów równy na wybranych uczestników; jeden płacący per wydatek; możliwość wykluczeń z wydatku.
-7. Uprawnienia edycji: autor edytuje/usuwa swoje wydatki, właściciel wszystkie; prosty log zmian (kto/co/kiedy).
-8. Współbieżność: optymistyczne blokowanie wersją rekordu; przy konflikcie informacja i ponowna próba zapisu.
-9. Zamknięcie: deterministyczny Minimum Cash Flow (sortowanie po |saldo|, potem participantId), obliczenia w groszach, remisy rozwiązywane stabilnie; brak korekt po zamknięciu; widok tylko do odczytu; rozliczenie trafia do archiwum.
-10. Waluta PLN; zaokrąglanie do 0,01; rozdzielanie reszt po największych częściach ułamkowych; dokumentacja reguł w podsumowaniu.
-11. Eksport: tekst z przyciskiem „Kopiuj do schowka”.
-12. Analityka: eventy settlement_created, member_joined, expense_added, settlement_closed; KPI: ≥60% created→closed, mediana 5 wydatków/rozliczenie, time_to_close ≤ 9 dni; parametry minimalizujące PII (pseud. settlement_id, member_count, expense_count, device_type).
-13. Prywatność: minimalizacja PII (imię/pseudonim), linki z krótkim TTL i jednorazowością; rozliczenia po zamknięciu archiwizowane.
-14. Harmonogram: 1 tydz. discovery/UX, 3 tyg. build, 1–2 tyg. QA/hardening; E2E na iOS Safari i Android Chrome dla ścieżki create→invite/assign names→add expenses/exclusions→close→export.
+1. Docelowi użytkownicy: grupy znajomych i rodziny; konteksty: wyjazdy i jednorazowe wydarzenia.
+2. Logowanie wymagane; Supabase Auth; metoda e‑mail + hasło; ważność sesji 14 dni.
+3. Dane przechowywane w bazie (Supabase); brak trybu anonimowego w MVP.
+4. Limit: maks. 3 aktywne rozliczenia na użytkownika; brak szkiców; statusy „open/closed”, archiwizacja po zamknięciu.
+5. Waluta w MVP: PLN; wartości przechowywane w groszach; prezentacja w locale pl‑PL.
+6. Brak kategorii w MVP; opis wydatku opcjonalny; filtr po osobie dostępny.
+7. Limity i walidacje: do 10 uczestników i 500 wydatków/rozliczenie; unikalne nicki (case‑insensitive, a‑z, 0‑9, „-”, „_”); opis do 140 znaków.
+8. Uprawnienia: edytuje tylko właściciel; audyt: updated_at i last_edited_by; brak historii zmian w UI.
+9. Podział i zaokrąglenia: równe części; reszta groszy przydzielana deterministycznie pierwszym N osobom wg znormalizowanego nicku.
+10. Bilans i przelewy: minimalizacja liczby transakcji, stabilne sortowanie; próg mikro‑płatności praktycznie nie dotyczy (jednostka = 0,01 PLN).
+11. UX: mobile‑first; 3‑krokowy flow (Uczestnicy → Koszty → Podsumowanie); klawiatura numeryczna; modal potwierdzenia „Rozlicz” (nieodwracalne); badge „Właściciel”; puste stany; WCAG AA.
+12. „Kopia podsumowania”: nagłówek, saldo per osoba i lista przelewów; dostępne po zamknięciu i w archiwum; zgodnie z locale.
+13. Analityka: eventy (settlement_created, participant_added, expense_added, settle_confirmed, settled, summary_copied, new_settlement_started) logowane w Supabase (server‑side); środowiska: dev/lokalne i prod.
+14. Usuwanie: wyłącznie rozliczenia archiwalne; tylko właściciel; brak przywracania.
 </decisions>
 
 <matched_recommendations>
-1. Mechanizm merge uczestnika „offline" z kontem po weryfikacji, zachowując participantId i historię zmian.
-2. Tokeny zaproszeń jednorazowe z TTL 72h; możliwość unieważnienia/regeneracji przez właściciela (z logiem).
-3. Unikalność nazw per rozliczenie; nazwy jako atrybut prezentacyjny, tożsamość po participantId; log historii nazw.
-4. Deterministyczny algorytm Minimum Cash Flow; obliczenia w groszach; stabilne rozstrzyganie remisów.
-5. Reguły zaokrągleń: liczenie w groszach, rozdział reszt po największych częściach ułamkowych; jawne raportowanie.
-6. Optymistyczne blokowanie i obsługa konfliktów zapisu.
-7. Brak reopen w MVP; po zamknięciu tylko do odczytu i archiwizacja.
-8. Eksport jako tekst + przycisk „Kopiuj do schowka” (doprecyzowanie: bez CSV w MVP).
-9. KPI i eventy analityczne z minimalizacją PII; doprecyzowane wartości celów i parametry zdarzeń.
-10. Plan 1+3+1–2 tyg. i zakres E2E na mobile (iOS/Android).
+1. Przechowywanie wartości w najmniejszych jednostkach (grosze) i deterministyczne zaokrąglenia.
+2. Algorytm nettingu minimalizujący liczbę przelewów, stabilne sortowanie, wyjaśnialność wyniku.
+3. 3‑etapowy przepływ UX z pustymi stanami, potwierdzeniem „Rozlicz” i akcentem mobile‑first.
+4. Zestaw eventów produktowych do pomiaru kryteriów sukcesu i lejka.
+5. Model uprawnień: właściciel edytuje, pola audytowe; brak historii w UI w MVP.
+6. Sesje 14 dni, bezpieczne tokeny (httpOnly), opcja „wyloguj wszędzie” (do rozważenia).
+7. Walidacje i limity (10 uczestników, 500 wydatków, 140 znaków opisu, unikalny nick).
+8. Locale pl‑PL dla formatowania kwot; brak kategorii, opis tekstowy.
+9. „Kopia podsumowania” jako zwięzły tekst gotowy do skopiowania po zamknięciu.
+10. Środowiska dev/lokalne i prod; logowanie zdarzeń w Supabase; opcjonalnie Plausible bez cookies (poza MVP).
 </matched_recommendations>
 
 <prd_planning_summary>
-• Główne wymagania funkcjonalne produktu:
-  - Tworzenie pojedynczego, aktywnego rozliczenia z rolą właściciela.
-  - Zarządzanie uczestnikami: dodawanie kont/„offline”, unikalne nazwy, tokeny zaproszeń (jednorazowe, TTL 72h), możliwość unieważniania/regeneracji, opcjonalne dołączanie.
-  - Wydatki: jeden płacący, równy podział na wybranych uczestników, możliwość wykluczeń; waluta PLN; rozliczenia w groszach; zasady zaokrągleń i rozdziału reszt.
-  - Uprawnienia i audyt: autor vs właściciel; prosty log zmian (kto/co/kiedy) oraz historia zmian nazw.
-  - Współbieżność: optymistyczne blokowanie wersją rekordu i bezpieczna obsługa konfliktów.
-  - Zamknięcie: blokada edycji, deterministyczny Minimum Cash Flow, stabilne remisy, przeniesienie do archiwum; widok tylko do odczytu.
-  - Eksport: podsumowanie tekstowe do schowka (Copy to clipboard).
-  - Prywatność: minimalizacja PII; pseudonimizacja identyfikatorów; bez wrażliwych danych.
-  - Analityka: eventy settlement_created/member_joined/expense_added/settlement_closed; parametry: pseud. settlement_id, member_count, expense_count, device_type.
+a. Główne wymagania funkcjonalne
+- Konta i sesje: rejestracja/logowanie e‑mail+hasło; sesja 14 dni; reset hasła; (weryfikacja e‑mail do potwierdzenia).
+- Rozliczenia: tworzenie/listowanie; max 3 aktywne; zamknięcie generuje bilans i przenosi do archiwum; usuwanie tylko archiwalnych.
+- Uczestnicy: dodawanie/edycja/usuwanie offline w ramach rozliczenia; unikalne nicki (case‑insensitive) w ramach rozliczenia; limit 10.
+- Wydatki: dodawanie/edycja/usuwanie przez właściciela; płacący wybierany z listy; domyślnie wszyscy w podziale z możliwością odznaczania; opis (≤140 znaków); limit 500; grupowanie po dacie; filtr po osobie.
+- Rozliczanie: równe części, grosze; reszta przydzielana deterministycznie wg nicku; waluta PLN.
+- Bilans i przelewy: algorytm minimalizujący liczbę transakcji; stabilne sortowanie; ignorowanie kwot < 0,01 PLN nie dotyczy (jednostka grosz).
+- Kopia podsumowania: tekst do schowka (nagłówek, saldo per osoba, lista przelewów), po zamknięciu i w archiwum.
+- Analityka: eventy produktowe zapisane w Supabase.
+- Uprawnienia i audyt: tylko właściciel edytuje; updated_at, last_edited_by; brak wersjonowania w UI.
 
-• Kluczowe historie użytkownika i ścieżki korzystania:
-  1) Właściciel tworzy rozliczenie → definiuje uczestników i nazwy → generuje/udostępnia linki (opcjonalne) → uczestnicy dołączają (lub pozostają „offline").
-  2) Uczestnik dołącza po raz pierwszy → może zmienić swoją nazwę (unikalność wymagana) → widzi listę wydatków i może dodać własne.
-  3) Dodanie wydatku → wybór płacącego → wybór uczestników biorących udział → równy podział, zapis w groszach, log zmian.
-  4) Równoczesna edycja → konflikt wersji → informacja i ponowienie zapisu po odświeżeniu.
-  5) Zamknięcie rozliczenia przez właściciela → obliczenie sald i minimalizacja przelewów (MCF) → zablokowanie edycji → przeniesienie do archiwum → eksport tekstowy (kopiuj).
-  6) Po zamknięciu uczestnicy mają dostęp tylko do odczytu do podsumowania i historii.
+b. Kluczowe historie użytkownika i ścieżki
+- Rejestracja/logowanie (e‑mail+hasło) → wejście do listy rozliczeń.
+- Utworzenie rozliczenia (sprawdzenie limitu 3) → dodanie uczestników → dodanie pierwszego wydatku (wszyscy w podziale, możliwość odznaczania, wybór płacącego) → kolejne wydatki.
+- Przegląd listy wydatków (grupowanie po dacie) → filtr po osobie → wejście w szczegóły wydatku.
+- Zamknięcie rozliczenia (modal potwierdzenia, nieodwracalne) → wygenerowanie bilansu i listy przelewów → „Kopia podsumowania”.
+- Archiwum: przegląd zakończonych rozliczeń → podgląd bilansu → ewentualne usunięcie archiwalnego.
+- Zarządzanie sesją: pozostanie zalogowanym 14 dni, wylogowanie (lokalne i ewentualnie globalne).
 
-• Ważne kryteria sukcesu i sposoby ich mierzenia:
-  - KPI: ≥60% stosunek created→closed; mediana 5 wydatków/rozliczenie; time_to_close ≤ 9 dni.
-  - Eventy: settlement_created, member_joined, expense_added, settlement_closed; parametry bez PII.
-  - Jakość: E2E na iOS Safari i Android Chrome dla ścieżki end‑to‑end; brak błędów krytycznych blokujących zamknięcie i eksport.
+c. Kryteria sukcesu i pomiar
+- 50 zakończonych rozliczeń w pierwszym miesiącu: liczba eventów „settled” (unikalne rozliczenia).
+- Pozytywny feedback o prostocie: jakościowe ankiety NPS/PMF po „settled” + analiza czasu do pierwszego rozliczenia.
+- Powracalność 20% w 3 mies.: cohorty użytkowników z ≥2 eventami „settled”.
+- Lejek aktywacji: settlement_created → participant_added → expense_added → settle_confirmed → settled; mierniki drop‑off i mediany czasu między etapami.
+- Jakość danych: średnia liczba wydatków/rozliczenie, średnia liczba uczestników, użycie filtra po osobie, użycie „summary_copied”.
 
-• Ograniczenia projektowe i wpływ:
-  - Brak integracji płatności, brak reopen, brak CSV/PDF w MVP → upraszcza zakres i skraca czas.
-  - Mobile‑first → priorytet przeglądarek mobilnych i prostego UI.
-  - Minimalizacja PII i jednorazowe tokeny → wymogi bezpieczeństwa i projekt zaproszeń.
-  - Deterministyczny algorytm MCF i zasady zaokrągleń → przewidywalne wyniki i spójne podsumowania.
+d. Nierozwiązane kwestie/obszary do doprecyzowania
+- Czy wymagamy weryfikacji e‑mail przy rejestracji?
+- Polityka resetu hasła i blokady konta (rate‑limiting, anty‑brute‑force).
+- Concurrency: co w przypadku jednoczesnej edycji na wielu urządzeniach tego samego właściciela (ostatni zapis wygrywa vs. blokady)?
+- Język interfejsu (PL‑only vs. i18n w przyszłości) i format czasu/strefy.
+- Retencja i backup danych (okres przechowywania, usuwanie konta/RODO).
+- Zakres i treść „pustych stanów” i komunikatów błędów (final copy).
+- Granice walidacji: maks. długość nicku, znaki diakrytyczne, normalizacja.
+- Ewentualna przyszła migracja uczestników offline do powiązań z kontami (strategia i migracje schematu).
 </prd_planning_summary>
 
 <unresolved_issues>
-1. Retencja danych i polityka usuwania/anonymizacji (np. okres archiwizacji, trwałość logów zmian).
-2. Limity skali (max liczba uczestników/wydatków na rozliczenie) i zachowanie przy bardzo dużych rozliczeniach.
-3. Dostępność/A11y oraz minimalne wymagania wydajności (np. słabsze urządzenia, offline/PWA – czy wchodzi w zakres?).
-4. Szczegóły treści eksportu tekstowego (format, kolejność sekcji, lokalizacja liczb – kropka/przecinek).
-5. Zasady modyfikacji listy uczestników po rozpoczęciu dodawania wydatków (dodanie/usunięcie a historia i spójność podziałów).
-6. Określenie ról poza administratorem (czy potrzebny jest moderator/współadmin w przyszłości – poza MVP?).
+1. Wymóg weryfikacji e‑mail i polityka zabezpieczeń logowania.
+2. Strategie współbieżności przy edycji (konflikty zapisów).
+3. Retencja/backup oraz polityka usuwania danych (RODO).
+4. Zakres docelowego języka UI (PL‑only vs. i18n).
+5. Finalne reguły walidacji nicku (długość, diakrytyka).
+6. Szczegółowe treści komunikatów (puste stany, błędy, modal „Rozlicz”).
 </unresolved_issues>
-
 </conversation_summary>
-
-
