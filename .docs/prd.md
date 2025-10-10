@@ -2,294 +2,497 @@
 
 ## 1. Przegląd produktu
 
-FlexiSplit to prosta, mobilna aplikacja do jednorazowego rozliczania wspólnych kosztów w grupach znajomych i rodzin podczas wyjazdów oraz wydarzeń. MVP koncentruje się na utworzeniu jednego aktywnego rozliczenia, dodawaniu uczestników, rejestrowaniu wydatków z równym podziałem na wybranych członków oraz deterministycznym zamknięciu rozliczenia z minimalną liczbą przelewów.
+FlexiSplit to prosta aplikacja webowa do sprawnego rozliczania wspólnych kosztów po jednorazowych wydarzeniach (np. wyjazdy, imprezy rodzinne). Umożliwia właścicielowi rozliczenia dodawanie uczestników (offline, bez kont), rejestrowanie wydatków z wyborem płacącego, automatyczny równy podział kosztów oraz wygenerowanie bilansu i listy przelewów minimalizującej liczbę transakcji. Po zamknięciu rozliczenie trafia do archiwum, a edycja jest zablokowana.
 
-Zakładany użytkownik: nieformalna grupa, mieszanka osób z kontem i uczestników „offline" dodanych przez właściciela. Projekt nastawiony na mobile‑first, wspierany w przeglądarkach iOS Safari i Android Chrome.
+Założenia MVP obejmują:
 
-Definicje pojęć:
-- Rozliczenie: pojedyncza sesja rozrachunkowa z zestawem uczestników i wydatków.
-- Właściciel: osoba, która tworzy rozliczenie; ma pełne uprawnienia edycyjne.
-- Uczestnik: członek rozliczenia (z kontem lub „offline”).
-- Wydatek: pozycja kosztowa z jednym płacącym i listą objętych uczestników.
-
-Wysokopoziomowy przepływ MVP: utworzenie rozliczenia → zdefiniowanie uczestników i nazw → udostępnienie zaproszeń (opcjonalnie) → dodawanie wydatków i wykluczeń → zamknięcie i obliczenie sald metodą Minimum Cash Flow → eksport podsumowania tekstowego.
-
-Założenia kluczowe:
-- Max 3 aktywne rozliczenia na użytkownika‑właściciela w danym momencie (archiwum dla zamkniętych).
-- PLN, obliczenia w groszach, zaokrąglenia do 0,01; reszty rozdzielane po największych częściach ułamkowych.
-- Minimalizacja PII: imię/pseudonim, pseudonimizowane identyfikatory; pojedyncze linki zaproszeń z TTL 72h.
+- Logowanie wymagane dla właściciela (konto e‑mail + hasło, sesja 14 dni).
+- Jeden właściciel na rozliczenie, tylko właściciel może edytować.
+- Uczestnicy jako byty offline (nick w ramach rozliczenia, bez kont).
+- Waluta PLN; wartości przechowywane w groszach; prezentacja zgodnie z pl‑PL.
+- 3‑etapowy przepływ: Uczestnicy → Koszty → Podsumowanie → Zamknięcie.
 
 ## 2. Problem użytkownika
 
-Ręczne rozliczanie wspólnych wydatków jest czasochłonne, podatne na błędy i często prowadzi do nieporozumień oraz poczucia niesprawiedliwości. Użytkownicy mają trudność w ustaleniu, kto, ile i za co zapłacił, zwłaszcza po wyjazdach i wydarzeniach grupowych. FlexiSplit eliminuje niejasności przez prosty, jednoetapowy proces rozliczenia z przejrzystymi zasadami obliczeń, deterministycznym algorytmem minimalizacji przelewów i prostym eksportem wyników.
+Ręczne rozliczanie wspólnych kosztów jest skomplikowane i podatne na błędy, co prowadzi do nieporozumień oraz poczucia niesprawiedliwości. Użytkownicy potrzebują prostego, jednoznacznego i sprawiedliwego sposobu na podział kosztów po jednorazowych wydarzeniach, który:
+
+- redukuje ryzyko błędów i sporów,
+- jest szybki i czytelny na urządzeniach mobilnych,
+- jasno pokazuje, kto komu ile powinien zapłacić,
+- uniemożliwia modyfikacje po finalizacji, chroniąc integralność rozliczenia.
 
 ## 3. Wymagania funkcjonalne
 
-3.1. Rozliczenie
-1) Utworzenie pojedynczego, aktywnego rozliczenia przez właściciela z nazwą (np. „Wyjazd weekendowy").
-2) Max 3 aktywne rozliczenia per właściciel jednocześnie; zamknięte trafiają do archiwum i są tylko do odczytu.
-3) Automatyczne nadanie identyfikatora rozliczenia; pseudonimizacja na potrzeby analityki.
+3.1 Konta i sesje
 
-3.2. Uczestnicy i zaproszenia
-1) Właściciel definiuje liczbę i nazwy uczestników przy tworzeniu; nazwy są unikalne w ramach rozliczenia.
-2) Zaproszenia mają formę jednorazowych tokenów z TTL 72h; dołączenie jest opcjonalne.
-3) Właściciel może unieważnić i zregenerować token; zdarzenie jest logowane.
-4) Uczestnik dołączający po raz pierwszy może zmienić swoją nazwę (przy zachowaniu unikalności); historia zmian nazw jest logowana.
-5) Możliwość dodania uczestników „offline” (bez konta) i późniejszego scalenia z kontem po weryfikacji, bez zmiany participantId.
+- Rejestracja i logowanie e‑mail + hasło przez Supabase Auth; sesja ważna 14 dni.
+- Możliwość wylogowania; opcjonalny reset hasła.
+- Brak trybu anonimowego w MVP.
 
-3.3. Wydatki i podział
-1) Każdy wydatek ma jednego płacącego, kwotę (PLN), opis i listę objętych uczestników.
-2) Równy podział na wskazanych uczestników; możliwość wykluczenia dowolnych uczestników dla danego wydatku.
-3) Obliczenia w groszach; zaokrąglenie do 0,01; reszty rozdzielane stabilnie według największych części ułamkowych.
-4) Uprawnienia: autor może edytować/usuwać swoje wydatki; właściciel może edytować/usuwać wszystkie.
-5) Prosty log zmian: kto/co/kiedy dla wydatków i nazw uczestników.
+3.2 Rozliczenia
 
-3.4. Współbieżność i wersjonowanie
-1) Optymistyczne blokowanie wersją rekordu dla zapisów wydatków/uczestników.
-2) W przypadku konfliktu użytkownik otrzymuje informację i aplikacja proponuje ponowienie zapisu po odświeżeniu danych.
+- Tworzenie i listowanie rozliczeń; maks. 3 aktywne rozliczenia na użytkownika.
+- Statusy: open/closed; zamknięcie przenosi do archiwum i blokuje edycję.
+- Usuwanie wyłącznie rozliczeń archiwalnych; brak przywracania.
 
-3.5. Zamknięcie rozliczenia
-1) Tylko właściciel może zamknąć rozliczenie; po zamknięciu edycja jest zablokowana.
-2) Obliczenie sald i minimalizacja liczby przelewów algorytmem Minimum Cash Flow:
-   a) deterministyczne sortowanie po wartości bezwzględnej salda, następnie po participantId,
-   b) obliczenia w groszach, stabilne rozwiązywanie remisów.
-3) Rozliczenie trafia do archiwum; widok tylko do odczytu z pełnym podsumowaniem i historią zmian.
+3.3 Uczestnicy
 
-3.6. Eksport i prezentacja wyników
-1) Eksport podsumowania jako tekst z przyciskiem „Kopiuj do schowka”.
-2) Podsumowanie zawiera: listę sald uczestników, listę przelewów minimalizujących płatności oraz notę o zasadach obliczeń i zaokrągleń.
-3) Format liczb zgodny z PL (przecinek jako separator dziesiętny w UI).
+- Dodawanie/edycja/usuwanie uczestników offline w ramach rozliczenia.
+- Unikalne nicki (case‑insensitive, a‑z, 0‑9, „-”, „_”) w obrębie rozliczenia.
+- Limit: do 10 uczestników.
+- Widoczna etykieta „Właściciel” przy nicku właściciela.
 
-3.7. Analityka i prywatność
-1) Zdarzenia: settlement_created, member_joined, expense_added, settlement_closed.
-2) Parametry minimalizujące PII: pseud. settlement_id, member_count, expense_count, device_type.
-3) Brak przechowywania wrażliwych danych; nazwy jako atrybut prezentacyjny, tożsamość po participantId.
+3.4 Wydatki
 
-3.8. Walidacje i błędy
-1) Kwoty dodatnie, do dwóch miejsc po przecinku; walidacja wejścia.
-2) Unikalność nazw w obrębie rozliczenia; komunikat i propozycja alternatywy w razie konfliktu.
-3) Obsługa wygaśnięcia/zużycia tokenu zaproszenia i braków uprawnień.
-4) Fallback przy błędzie schowka: prezentacja gotowego tekstu do ręcznego skopiowania.
+- Dodawanie/edycja/usuwanie wydatków przez właściciela do momentu zamknięcia.
+- Wybór płacącego z listy uczestników; domyślnie wszyscy biorą udział w podziale z możliwością odznaczania.
+- Opis wydatku opcjonalny, do 140 znaków.
+- Limit: do 500 wydatków na rozliczenie.
+- Lista wydatków grupowana po dacie; na pozycji: płacący, kwota, liczba osób w podziale, skrót opisu.
+- Filtrowanie listy po osobie.
+- Wartości w groszach, wprowadzanie z separatorem dziesiętnym, prezentacja w pl‑PL.
+
+3.5 Rozliczanie i bilans
+
+- Podział na równe części; reszta groszy przydzielana deterministycznie pierwszym N osobom wg znormalizowanego nicku.
+- Generowanie bilansu „kto komu ile” minimalizującego liczbę przelewów; stabilne sortowanie wyników.
+- Podgląd sald per osoba oraz lista przelewów.
+- Funkcja „Kopia podsumowania” (nagłówek, saldo per osoba, lista przelewów) kopiująca tekst do schowka po zamknięciu.
+
+3.6 Uprawnienia i audyt
+
+- Edycje dozwolone wyłącznie dla właściciela rozliczenia.
+- Pola audytowe: updated_at i last_edited_by.
+
+3.7 Analityka
+
+- Logowanie zdarzeń po stronie serwera w Supabase: settlement_created, participant_added, expense_added, settle_confirmed, settled, summary_copied, new_settlement_started.
+- Środowiska: dev/lokalne i prod.
+
+3.8 Dostępność i UX
+
+- Mobile‑first; klawiatura numeryczna dla kwot; puste stany z jasnymi wezwaniami do działania; zgodność z WCAG AA.
 
 ## 4. Granice produktu
 
-Poza zakresem MVP:
-1) Rozliczenia cykliczne/miesięczne.
-2) Przekazanie roli właściciela.
-3) Integracja płatności (BLIK, przelewy online) i rozliczenia płatności w aplikacji.
-4) Wielowalutowość i automatyczne kursy.
-5) Zaawansowane statystyki, raporty CSV/PDF.
-6) Powiadomienia push.
-7) Logowanie przez konta społecznościowe.
-8) Dodawanie zdjęć paragonów.
-9) Edycja zamkniętych rozliczeń lub ich ponowne otwarcie.
-10) PWA/offline poza podstawowym cachingiem przeglądarki.
-
-Ograniczenia i decyzje projektowe:
-1) Mobile‑first; priorytet iOS Safari i Android Chrome.
-2) Minimalizacja PII; krótkie TTL i jednorazowość linków zaproszeń.
-3) Deterministyczny MCF i jawne zasady zaokrągleń.
-
-Kwestie otwarte do uściślenia po MVP (nie blokują implementacji przy przyjętych założeniach tymczasowych):
-1) Retencja/anonymizacja danych (okres archiwizacji, trwałość logów zmian).
-2) Limity skali (max uczestników/wydatków) i zachowanie przy bardzo dużych rozliczeniach.
-3) A11y i minimalne wymagania wydajności na słabszych urządzeniach.
-4) Dokładny format treści eksportu (kolejność sekcji, styl liczb); w MVP: wersja tekstowa PL.
-5) Zasady modyfikacji listy uczestników po rozpoczęciu dodawania wydatków; w MVP: dodawanie dozwolone, usuwanie zablokowane jeśli uczestnik figuruje w jakimkolwiek wydatku.
+- Brak zapraszania uczestników, dołączania przez link/e‑mail/kod (uczestnicy offline).
+- Brak rozliczeń cyklicznych lub miesięcznych.
+- Brak przekazania roli właściciela.
+- Brak integracji płatności, wielu walut i automatycznych kursów (PLN only).
+- Brak zaawansowanych statystyk, raportów i eksportów poza podstawowym podsumowaniem.
+- Brak powiadomień push.
+- Brak dodawania zdjęć paragonów.
+- Brak edycji zamkniętych rozliczeń (zamknięcie jest nieodwracalne w MVP).
+- Brak niestandardowych podziałów kosztów i wielu płacących w jednym wydatku (zawsze równy podział i pojedynczy płacący).
+- Brak szkiców rozliczeń; statusy wyłącznie open/closed.
+- Weryfikacja e‑mail podczas rejestracji do potwierdzenia; polityki rate‑limiting i blokad logowania do doprecyzowania poza MVP.
+- Concurrency: w MVP domyślnie ostatni zapis wygrywa; mechanizmy blokad do rozważenia poza MVP.
 
 ## 5. Historyjki użytkowników
 
-ID: US-001
-Tytuł: Utworzenie nowego rozliczenia
-Opis: Jako użytkownik chcę utworzyć jedno aktywne rozliczenie, aby rozpocząć dodawanie uczestników i wydatków.
-Kryteria akceptacji:
-- Podając nazwę i potwierdzając, tworzę rozliczenie z rolą właściciela.
-- Mogę utworzyć max 3 aktywne rozliczenia. Nie mogę utworzyć czwartego aktywnego rozliczenia; otrzymuję komunikat i link do archiwum.
-- Rozliczenie otrzymuje identyfikator; stan = aktywne.
+US‑001
 
-ID: US-002
-Tytuł: Definiowanie uczestników przy tworzeniu
-Opis: Jako właściciel chcę zdefiniować listę uczestników i ich nazwy.
-Kryteria akceptacji:
-- Mogę dodać co najmniej 1 uczestnika; nazwy muszą być unikalne.
-- W przypadku konfliktu nazwy widzę komunikat i propozycję zmiany.
-- Lista jest zapisana wraz z rozliczeniem.
+Tytuł: Rejestracja konta
 
-ID: US-003
-Tytuł: Zaproszenia z jednorazowym tokenem
-Opis: Jako właściciel chcę generować jednorazowe linki z TTL 72h dla uczestników.
-Kryteria akceptacji:
-- Dla każdego uczestnika generowany jest unikalny token jednorazowy.
-- Token wygasa po 72h lub po pierwszym użyciu.
-- Właściciel może unieważnić i zregenerować token; zdarzenie jest logowane.
+Opis: Jako nowy użytkownik chcę zarejestrować konto e‑mail + hasło, aby móc tworzyć i zarządzać rozliczeniami.
 
-ID: US-004
-Tytuł: Dołączenie przez uczestnika i zmiana własnej nazwy
-Opis: Jako uczestnik chcę dołączyć przez link i ustawić swoją nazwę, jeśli to moja pierwsza sesja.
 Kryteria akceptacji:
-- Wejście przez ważny token dołącza mnie do rozliczenia.
-- Jeśli nazwa koliduje, otrzymuję komunikat i muszę wybrać unikalną.
-- Zmiana nazwy jest logowana w historii.
-- Próba użycia wygasłego/zużytego tokenu skutkuje komunikatem o błędzie i wskazówką kontaktu z właścicielem.
 
-ID: US-005
-Tytuł: Dodawanie uczestnika „offline"
-Opis: Jako właściciel chcę dodać uczestnika bez konta, aby uwzględnić go w rozliczeniu.
+- Formularz rejestracji wymaga poprawnego e‑maila i hasła zgodnego z polityką.
+- Po sukcesie użytkownik jest zalogowany i widzi listę rozliczeń.
+- W przypadku błędów walidacji użytkownik otrzymuje czytelne komunikaty.
+
+US‑002
+
+Tytuł: Logowanie
+
+Opis: Jako zarejestrowany użytkownik chcę się zalogować e‑mail + hasło, aby uzyskać dostęp do moich rozliczeń.
+
 Kryteria akceptacji:
-- Mogę dodać uczestnika z nazwą, bez wymogu konta.
-- Uczestnik „offline” może być przypisywany do wydatków.
-- Uczestnik ma participantId i może być scalony z kontem później.
 
-ID: US-006
-Tytuł: Scalenie uczestnika „offline" z kontem
-Opis: Jako właściciel/uczestnik chcę po weryfikacji połączyć wpis „offline" z kontem użytkownika.
+- Poprawne dane logują i przekierowują do listy rozliczeń.
+- Błędne dane zwracają komunikat o niepowodzeniu bez ujawniania, które pole jest niepoprawne.
+- Włączona jest pamięć sesji przez 14 dni.
+
+US‑003
+
+Tytuł: Utrzymanie sesji 14 dni
+
+Opis: Jako zalogowany użytkownik chcę pozostać zalogowany przez 14 dni bez ponownego logowania.
+
 Kryteria akceptacji:
-- Po scaleniu pozostaje ten sam participantId i zachowana historia zmian.
-- Uczestnik widzi swoje dotychczasowe wydatki i saldo.
-- Zdarzenie scalenia jest logowane.
 
-ID: US-007
-Tytuł: Dodanie wydatku z równym podziałem
-Opis: Jako uczestnik chcę dodać wydatek, wskazać płacącego i uczestników, aby koszt rozdzielił się równo.
+- Tokeny sesyjne są odświeżane zgodnie z polityką i działają 14 dni.
+- Sesja jest przechowywana w bezpiecznych httpOnly cookie.
+- Po upływie 14 dni wymagana jest ponowna autoryzacja.
+
+US‑004
+
+Tytuł: Wylogowanie
+
+Opis: Jako użytkownik chcę się wylogować, aby zakończyć bieżącą sesję na tym urządzeniu.
+
 Kryteria akceptacji:
-- Wymagane pola: płacący, kwota > 0, opis tekstowy, lista objętych uczestników.
-- Domyślnie wszyscy uczestnicy są zaznaczeni; mogę odznaczać.
-- Kwoty wyliczane w groszach; suma części równa kwocie po zasadach zaokrągleń.
-- Po zapisie emisja zdarzenia analitycznego expense_added.
 
-ID: US-008
-Tytuł: Wykluczenia z wydatku
-Opis: Jako uczestnik chcę wykluczyć wybranych uczestników z konkretnego wydatku.
+- Akcja wylogowania usuwa tokeny i przekierowuje do ekranu logowania.
+- Po wylogowaniu dostęp do widoków zabezpieczonych jest zablokowany.
+
+US‑005
+
+Tytuł: Reset hasła
+
+Opis: Jako użytkownik chcę zresetować hasło, gdy je zapomnę.
+
 Kryteria akceptacji:
-- Mogę odznaczyć dowolnych uczestników dla danego wydatku.
-- Podział przelicza się tylko na pozostających uczestników.
-- Zmiana jest logowana z kontekstem wydatku.
 
-ID: US-009
-Tytuł: Edycja własnego wydatku
-Opis: Jako autor chcę edytować lub usunąć własny wydatek.
+- Formularz resetu weryfikuje e‑mail i wysyła link resetu (jeśli mechanizm dostępny w środowisku).
+- Po ustawieniu nowego hasła możliwe jest standardowe logowanie.
+
+US‑006
+
+Tytuł: Autoryzacja właścicielska
+
+Opis: Jako właściciel rozliczenia chcę mieć wyłączne prawo edycji, aby zachować spójność danych.
+
 Kryteria akceptacji:
-- Mogę zmienić opis, kwotę, płacącego, listę uczestników.
-- Zmiany aktualizują wersję rekordu; historia zmian jest zapisywana.
-- Usunięcie jest możliwe przed zamknięciem rozliczenia.
 
-ID: US-010
-Tytuł: Uprawnienia właściciela do edycji
-Opis: Jako właściciel chcę edytować/usuwać dowolny wydatek.
+- Edycje uczestników i wydatków są dostępne tylko dla właściciela.
+- Użytkownicy niebędący właścicielem widzą dane w trybie tylko do odczytu.
+- Próby edycji przez niewłaściciela zwracają błąd autoryzacji.
+
+US‑010
+
+Tytuł: Utworzenie rozliczenia
+
+Opis: Jako właściciel chcę utworzyć nowe rozliczenie, aby rozpocząć podział kosztów.
+
 Kryteria akceptacji:
-- Właściciel ma pełne uprawnienia edycyjne do wszystkich wydatków.
-- Zmiany są logowane z identyfikatorem właściciela.
 
-ID: US-011
-Tytuł: Współbieżność i konflikt zapisu
-Opis: Jako użytkownik chcę bezpiecznego zapisu w przypadku równoczesnych edycji.
+- Utworzenie zwiększa licznik aktywnych; jeśli osiągnięto limit 3, akcja jest blokowana z komunikatem.
+- Nowe rozliczenie ma status open i jest widoczne na liście aktywnych.
+
+US‑011
+
+Tytuł: Lista rozliczeń
+
+Opis: Jako właściciel chcę widzieć listę moich rozliczeń (aktywne i archiwalne).
+
 Kryteria akceptacji:
-- Każdy zapis weryfikuje wersję rekordu (ETag/wersja).
-- Przy konflikcie widzę komunikat o konieczności odświeżenia i ponowne próby.
-- Po odświeżeniu mogę zapisać ponownie bez utraty danych.
 
-ID: US-012
+- Lista pokazuje min. nazwę, status, liczbę uczestników i wydatków.
+- Dostępne są zakładki/filtry: Aktywne, Archiwum.
+
+US‑012
+
+Tytuł: Szczegóły rozliczenia
+
+Opis: Jako właściciel chcę wejść w szczegóły rozliczenia, aby zarządzać uczestnikami i wydatkami.
+
+Kryteria akceptacji:
+
+- Widok zawiera 3 kroki: Uczestnicy → Koszty → Podsumowanie.
+- Dostępne są akcje odpowiednie do statusu open/closed.
+
+US‑013
+
 Tytuł: Zamknięcie rozliczenia
-Opis: Jako właściciel chcę zamknąć rozliczenie i zablokować dalsze edycje.
-Kryteria akceptacji:
-- Tylko właściciel widzi przycisk Zamknij.
-- Po zamknięciu edycja wydatków/uczestników jest niemożliwa.
-- Stan rozliczenia = zamknięte; przeniesienie do archiwum.
 
-ID: US-013
-Tytuł: Algorytm minimalizacji przelewów (MCF)
-Opis: Jako właściciel chcę, aby lista przelewów była deterministyczna i minimalna.
-Kryteria akceptacji:
-- Salda liczone w groszach, z zastosowaniem zasad zaokrągleń reszt.
-- Kolejność rozwiązywania remisów: najpierw po |saldo|, następnie participantId.
-- Wynik jest stabilny dla tych samych danych wejściowych.
+Opis: Jako właściciel chcę zamknąć rozliczenie po akceptacji, aby zablokować edycję i wygenerować bilans.
 
-ID: US-014
-Tytuł: Widok podsumowania po zamknięciu
-Opis: Jako uczestnik chcę zobaczyć czytelne podsumowanie sald i przelewów.
 Kryteria akceptacji:
-- Widok tylko do odczytu zawiera salda wszystkich uczestników.
-- Lista przelewów minimalizuje liczbę płatności.
-- Widoczna jest nota o zasadach obliczeń.
 
-ID: US-015
-Tytuł: Eksport tekstowy i kopiowanie do schowka
-Opis: Jako użytkownik chcę skopiować podsumowanie do schowka, by udostępnić je grupie.
+- Przed zamknięciem wyświetla się modal potwierdzenia z liczbą kosztów i datą oraz informacją o nieodwracalności.
+- Po zamknięciu status zmienia się na closed, edycja jest zablokowana, rozliczenie trafia do archiwum.
+
+US‑014
+
+Tytuł: Usunięcie rozliczenia archiwalnego
+
+Opis: Jako właściciel chcę móc usunąć rozliczenie z archiwum, gdy nie jest już potrzebne.
+
 Kryteria akceptacji:
-- Kliknięcie przycisku kopiuje pełny tekst podsumowania.
-- W razie braku dostępu do schowka pojawia się treść do ręcznego skopiowania.
-- Format liczb zgodny z PL w UI.
 
-ID: US-016
-Tytuł: Historia zmian nazw uczestników
-Opis: Jako właściciel chcę mieć dostęp do historii zmian nazw.
+- Usunięcie dostępne wyłącznie dla closed; akcja nieodwracalna.
+- Po usunięciu rozliczenie znika z listy i nie jest dostępne przez UI.
+
+US‑020
+
+Tytuł: Dodanie uczestnika
+
+Opis: Jako właściciel chcę dodać uczestnika (nick), aby uwzględnić go w podziale kosztów.
+
 Kryteria akceptacji:
-- Każda zmiana nazwy zapisuje: kto, co, kiedy.
-- Historia jest dostępna w widoku szczegółów uczestnika.
 
-ID: US-017
-Tytuł: Bezpieczny dostęp przez token (uwierzytelnienie lekkie)
-Opis: Jako uczestnik chcę, aby dostęp do rozliczenia był możliwy wyłącznie przez ważny, jednorazowy link.
+- Walidacja unikalności nicka w ramach rozliczenia (case‑insensitive).
+- Dozwolone znaki: a‑z, 0‑9, „-”, „_”.
+- Po przekroczeniu limitu 10 dodawanie jest zablokowane z komunikatem.
+
+US‑021
+
+Tytuł: Edycja uczestnika
+
+Opis: Jako właściciel chcę edytować nick uczestnika przed zamknięciem rozliczenia.
+
 Kryteria akceptacji:
-- Wejście bez ważnego tokenu kończy się komunikatem o braku dostępu.
-- Użyty token nie działa ponownie.
-- Właściciel może unieważnić token w dowolnym momencie.
 
-ID: US-018
-Tytuł: Analityka kluczowych zdarzeń
-Opis: Jako właściciel produktu chcę mierzyć tworzenie, dołączanie, dodawanie wydatków i zamykanie.
+- Zmiana nicka przestrzega walidacji unikalności i wzorca znaków.
+- Aktualizacje są widoczne w listach i w istniejących wydatkach.
+
+US‑022
+
+Tytuł: Usunięcie uczestnika
+
+Opis: Jako właściciel chcę usunąć uczestnika przed zamknięciem, jeśli to konieczne.
+
 Kryteria akceptacji:
-- Emisja settlement_created przy utworzeniu aktywnego rozliczenia.
-- Emisja member_joined przy skutecznym dołączeniu.
-- Emisja expense_added przy dodaniu wydatku.
-- Emisja settlement_closed przy zamknięciu.
-- Parametry zgodnie z zasadą minimalizacji PII.
 
-ID: US-019
-Tytuł: Walidacje kwot i formatów
-Opis: Jako użytkownik chcę, aby błędne kwoty były blokowane z jasnym komunikatem.
+- Usuwanie dostępne tylko dla statusu open.
+- System zapobiega stanom niespójnym (np. usuwa udział w niezależnych wydatkach lub blokuje akcję z komunikatem, zgodnie z przyjętą implementacją).
+
+US‑023
+
+Tytuł: Walidacja i podpowiedź nicka
+
+Opis: Jako właściciel chcę widzieć informację o kolizji nicka i otrzymać proponowaną alternatywę z sufiksem.
+
 Kryteria akceptacji:
-- Kwota musi być > 0 i mieć maks. 2 miejsca po przecinku.
-- W przypadku błędu pole jest oznaczone, a zapis zablokowany.
 
-ID: US-020
-Tytuł: Stabilna dystrybucja reszt z zaokrągleń
-Opis: Jako użytkownik chcę, by różnice groszowe były rozdzielane przewidywalnie.
+- Podczas wpisywania system sygnalizuje kolizję i proponuje wolny wariant.
+
+US‑025
+
+Tytuł: Widoczność roli właściciela
+
+Opis: Jako uczestnik chcę wiedzieć, kto jest właścicielem rozliczenia.
+
 Kryteria akceptacji:
-- Reszty wynikające z zaokrągleń przypisywane są kolejno do największych części ułamkowych.
-- Wynik jest deterministyczny dla tych samych danych wejściowych.
 
-ID: US-021
+- Przy nicku właściciela widoczny jest badge „Właściciel”.
+
+US‑030
+
+Tytuł: Dodanie wydatku
+
+Opis: Jako właściciel chcę dodać wydatek z wyborem płacącego i domyślnym udziałem wszystkich.
+
+Kryteria akceptacji:
+
+- Formularz zawiera: kwotę, płacącego, listę uczestników z checkboxami, opcjonalny opis (≤140 znaków), datę.
+- Domyślnie zaznaczeni są wszyscy uczestnicy; można odznaczać pojedyncze osoby.
+- Po zapisie wydatek pojawia się na liście grupowanej po dacie.
+
+US‑031
+
+Tytuł: Edycja wydatku
+
+Opis: Jako właściciel chcę edytować istniejący wydatek przed zamknięciem rozliczenia.
+
+Kryteria akceptacji:
+
+- Edycja dostępna dla open; pola walidowane jak przy dodawaniu.
+- Zmiany aktualizują bilans w podsumowaniu.
+
+US‑032
+
+Tytuł: Usunięcie wydatku
+
+Opis: Jako właściciel chcę usunąć wydatek przed zamknięciem rozliczenia.
+
+Kryteria akceptacji:
+
+- Usuwanie dostępne dla open; po usunięciu bilans i lista są aktualizowane.
+
+US‑033
+
+Tytuł: Opis wydatku i ograniczenia
+
+Opis: Jako właściciel chcę dodać krótki opis, aby ułatwić identyfikację wydatku.
+
+Kryteria akceptacji:
+
+- Opis jest opcjonalny i ograniczony do 140 znaków; walidacja działa w formularzu.
+
+US‑034
+
+Tytuł: Filtrowanie po osobie
+
+Opis: Jako właściciel chcę przefiltrować listę wydatków po wybranej osobie.
+
+Kryteria akceptacji:
+
+- Filtr ogranicza listę do wydatków, w których osoba była płacącym lub uczestnikiem podziału.
+
+US‑035
+
+Tytuł: Wejście w szczegóły wydatku
+
+Opis: Jako właściciel chcę wejść w szczegóły wydatku, aby zobaczyć pełny udział i opis.
+
+Kryteria akceptacji:
+
+- Widok zawiera: płacącego, kwotę, listę uczestników w podziale, jednostkową część kosztu, opis.
+
+US‑036
+
+Tytuł: Edge case – wydatek jednoosobowy
+
+Opis: Jako właściciel chcę móc zarejestrować wydatek z udziałem tylko jednej osoby.
+
+Kryteria akceptacji:
+
+- System poprawnie rejestruje wydatek i nie dzieli kwoty.
+
+US‑037
+
+Tytuł: Wprowadzanie i prezentacja kwot
+
+Opis: Jako użytkownik chcę wprowadzać kwoty wygodnie na mobile, a system ma przechowywać wartości w groszach.
+
+Kryteria akceptacji:
+
+- Pole kwoty używa klawiatury numerycznej i akceptuje separator dziesiętny.
+- Wartości są przechowywane w groszach; prezentacja zgodna z locale pl‑PL.
+
+US‑040
+
+Tytuł: Obliczanie podziału i reszt groszy
+
+Opis: Jako właściciel chcę, aby podział był równy, a reszta groszy przydzielana deterministycznie wg znormalizowanych nicków.
+
+Kryteria akceptacji:
+
+- Algorytm dzieli koszt na równe części w groszach i przydziela resztę pierwszym N osobom zgodnie z deterministyczną kolejnością.
+- Wynik jest stabilny i powtarzalny dla tych samych danych wejściowych.
+
+US‑041
+
+Tytuł: Minimalizacja liczby przelewów
+
+Opis: Jako właściciel chcę skróconą listę przelewów minimalizującą liczbę transakcji.
+
+Kryteria akceptacji:
+
+- Algorytm nettingu redukuje liczbę transakcji i zwraca listę posortowaną stabilnie.
+- Suma kwot do zapłaty równa się sumie kwot do otrzymania (kontrola sum).
+
+US‑042
+
+Tytuł: Salda per osoba
+
+Opis: Jako uczestnik chcę zobaczyć swoje saldo po zamknięciu rozliczenia.
+
+Kryteria akceptacji:
+
+- Widok prezentuje salda każdej osoby w PLN z dokładnością do grosza.
+
+US‑043
+
+Tytuł: Kopia podsumowania do schowka
+
+Opis: Jako właściciel chcę skopiować podsumowanie po zamknięciu, aby łatwo udostępnić je uczestnikom.
+
+Kryteria akceptacji:
+
+- Kliknięcie „Kopia podsumowania” kopiuje tekst zawierający nagłówek, salda per osoba i listę przelewów do schowka.
+
+US‑050
+
 Tytuł: Archiwum rozliczeń
-Opis: Jako użytkownik chcę mieć dostęp do zamkniętych rozliczeń w trybie tylko do odczytu.
-Kryteria akceptacji:
-- Po zamknięciu rozliczenie pojawia się w archiwum.
-- Edycja jest niedostępna; dostępny jest eksport i historia.
 
-ID: US-024
-Tytuł: Komunikaty o wygaśnięciu/zużyciu tokenu
-Opis: Jako uczestnik chcę jasnego komunikatu, gdy token jest nieważny.
-Kryteria akceptacji:
-- Token po TTL lub po użyciu jest nieważny.
-- Widzę komunikat i instrukcję skontaktowania się z administratorem.
+Opis: Jako właściciel chcę przeglądać zakończone rozliczenia i ich bilans.
 
-ID: US-025
-Tytuł: Edycja i usuwanie wydatków przed zamknięciem
-Opis: Jako uczestnik chcę mieć możliwość korekt wydatków przed zamknięciem rozliczenia, a po zamknięciu widok tylko do odczytu.
 Kryteria akceptacji:
-- Do momentu zamknięcia mogę edytować zgodnie z uprawnieniami.
-- Po zamknięciu próby edycji są blokowane z komunikatem.
+
+- Archiwum prezentuje listę closed; wejście w szczegóły pokazuje bilans i listę przelewów.
+
+US‑060
+
+Tytuł: Audyt edycji
+
+Opis: Jako właściciel chcę, aby system rejestrował updated_at i last_edited_by przy każdej zmianie.
+
+Kryteria akceptacji:
+
+- Pola audytowe aktualizują się przy dodawaniu/edycji/usuwaniu danych.
+
+US‑061
+
+Tytuł: Zdarzenia analityczne
+
+Opis: Jako właściciel produktu chcę śledzić kluczowe zdarzenia, aby mierzyć lejek aktywacji i sukces produktu.
+
+Kryteria akceptacji:
+
+- Emisja zdarzeń po stronie serwera: settlement_created, participant_added, expense_added, settle_confirmed, settled, summary_copied, new_settlement_started.
+- Zdarzenia zawierają minimalny kontekst (ID rozliczenia, liczebności, timestamp).
+
+US‑070
+
+Tytuł: Blokada edycji po zamknięciu
+
+Opis: Jako właściciel chcę mieć pewność, że zamknięte rozliczenie jest tylko do odczytu.
+
+Kryteria akceptacji:
+
+- Wszystkie akcje edycji uczestników i wydatków są niedostępne dla closed.
+- Próby modyfikacji zwracają komunikat o blokadzie.
+
+US‑071
+
+Tytuł: Walidacja kwot
+
+Opis: Jako właściciel chcę, aby kwoty były walidowane jako dodatnie i poprawnie sformatowane.
+
+Kryteria akceptacji:
+
+- Minimalna jednostka to 0,01 PLN; kwoty ujemne lub 0 są odrzucane.
+- Prezentacja kwot zgodna z locale pl‑PL.
+
+US‑072
+
+Tytuł: Puste stany i przewodnictwo
+
+Opis: Jako użytkownik chcę widzieć jasne komunikaty w pustych stanach, aby wiedzieć, co robić dalej.
+
+Kryteria akceptacji:
+
+- Po utworzeniu rozliczenia widoczne są CTA: „Dodaj pierwszego uczestnika” i „Dodaj pierwszy koszt”.
+
+US‑073
+
+Tytuł: Dostępność i mobile
+
+Opis: Jako użytkownik mobilny chcę wygodnej obsługi formularzy i czytelnych kontrastów.
+
+Kryteria akceptacji:
+
+- Duże pola dotykowe, fokus klawiatury na kolejne pole, kontrast czytelny.
+- Pola kwot oferują klawiaturę numeryczną.
+
+US‑074
+
+Tytuł: Filtrowanie i sortowanie stabilne
+
+Opis: Jako użytkownik chcę przewidywalnego sortowania list i filtrów.
+
+Kryteria akceptacji:
+
+- Listy wydatków są grupowane po dacie i sortowane stabilnie; filtry nie zmieniają kolejności w ramach grupy.
+
+US‑075
+
+Tytuł: Obsługa błędów i komunikaty
+
+Opis: Jako użytkownik chcę jasnych, przyjaznych komunikatów błędów.
+
+Kryteria akceptacji:
+
+- Błędy walidacji i uprawnień są komunikowane po polsku, bez żargonu księgowego.
 
 ## 6. Metryki sukcesu
 
-KPI produktu:
-1) Co najmniej 50 zakończonych rozliczeń w pierwszym miesiącu od uruchomienia.
-2) Współczynnik created→closed ≥ 60%.
-3) Mediana 5 wydatków na rozliczenie.
-4) Czas do zamknięcia ≤ 9 dni.
-5) Powracalność: ≥ 20% użytkowników tworzy kolejne rozliczenie w ciągu 3 miesięcy.
-
-Telemetria i jakość:
-1) Poprawna emisja zdarzeń settlement_created, member_joined, expense_added, settlement_closed z parametrami bez PII.
-2) Brak błędów krytycznych blokujących zamknięcie i eksport.
-3) E2E testy na iOS Safari i Android Chrome dla ścieżki create → invite/assign names → add expenses/exclusions → close → export.
+- 50 zakończonych rozliczeń (unikalne) w pierwszym miesiącu produkcyjnym; źródło: liczba zdarzeń settled.
+- Co najmniej 20% użytkowników tworzy kolejne rozliczenie w ciągu 3 miesięcy; źródło: cohorty z ≥2 zdarzeniami settled.
+- Pozytywny feedback o prostocie: ankiety NPS/PMF po settled oraz medianowy czas do pierwszego rozliczenia.
+- Lejek aktywacji: settlement_created → participant_added → expense_added → settle_confirmed → settled; monitorowane drop‑off i mediany czasu między etapami.
+-- Jakość danych: średnia liczba wydatków/rozliczenie, średnia liczba uczestników, użycie filtra po osobie, użycie „summary_copied”.
