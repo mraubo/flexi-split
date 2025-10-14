@@ -3,6 +3,7 @@
 ### 1. Lista tabel z kolumnami, typami i ograniczeniami
 
 #### 1.0 `auth.users` (zarządzana przez Supabase Auth)
+
 - Tabela zarządzana przez Supabase Auth; źródło użytkowników logujących się do aplikacji. Struktura jest przybliżona i może różnić się między wersjami Supabase.
 - **id**: uuid, PK
 - **email**: varchar(255), NOT NULL, UNIQUE
@@ -11,9 +12,11 @@
 - **confirmed_at**: timestamptz, NULL
 
 Powiązania (użycie w aplikacji):
+
 - Referencje FK z tabel: `settlements.owner_id`, `events.actor_id`, pola audytu `last_edited_by` w `settlements`/`participants`/`expenses`.
 
 #### 1.1 `settlements`
+
 - **id**: uuid, PK, default `gen_random_uuid()`
 - **owner_id**: uuid, NOT NULL, FK → `auth.users(id)` (ON DELETE RESTRICT)
 - **title**: varchar(100), NOT NULL
@@ -27,12 +30,14 @@ Powiązania (użycie w aplikacji):
 - **last_edited_by**: uuid, NULL, FK → `auth.users(id)`
 
 Constraints and behaviors:
+
 - Status przejść: `open → closed` (brak ponownego otwarcia w MVP).
 - Brak Hard delete.
 - Zmiana `owner_id` po wstawieniu jest zablokowana (trigger BEFORE UPDATE).
 - Limit maks. 3 aktywne (`status='open'`) rozliczenia na użytkownika (constraint trigger AFTER INSERT/UPDATE of status).
 
 #### 1.2 `participants`
+
 - **id**: uuid, PK, default `gen_random_uuid()`
 - **settlement_id**: uuid, NOT NULL, FK → `settlements(id)` (ON DELETE CASCADE)
 - **nickname**: varchar(30), NOT NULL, CHECK `nickname ~ '^[a-z0-9_-]+$'`
@@ -43,12 +48,14 @@ Constraints and behaviors:
 - **last_edited_by**: uuid, NULL, FK → `auth.users(id)`
 
 Constraints and behaviors:
+
 - Unikalność nicków per rozliczenie: UNIQUE(`settlement_id`, `nickname_norm`).
 - Wspierająca spójność kompozytowa: UNIQUE(`settlement_id`, `id`) (do FKs złożonych).
 - Dokładnie jeden właściciel per rozliczenie: UNIQUE(`settlement_id`) WHERE `is_owner = true` (partial unique index).
 - Operacje DML dozwolone tylko, gdy `settlements.status='open'` (trigger/constraint, oraz RLS policy).
 
 #### 1.3 `expenses`
+
 - **id**: uuid, PK, default `gen_random_uuid()`
 - **settlement_id**: uuid, NOT NULL, FK → `settlements(id)`
 - **payer_participant_id**: uuid, NOT NULL, FK (kompozytowa zgodność z `participants` — patrz constraint)
@@ -61,17 +68,20 @@ Constraints and behaviors:
 - **last_edited_by**: uuid, NULL, FK → `auth.users(id)`
 
 Constraints and behaviors:
+
 - Spójność płacącego z rozliczeniem: FK(`settlement_id`, `payer_participant_id`) → `participants(settlement_id, id)`.
 - Min. 1 uczestnik w podziale: constraint trigger DEFERRABLE (sprawdzany po DML na `expense_participants`).
 - Operacje DML dozwolone tylko, gdy `settlements.status='open'`.
 
 #### 1.4 `expense_participants`
+
 - **expense_id**: uuid, NOT NULL
 - **participant_id**: uuid, NOT NULL
 - **settlement_id**: uuid, NOT NULL
 - **created_at**: timestamptz, NOT NULL, default `now()`
 
 Keys and constraints:
+
 - PK: (`expense_id`, `participant_id`).
 - FK(`expense_id`, `settlement_id`) → `expenses(id, settlement_id)`.
 - FK(`participant_id`, `settlement_id`) → `participants(id, settlement_id).
@@ -79,10 +89,12 @@ Keys and constraints:
 - Operacje DML dozwolone tylko, gdy `settlements.status='open'`.
 
 Behaviors:
+
 - Triggery AFTER INSERT/DELETE/UPDATE utrzymują `expenses.share_count`.
 - Constraint trigger DEFERRABLE pilnujący, aby każdy `expense` miał ≥1 uczestnika.
 
 #### 1.5 `settlement_snapshots`
+
 - **id**: uuid, PK, default `gen_random_uuid()`
 - **settlement_id**: uuid, NOT NULL, FK → `settlements(id)`
 - **balances**: jsonb, NOT NULL  
@@ -93,10 +105,12 @@ Behaviors:
 - **created_at**: timestamptz, NOT NULL, default `now()`
 
 Constraints and behaviors:
+
 - Snapshoty powstają tylko przy finalizacji rozliczenia (funkcja `finalize_settlement`).
 - Opcjonalnie UNIQUE(`settlement_id`) jeśli trzymamy jeden snapshot per closed (MVP może przyjąć jeden).
 
 #### 1.6 `events`
+
 - **id**: uuid, PK, default `gen_random_uuid()`
 - **event_type**: text, NOT NULL, CHECK IN (
   'settlement_created',
@@ -106,19 +120,21 @@ Constraints and behaviors:
   'settled',
   'summary_copied',
   'new_settlement_started'
-)
+  )
 - **settlement_id**: uuid, NULL, FK → `settlements(id)` (ON DELETE SET NULL) — niektóre zdarzenia mogą być globalne.
 - **actor_id**: uuid, NULL, FK → `auth.users(id)`
 - **payload**: jsonb, NOT NULL, CHECK `(payload ? 'env') AND (payload->>'env') IN ('dev','prod')`
 - **created_at**: timestamptz, NOT NULL, default `now()`
 
 Constraints and behaviors:
+
 - Minimalny kontekst w `payload`; wymagane `env`.
 - Indeksy wspierają analizę lejkową i raporty.
 
 ---
 
 ### 2. Relacje między tabelami (kardynalność)
+
 - **`auth.users` 1:N `settlements`** — właściciel przez `owner_id` (brak modyfikacji w `auth.users`).
 - **`auth.users` 1:N `events`** — aktor zdarzenia przez `actor_id` (opcjonalnie NULL).
 - **`auth.users` 1:N pola audytu** — `last_edited_by` w `settlements`, `participants`, `expenses` (NULLable).
@@ -132,6 +148,7 @@ Constraints and behaviors:
 ---
 
 ### 3. Indeksy
+
 - `auth.users` (zarządzana przez Supabase)
   - PK (`id`), UNIQUE (`email`) — dostarczane przez Supabase Auth.
 - `settlements`
@@ -195,6 +212,7 @@ Uwaga: `auth.users` jest zarządzana przez Supabase Auth (GoTrue). Nie wprowadza
   - UPDATE/DELETE: zabronione
 
 Dodatkowe zabezpieczenia i triggery:
+
 - BEFORE UPDATE na `settlements`: blokuje zmianę `owner_id`; ustawia `updated_at`, `last_edited_by`.
 - BEFORE UPDATE na `participants`/`expenses`/`expense_participants`: ustawia `updated_at`, `last_edited_by`.
 - BEFORE INSERT/UPDATE/DELETE na `participants`/`expenses`/`expense_participants`: odrzuca modyfikacje, gdy `settlements.status='closed'`.
@@ -209,6 +227,7 @@ Dodatkowe zabezpieczenia i triggery:
 ---
 
 ### 5. Uwagi projektowe i uzasadnienia
+
 - **Waluta i kwoty**: wartości finansowe w groszach (`bigint`) zgodnie z PRD; `currency` na poziomie `settlements` (default 'PLN').
 - **Nicki uczestników**: walidacja wzorca i kolumna znormalizowana `nickname_norm` zapewniają unikalność case-insensitive bez rozszerzeń CITEXT.
 - **Denormalizacja**: `expenses.share_count` oraz liczniki w `settlements` przyspieszają listowanie i filtrowanie; utrzymywane triggerami.
@@ -217,5 +236,3 @@ Dodatkowe zabezpieczenia i triggery:
 - **Finalizacja**: funkcja `finalize_settlement(settlement_id)` (w transakcji z `SELECT ... FOR UPDATE`) liczy salda, wyznacza minimalny zestaw przelewów (netting), zapisuje snapshot, ustawia `status='closed'` i `closed_at`. Dostępna tylko dla właściciela; działa jako SECURITY DEFINER.
 - **Usuwanie**: dozwolone wyłącznie dla rozliczeń `closed`; kaskady usuwają powiązane rekordy.
 - **Zdarzenia analityczne**: whitelist `event_type` oraz obowiązkowe `payload.env` pozwalają na prostą filtrację środowisk (dev/prod) i analizę lejka.
-
-
