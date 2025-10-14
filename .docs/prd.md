@@ -29,20 +29,20 @@ Ręczne rozliczanie wspólnych kosztów jest skomplikowane i podatne na błędy,
 - Możliwość wylogowania; opcjonalny reset hasła.
 - Brak trybu anonimowego w MVP.
 
-3.2 Rozliczenia
+  3.2 Rozliczenia
 
 - Tworzenie i listowanie rozliczeń; maks. 3 aktywne rozliczenia na użytkownika.
 - Statusy: open/closed; zamknięcie przenosi do archiwum i blokuje edycję.
 - Usuwanie wyłącznie rozliczeń archiwalnych; brak przywracania.
 
-3.3 Uczestnicy
+  3.3 Uczestnicy
 
 - Dodawanie/edycja/usuwanie uczestników offline w ramach rozliczenia.
-- Unikalne nicki (case‑insensitive, a‑z, 0‑9, „-”, „_”) w obrębie rozliczenia.
+- Unikalne nicki (case‑insensitive, a‑z, 0‑9, „-”, „\_”) w obrębie rozliczenia.
 - Limit: do 10 uczestników.
 - Widoczna etykieta „Właściciel” przy nicku właściciela.
 
-3.4 Wydatki
+  3.4 Wydatki
 
 - Dodawanie/edycja/usuwanie wydatków przez właściciela do momentu zamknięcia.
 - Wybór płacącego z listy uczestników; domyślnie wszyscy biorą udział w podziale z możliwością odznaczania.
@@ -52,24 +52,24 @@ Ręczne rozliczanie wspólnych kosztów jest skomplikowane i podatne na błędy,
 - Filtrowanie listy po osobie.
 - Wartości w groszach, wprowadzanie z separatorem dziesiętnym, prezentacja w pl‑PL.
 
-3.5 Rozliczanie i bilans
+  3.5 Rozliczanie i bilans
 
 - Podział na równe części; reszta groszy przydzielana deterministycznie pierwszym N osobom wg znormalizowanego nicku.
 - Generowanie bilansu „kto komu ile” minimalizującego liczbę przelewów; stabilne sortowanie wyników.
 - Podgląd sald per osoba oraz lista przelewów.
 - Funkcja „Kopia podsumowania” (nagłówek, saldo per osoba, lista przelewów) kopiująca tekst do schowka po zamknięciu.
 
-3.6 Uprawnienia i audyt
+  3.6 Uprawnienia i audyt
 
 - Edycje dozwolone wyłącznie dla właściciela rozliczenia.
 - Pola audytowe: updated_at i last_edited_by.
 
-3.7 Analityka
+  3.7 Analityka
 
 - Logowanie zdarzeń po stronie serwera w Supabase: settlement_created, participant_added, expense_added, settle_confirmed, settled, summary_copied, new_settlement_started.
 - Środowiska: dev/lokalne i prod.
 
-3.8 Dostępność i UX
+  3.8 Dostępność i UX
 
 - Mobile‑first; klawiatura numeryczna dla kwot; puste stany z jasnymi wezwaniami do działania; zgodność z WCAG AA.
 
@@ -224,7 +224,7 @@ Opis: Jako właściciel chcę dodać uczestnika (nick), aby uwzględnić go w po
 Kryteria akceptacji:
 
 - Walidacja unikalności nicka w ramach rozliczenia (case‑insensitive).
-- Dozwolone znaki: a‑z, 0‑9, „-”, „_”.
+- Dozwolone znaki: a‑z, 0‑9, „-”, „\_”.
 - Po przekroczeniu limitu 10 dodawanie jest zablokowane z komunikatem.
 
 US‑021
@@ -495,4 +495,4 @@ Kryteria akceptacji:
 - Co najmniej 20% użytkowników tworzy kolejne rozliczenie w ciągu 3 miesięcy; źródło: cohorty z ≥2 zdarzeniami settled.
 - Pozytywny feedback o prostocie: ankiety NPS/PMF po settled oraz medianowy czas do pierwszego rozliczenia.
 - Lejek aktywacji: settlement_created → participant_added → expense_added → settle_confirmed → settled; monitorowane drop‑off i mediany czasu między etapami.
--- Jakość danych: średnia liczba wydatków/rozliczenie, średnia liczba uczestników, użycie filtra po osobie, użycie „summary_copied”.
+  -- Jakość danych: średnia liczba wydatków/rozliczenie, średnia liczba uczestników, użycie filtra po osobie, użycie „summary_copied”.
