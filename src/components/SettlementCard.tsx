@@ -1,10 +1,10 @@
-import { Users, Receipt, Calendar, CheckCircle } from "lucide-react";
+import { Users, Receipt, Calendar, CheckCircle, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import CardActionsMenu from "./CardActionsMenu";
 import type { SettlementCardVM } from "@/types";
-import { formatDate } from "@/types";
+import { formatDate, formatCurrency } from "@/types";
 
 interface SettlementCardProps {
   item: SettlementCardVM;
@@ -40,7 +40,7 @@ export default function SettlementCard({ item, onDelete }: SettlementCardProps) 
               </Badge>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap gap-4 mb-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 <span>{item.participantsCount} uczestników</span>
@@ -48,6 +48,10 @@ export default function SettlementCard({ item, onDelete }: SettlementCardProps) 
               <div className="flex items-center gap-2">
                 <Receipt className="w-4 h-4" />
                 <span>{item.expensesCount} wydatków</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                <span>{formatCurrency(item.totalExpensesAmountCents)}</span>
               </div>
             </div>
 

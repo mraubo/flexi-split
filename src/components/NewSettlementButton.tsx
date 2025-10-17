@@ -8,10 +8,9 @@ interface NewSettlementButtonProps {
 
 export default function NewSettlementButton({ disabled, onClick }: NewSettlementButtonProps) {
   return (
-    <Button onClick={onClick} disabled={disabled} className="gap-2">
+    <Button onClick={onClick} disabled={disabled} className="gap-2 cursor-pointer">
       <Plus className="h-4 w-4" />
       Nowe rozliczenie
     </Button>
   );
 }
-
