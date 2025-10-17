@@ -10,3 +10,15 @@ export const GetSettlementsQuerySchema = z.object({
 
 export type GetSettlementsQueryInput = z.input<typeof GetSettlementsQuerySchema>;
 export type GetSettlementsQueryOutput = z.output<typeof GetSettlementsQuerySchema>;
+
+export const CreateSettlementSchema = z.object({
+  title: z.string().min(1, "title is required").max(100, "max 100 chars"),
+});
+
+export type CreateSettlementInput = z.infer<typeof CreateSettlementSchema>;
+
+// UUID validation for path parameters
+export const UUIDSchema = z.uuid();
+
+export type UUIDInput = z.input<typeof UUIDSchema>;
+export type UUIDOutput = z.output<typeof UUIDSchema>;

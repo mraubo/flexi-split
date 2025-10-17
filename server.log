@@ -1,0 +1,92 @@
+$ astro dev
+11:51:24 [@astrojs/node] Enabling sessions with filesystem storage
+11:51:24 [types] Generated 0ms
+11:51:24 [content] Syncing content
+11:51:24 [content] Synced content
+11:51:24 [vite] Re-optimizing dependencies because vite config has changed
+
+ astro  v5.14.1 ready in 174 ms
+
+┃ Local    http://localhost:3000/
+┃ Network  use --host to expose
+
+11:51:24 watching for file changes...
+user {
+  id: 'a507ffc8-aae4-45be-859a-5afd2325fcaf',
+  email: 'test@test.pl',
+  created_at: '2025-10-17T09:43:35.926966+00:00',
+  confirmed_at: '2025-10-17T09:43:35.934705+00:00',
+  last_sign_in_at: null,
+  phone: null,
+  raw_app_meta_data: { provider: 'email', providers: [ 'email' ] },
+  raw_user_meta_data: { email_verified: true },
+  updated_at: '2025-10-17T09:43:35.935357+00:00',
+  providers: [ 'email' ],
+  banned_until: null,
+  confirmation_sent_at: null,
+  is_anonymous: false,
+  is_sso_user: false,
+  invited_at: null
+}
+11:51:36 [200] /api/settlements 232ms
+user {
+  id: 'a507ffc8-aae4-45be-859a-5afd2325fcaf',
+  email: 'test@test.pl',
+  created_at: '2025-10-17T09:43:35.926966+00:00',
+  confirmed_at: '2025-10-17T09:43:35.934705+00:00',
+  last_sign_in_at: null,
+  phone: null,
+  raw_app_meta_data: { provider: 'email', providers: [ 'email' ] },
+  raw_user_meta_data: { email_verified: true },
+  updated_at: '2025-10-17T09:43:35.935357+00:00',
+  providers: [ 'email' ],
+  banned_until: null,
+  confirmation_sent_at: null,
+  is_anonymous: false,
+  is_sso_user: false,
+  invited_at: null
+}
+11:51:46 [200] /api/settlements 37ms
+11:56:20 [200] /settlements 69ms
+11:56:20 [200] /settlements 70ms
+user {
+  id: 'a507ffc8-aae4-45be-859a-5afd2325fcaf',
+  email: 'test@test.pl',
+  created_at: '2025-10-17T09:43:35.926966+00:00',
+  confirmed_at: '2025-10-17T09:43:35.934705+00:00',
+  last_sign_in_at: undefined,
+  phone: undefined,
+  app_metadata: { provider: 'email', providers: [ 'email' ] },
+  user_metadata: { email_verified: true },
+  updated_at: '2025-10-17T09:43:35.935357+00:00',
+  confirmation_sent_at: undefined,
+  is_anonymous: false,
+  is_sso_user: false,
+  invited_at: undefined,
+  aud: 'authenticated'
+}
+11:56:20 [200] /api/settlements 44ms
+11:56:40 [vite] .env changed, restarting server...
+11:56:40 Restarting...
+11:56:40 [@astrojs/node] Enabling sessions with filesystem storage
+11:56:40 [content] Syncing content
+11:56:40 [content] Synced content
+11:56:40 [types] Generated 205ms
+11:56:40 [vite] Re-optimizing dependencies because vite config has changed
+11:58:49 [vite] .env changed, restarting server...
+11:58:49 Restarting...
+11:58:49 [@astrojs/node] Enabling sessions with filesystem storage
+11:58:49 [vite] Re-optimizing dependencies because vite config has changed
+11:58:49 [ERROR] [config] ENOTEMPTY: directory not empty, rename '/Users/mraubo/Projects/flex-spliter/node_modules/.vite/deps_temp_059fa1d3' -> '/Users/mraubo/Projects/flex-spliter/node_modules/.vite/deps'
+  Stack trace:
+    at Object.renameSync (node:fs:1020:11)
+    [...] See full stack trace in the browser, or rerun with --verbose.
+
+11:58:49 [ERROR] Continuing with previous valid configuration
+
+11:58:49 [vite] 
+11:58:49 [ERROR] [vite] Error: cannot print server URLs before server.listen is called.
+12:05:09 [vite] .env changed, restarting server...
+12:05:09 [vite] server restarted.
+12:05:09 [vite] 
+12:05:09 [vite]   ➜  Local:   http://localhost:5173/

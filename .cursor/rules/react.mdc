@@ -5,6 +5,7 @@ alwaysApply: false
 ---
 ### Guidelines for React
 
+- Use the new JSX transform (React 17+) - do not import React unless using React APIs directly (React.memo, React.forwardRef, etc.)
 - Use functional components with hooks instead of class components
 - Never use "use client" and other Next.js directives as we use React with Astro
 - Extract logic into custom hooks in `src/components/hooks`

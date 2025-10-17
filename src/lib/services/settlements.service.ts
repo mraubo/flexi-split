@@ -1,6 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types.ts";
-import type { SettlementsListResponse, GetSettlementsQuery } from "@/types.ts";
+import type {
+  SettlementsListResponse,
+  GetSettlementsQuery,
+  CreateSettlementCommand,
+  SettlementDetailsDTO,
+} from "@/types.ts";
 
 // Safe mapping of sort fields to actual database columns
 const sortColumnMap = {
@@ -24,9 +29,10 @@ export async function listSettlements(
   let dbQuery = supabase
     .from("settlements")
     .select(
-      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by",
+      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at",
       { count: "exact" }
     )
+    .is("deleted_at", null) // Filter out soft-deleted records
     .order(sortColumn, { ascending })
     .range(offset, offset + limit - 1);
 
@@ -55,4 +61,87 @@ export async function listSettlements(
       total_pages,
     },
   };
+}
+
+export async function deleteSettlementSoft(
+  supabase: SupabaseClient<Database>,
+  settlementId: string,
+  userId: string
+): Promise<void> {
+  // First, fetch the settlement to verify ownership and status
+  const { data: settlement, error: fetchError } = await supabase
+    .from("settlements")
+    .select("id, owner_id, status, deleted_at")
+    .eq("id", settlementId)
+    .is("deleted_at", null) // Ensure it's not already soft-deleted
+    .single();
+
+  if (fetchError) {
+    if (fetchError.code === "PGRST116") {
+      // No rows returned
+      throw new Error("Settlement not found");
+    }
+    throw fetchError;
+  }
+
+  // Verify ownership
+  if (settlement.owner_id !== userId) {
+    throw new Error("Forbidden: insufficient permissions");
+  }
+
+  // Verify status is closed
+  if (settlement.status !== "closed") {
+    throw new Error("Unprocessable Content: settlement is not closed");
+  }
+
+  // Perform soft delete
+  const { error: deleteError } = await supabase
+    .from("settlements")
+    .update({
+      deleted_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      last_edited_by: userId,
+    })
+    .eq("id", settlementId);
+
+  if (deleteError) {
+    throw deleteError;
+  }
+}
+
+export async function createSettlement(
+  supabase: SupabaseClient<Database>,
+  command: CreateSettlementCommand,
+  userId: string
+): Promise<SettlementDetailsDTO> {
+  const { data, error } = await supabase
+    .from("settlements")
+    .insert([
+      {
+        title: command.title,
+        owner_id: userId,
+        // Let DB defaults handle: status='open', currency='PLN', participants_count=0, expenses_count=0
+      },
+    ])
+    .select(
+      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at"
+    )
+    .single();
+
+  if (error) {
+    // Map specific database errors to business logic errors
+    if (
+      error.message?.toLowerCase().includes("max open settlements") ||
+      (error.code === "23505" && error.message?.includes("settlements_open_limit"))
+    ) {
+      const e = new Error("Maximum number of open settlements exceeded") as Error & {
+        code: string;
+      };
+      e.code = "MAX_OPEN_SETTLEMENTS";
+      throw e;
+    }
+    throw error;
+  }
+
+  return data;
 }

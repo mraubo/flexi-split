@@ -36,36 +36,64 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Add supabase client to context
   context.locals.supabase = supabase;
 
-  // Optionally get user and add to context
+  // Get user from session
   try {
     const {
       data: { user },
       error,
     } = await supabase.auth.getUser();
 
-    // For development, use DEFAULT_USER_ID if no authenticated user
-    if (!user && defaultUserId) {
+    if (user) {
+      context.locals.user = user;
+    } else if (defaultUserId) {
+      // For development, mock user object with DEFAULT_USER_ID
       context.locals.user = {
         id: defaultUserId,
-        app_metadata: {},
-        user_metadata: {},
+        email: "test@test.pl",
+        created_at: "2025-10-17T09:43:35.926966+00:00",
+        confirmed_at: "2025-10-17T09:43:35.934705+00:00",
+        last_sign_in_at: undefined,
+        phone: undefined,
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          email_verified: true,
+        },
+        updated_at: "2025-10-17T09:43:35.935357+00:00",
+        confirmation_sent_at: undefined,
+        is_anonymous: false,
+        is_sso_user: false,
+        invited_at: undefined,
         aud: "authenticated",
-        created_at: new Date().toISOString(),
-        email: `dev-user-${defaultUserId}@example.com`,
       };
     } else {
-      context.locals.user = error ? null : user;
+      context.locals.user = null;
     }
   } catch {
-    // For development, use DEFAULT_USER_ID as fallback
+    // Fallback for development with DEFAULT_USER_ID
     if (defaultUserId) {
       context.locals.user = {
         id: defaultUserId,
-        app_metadata: {},
-        user_metadata: {},
+        email: "test@test.pl",
+        created_at: "2025-10-17T09:43:35.926966+00:00",
+        confirmed_at: "2025-10-17T09:43:35.934705+00:00",
+        last_sign_in_at: undefined,
+        phone: undefined,
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          email_verified: true,
+        },
+        updated_at: "2025-10-17T09:43:35.935357+00:00",
+        confirmation_sent_at: undefined,
+        is_anonymous: false,
+        is_sso_user: false,
+        invited_at: undefined,
         aud: "authenticated",
-        created_at: new Date().toISOString(),
-        email: `dev-user-${defaultUserId}@example.com`,
       };
     } else {
       context.locals.user = null;

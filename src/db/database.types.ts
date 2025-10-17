@@ -226,6 +226,7 @@ export interface Database {
           closed_at: string | null;
           created_at: string;
           currency: string;
+          deleted_at: string | null;
           expenses_count: number;
           id: string;
           last_edited_by: string | null;
@@ -239,6 +240,7 @@ export interface Database {
           closed_at?: string | null;
           created_at?: string;
           currency?: string;
+          deleted_at?: string | null;
           expenses_count?: number;
           id?: string;
           last_edited_by?: string | null;
@@ -252,6 +254,7 @@ export interface Database {
           closed_at?: string | null;
           created_at?: string;
           currency?: string;
+          deleted_at?: string | null;
           expenses_count?: number;
           id?: string;
           last_edited_by?: string | null;

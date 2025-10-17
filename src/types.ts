@@ -45,6 +45,7 @@ export type SettlementSummaryDTO = Pick<
   | "updated_at"
   | "closed_at"
   | "last_edited_by"
+  | "deleted_at"
 >;
 
 // Detail is the same structure per API plan
@@ -220,3 +221,77 @@ export type SettlementsListResponse = PagedResponse<SettlementSummaryDTO>;
 export type ParticipantsListResponse = PagedResponse<ParticipantDTO>;
 export type ExpensesListResponse = PagedResponse<ExpenseDTO>;
 export type EventsListResponse = PagedResponse<EventDTO>;
+
+// -----------------------------
+// Frontend-specific types for Settlements view
+// -----------------------------
+
+export type SettlementsTab = "active" | "archive";
+
+export interface SettlementsQueryState {
+  status: "open" | "closed";
+  page: number;
+  limit: number;
+  sort_by: "updated_at";
+  sort_order: "desc";
+}
+
+export interface SettlementCardVM {
+  id: string;
+  title: string;
+  status: string;
+  participantsCount: number;
+  expensesCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  closedAt?: Date | null;
+  isDeletable: boolean; // status === "closed"
+  href: string; // /settlements/{id}
+}
+
+export interface AggregatedCountsVM {
+  activeCount: number;
+  archiveCount: number;
+}
+
+export interface ApiError {
+  status: number;
+  code?: string;
+  message?: string;
+  details?: unknown;
+}
+
+// Utility functions
+
+export function mapSettlementToVM(dto: SettlementSummaryDTO): SettlementCardVM {
+  return {
+    id: dto.id,
+    title: dto.title,
+    status: dto.status,
+    participantsCount: dto.participants_count,
+    expensesCount: dto.expenses_count,
+    createdAt: new Date(dto.created_at),
+    updatedAt: new Date(dto.updated_at),
+    closedAt: dto.closed_at ? new Date(dto.closed_at) : null,
+    isDeletable: dto.status === "closed",
+    href: `/settlements/${dto.id}`,
+  };
+}
+
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString("pl-PL", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export function formatDateTime(date: Date): string {
+  return date.toLocaleString("pl-PL", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
