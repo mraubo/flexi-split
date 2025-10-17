@@ -22,7 +22,7 @@ export default function SettlementCard({ item, onDelete }: SettlementCardProps) 
   };
 
   return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleCardClick}>
+    <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
