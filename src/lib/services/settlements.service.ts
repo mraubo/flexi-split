@@ -5,6 +5,7 @@ import type {
   GetSettlementsQuery,
   CreateSettlementCommand,
   SettlementDetailsDTO,
+  SettlementWithExpenses,
 } from "@/types.ts";
 
 // Safe mapping of sort fields to actual database columns
@@ -25,11 +26,14 @@ export async function listSettlements(
   const ascending = sort_order === "asc";
   const offset = (page - 1) * limit;
 
-  // Build the base query
+  // Build the base query with expenses data for total calculation
   let dbQuery = supabase
     .from("settlements")
     .select(
-      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at",
+      `
+      id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at,
+      expenses(amount_cents)
+    `,
       { count: "exact" }
     )
     .is("deleted_at", null) // Filter out soft-deleted records
@@ -48,12 +52,19 @@ export async function listSettlements(
     throw error;
   }
 
+  // Process data to calculate total expenses amount
+  const processedData = (data as SettlementWithExpenses[]).map((settlement) => ({
+    ...settlement,
+    total_expenses_amount_cents:
+      settlement.expenses?.reduce((sum, expense) => sum + (expense.amount_cents || 0), 0) || 0,
+  }));
+
   // Calculate pagination metadata
   const total = count ?? 0;
   const total_pages = Math.max(1, Math.ceil(total / limit));
 
   return {
-    data: data ?? [],
+    data: processedData,
     pagination: {
       page,
       limit,
@@ -143,5 +154,9 @@ export async function createSettlement(
     throw error;
   }
 
-  return data;
+  // Add total expenses amount for new settlement (always 0)
+  return {
+    ...data,
+    total_expenses_amount_cents: 0,
+  };
 }

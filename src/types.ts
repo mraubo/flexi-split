@@ -32,8 +32,8 @@ type EventRow = Tables<"events">;
 // Settlements - DTOs
 // -----------------------------
 
-// Summary DTO returned by list/detail endpoints
-export type SettlementSummaryDTO = Pick<
+// Shared fields used by multiple Settlement DTOs
+type SettlementBaseFields = Pick<
   SettlementRow,
   | "id"
   | "title"
@@ -47,6 +47,16 @@ export type SettlementSummaryDTO = Pick<
   | "last_edited_by"
   | "deleted_at"
 >;
+
+// Raw Supabase response with expenses for internal processing
+export type SettlementWithExpenses = SettlementBaseFields & {
+  expenses: { amount_cents: number }[] | null;
+};
+
+// Summary DTO returned by list/detail endpoints
+export type SettlementSummaryDTO = SettlementBaseFields & {
+  total_expenses_amount_cents: number;
+};
 
 // Detail is the same structure per API plan
 export type SettlementDetailsDTO = SettlementSummaryDTO;
@@ -242,6 +252,7 @@ export interface SettlementCardVM {
   status: string;
   participantsCount: number;
   expensesCount: number;
+  totalExpensesAmountCents: number;
   createdAt: Date;
   updatedAt: Date;
   closedAt?: Date | null;
@@ -270,6 +281,7 @@ export function mapSettlementToVM(dto: SettlementSummaryDTO): SettlementCardVM {
     status: dto.status,
     participantsCount: dto.participants_count,
     expensesCount: dto.expenses_count,
+    totalExpensesAmountCents: dto.total_expenses_amount_cents,
     createdAt: new Date(dto.created_at),
     updatedAt: new Date(dto.updated_at),
     closedAt: dto.closed_at ? new Date(dto.closed_at) : null,
@@ -294,4 +306,12 @@ export function formatDateTime(date: Date): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+export function formatCurrency(amountCents: number, currency = "PLN"): string {
+  const amount = amountCents / 100;
+  return new Intl.NumberFormat("pl-PL", {
+    style: "currency",
+    currency,
+  }).format(amount);
 }
