@@ -28,3 +28,39 @@ export const UUIDSchema = z.uuid();
 
 export type UUIDInput = z.input<typeof UUIDSchema>;
 export type UUIDOutput = z.output<typeof UUIDSchema>;
+
+// Close Settlement endpoint schemas
+export const CloseSettlementParamsSchema = z.object({
+  id: UUIDSchema,
+});
+
+export type CloseSettlementParamsInput = z.input<typeof CloseSettlementParamsSchema>;
+export type CloseSettlementParamsOutput = z.output<typeof CloseSettlementParamsSchema>;
+
+export const CloseSettlementBodySchema = z.object({}); // Empty body
+
+export type CloseSettlementBodyInput = z.input<typeof CloseSettlementBodySchema>;
+export type CloseSettlementBodyOutput = z.output<typeof CloseSettlementBodySchema>;
+
+// Idempotency-Key validation (optional header)
+export const IdempotencyKeySchema = z.string().min(1).max(255).optional();
+
+export type IdempotencyKeyInput = z.input<typeof IdempotencyKeySchema>;
+export type IdempotencyKeyOutput = z.output<typeof IdempotencyKeySchema>;
+
+export const TransferSchema = z.object({
+  from: UUIDSchema,
+  to: UUIDSchema,
+  amount_cents: z.number().int().min(1), // Must be positive
+});
+
+export const CloseSettlementResponseSchema = z.object({
+  id: UUIDSchema,
+  status: z.literal("closed"),
+  closed_at: z.string(), // ISO timestamp
+  balances: z.record(UUIDSchema, z.number().int()), // participant_id -> amount_cents
+  transfers: z.array(TransferSchema),
+});
+
+export type CloseSettlementResponseInput = z.input<typeof CloseSettlementResponseSchema>;
+export type CloseSettlementResponseOutput = z.output<typeof CloseSettlementResponseSchema>;

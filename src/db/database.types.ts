@@ -289,6 +289,13 @@ export interface Database {
         Args: { p_settlement_id: string };
         Returns: undefined;
       };
+      calculate_settlement_balances: {
+        Args: { p_settlement_id: string };
+        Returns: {
+          balance_cents: number;
+          participant_id: string;
+        }[];
+      };
       check_settlement_access: {
         Args: { p_settlement_id: string; p_user_id: string };
         Returns: Json;
@@ -304,6 +311,16 @@ export interface Database {
       finalize_settlement: {
         Args: { p_settlement_id: string };
         Returns: undefined;
+      };
+      finalize_settlement_transaction: {
+        Args: {
+          p_balances: Json;
+          p_closed_at: string;
+          p_settlement_id: string;
+          p_transfers: Json;
+          p_user_id: string;
+        };
+        Returns: boolean;
       };
       refresh_expense_share_count: {
         Args: { p_expense_id: string };
