@@ -126,7 +126,7 @@ export const POST: APIRoute = async (context) => {
       return new Response(
         JSON.stringify({
           error: "validation_error",
-          details: parsed.error.flatten().fieldErrors,
+          details: parsed.error.issues,
         }),
         {
           status: 400,

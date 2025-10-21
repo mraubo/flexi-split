@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import type { SettlementsTab, SettlementsQueryState, SettlementSummaryDTO } from "@/types";
 import { useQueryParamTab } from "@/components/hooks/useQueryParamTab";
 import { useSettlementsList } from "@/components/hooks/useSettlementsList";
-import { useCreateSettlement } from "@/components/hooks/useCreateSettlement";
 import { useDeleteSettlement } from "@/components/hooks/useDeleteSettlement";
 import TabsSegment from "./TabsSegment";
 import HeaderBar from "./HeaderBar";
@@ -36,8 +35,6 @@ export default function SettlementsPage() {
   );
 
   const settlements = useSettlementsList(query);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const createSettlement = useCreateSettlement();
   const deleteSettlement = useDeleteSettlement();
 
   const handleTabChange = (newTab: SettlementsTab) => {
@@ -48,8 +45,7 @@ export default function SettlementsPage() {
     setNewDialogOpen(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleSettlementCreated = (created: SettlementSummaryDTO) => {
+  const handleSettlementCreated = (_created: SettlementSummaryDTO) => {
     setNewDialogOpen(false);
     // TODO: Navigate to /settlements/{id} or refresh active list
     settlements.reload();

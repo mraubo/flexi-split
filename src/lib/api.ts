@@ -1,20 +1,28 @@
 import { UUIDSchema } from "@/lib/validation/settlements";
 
 /**
- * Common API response types
+ * Common API response types with RFC 7807 Problem Details support
  */
 export interface ApiErrorResponse {
   error: {
     code: string;
     message: string;
     details?: unknown;
+    pointer?: string; // JSON Pointer to the field that caused the error
   };
 }
 
 /**
  * Creates a standardized error response for API endpoints
+ * Follows RFC 7807 Problem Details for HTTP APIs
  */
-export function createErrorResponse(code: string, message: string, status: number, details?: unknown): Response {
+export function createErrorResponse(
+  code: string,
+  message: string,
+  status: number,
+  details?: unknown,
+  pointer?: string
+): Response {
   const errorResponse: ApiErrorResponse = {
     error: {
       code,
@@ -24,6 +32,10 @@ export function createErrorResponse(code: string, message: string, status: numbe
 
   if (details) {
     errorResponse.error.details = details;
+  }
+
+  if (pointer) {
+    errorResponse.error.pointer = pointer;
   }
 
   return new Response(JSON.stringify(errorResponse), {
@@ -50,7 +62,10 @@ export function validateSettlementId(settlement_id: string | undefined): {
   error: Response | null;
 } {
   if (!settlement_id) {
-    return { settlementId: "", error: createErrorResponse("invalid_request", "settlement ID is required", 400) };
+    return {
+      settlementId: "",
+      error: createErrorResponse("invalid_request", "settlement ID is required", 400, undefined, "/settlement_id"),
+    };
   }
 
   const settlementIdValidation = UUIDSchema.safeParse(settlement_id);
@@ -61,7 +76,8 @@ export function validateSettlementId(settlement_id: string | undefined): {
         "invalid_uuid",
         "invalid settlement ID format",
         400,
-        settlementIdValidation.error ? settlementIdValidation.error.issues : undefined
+        settlementIdValidation.error ? settlementIdValidation.error.issues : undefined,
+        "/settlement_id"
       ),
     };
   }

@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 // UUID validation for path parameters
-export const UUIDSchema = z.string().uuid();
+export const UUIDSchema = z.uuid();
 
 export const GetExpensesQuerySchema = z.object({
-  participant_id: z.string().uuid().optional(),
+  participant_id: z.uuid().optional(),
   date_from: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -21,8 +21,8 @@ export const GetExpensesQuerySchema = z.object({
 
 // Schema for GET and DELETE expense endpoint parameters
 export const GetExpenseParamsSchema = z.object({
-  settlement_id: z.string().uuid(),
-  id: z.string().uuid(),
+  settlement_id: z.uuid(),
+  id: z.uuid(),
 });
 
 export const DeleteExpenseParamsSchema = GetExpenseParamsSchema;
@@ -41,11 +41,11 @@ export type UpdateExpenseParamsOutput = z.output<typeof UpdateExpenseParamsSchem
 
 // Schema for POST expense endpoint body
 export const CreateExpenseCommandSchema = z.object({
-  payer_participant_id: z.string().uuid(),
+  payer_participant_id: z.uuid(),
   amount_cents: z.coerce.number().int().gt(0),
   expense_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   description: z.string().max(140).nullable().optional(),
-  participant_ids: z.array(z.string().uuid()).min(1),
+  participant_ids: z.array(z.uuid()).min(1),
 });
 
 export type CreateExpenseCommandInput = z.input<typeof CreateExpenseCommandSchema>;

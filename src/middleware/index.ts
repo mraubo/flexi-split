@@ -40,7 +40,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
   try {
     const {
       data: { user },
-      error,
     } = await supabase.auth.getUser();
 
     if (user) {

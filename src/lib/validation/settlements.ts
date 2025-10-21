@@ -73,3 +73,18 @@ export const GetParticipantsQuerySchema = z.object({
 
 export type GetParticipantsQueryInput = z.input<typeof GetParticipantsQuerySchema>;
 export type GetParticipantsQueryOutput = z.output<typeof GetParticipantsQuerySchema>;
+
+// Participant ID validation for path parameters
+export const ParticipantIdSchema = z.uuid("invalid participant ID format");
+
+export type ParticipantIdInput = z.input<typeof ParticipantIdSchema>;
+export type ParticipantIdOutput = z.output<typeof ParticipantIdSchema>;
+
+// Combined path parameters schema for participant endpoints
+export const ParticipantPathParamsSchema = z.object({
+  settlement_id: z.uuid("invalid settlement ID format"),
+  id: z.uuid("invalid participant ID format"),
+});
+
+export type ParticipantPathParamsInput = z.input<typeof ParticipantPathParamsSchema>;
+export type ParticipantPathParamsOutput = z.output<typeof ParticipantPathParamsSchema>;
