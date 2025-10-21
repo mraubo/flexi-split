@@ -272,6 +272,26 @@ export interface ApiError {
   details?: unknown;
 }
 
+export interface CreateExpenseRpcResult {
+  id: string;
+  settlement_id: string;
+  payer_participant_id: string;
+  amount_cents: number;
+  expense_date: string;
+  description: string | null;
+  share_count: number;
+  created_at: string;
+  updated_at: string;
+  last_edited_by: string | null;
+}
+
+export interface ExpenseParticipantQueryResult {
+  participants: {
+    id: string;
+    nickname: string;
+  };
+}
+
 // Utility functions
 
 export function mapSettlementToVM(dto: SettlementSummaryDTO): SettlementCardVM {

@@ -63,7 +63,7 @@ Mechanika sesji: przechwycenie 401 skutkuje przekierowaniem do logowania z zacho
 - Ścieżka widoku: /settlements/:id/expenses/new oraz /settlements/:id/expenses/:expenseId/edit
 - Główny cel: Dodawać i edytować wydatki z równym podziałem i pojedynczym płacącym (US‑030, US‑031, US‑036, US‑037, US‑071).
 - Kluczowe informacje do wyświetlenia: pola kwoty (PLN, separator dziesiętny, minimalnie 0,01), płacący (lista uczestników), lista uczestników z checkboxami domyślnie zaznaczonymi, data, opis ≤140 znaków, liczba osób w podziale i kalkulowana jednostkowa część.
-- Kluczowe komponenty widoku: kontrolka AmountInput z klawiaturą numeryczną, selektor płacącego, checkboxy uczestników, pole daty, licznik znaków opisu, podgląd jednostkowego udziału, przyciski Zapisz/Anuluj; połączenia API: POST/PUT /settlements/{id}/expenses.
+- Kluczowe komponenty widoku: kontrolka AmountInput z klawiaturą numeryczną, selektor płacącego, checkboxy uczestników, pole daty, licznik znaków opisu, podgląd jednostkowego udziału, przyciski Zapisz/Anuluj; połączenia API: POST /settlements/{id}/expenses i PUT /settlements/{id}/expenses/{id}.
 - UX, dostępność i względy bezpieczeństwa: walidacja natywna z pattern i step, blokada zapisu gdy brak uczestników, obsługa edge case jednoosobowego wydatku, focus trap i aria‑modal, etykiety i opisy dostępności, komunikaty walidacji po polsku.
 
 - Nazwa widoku: Szczegóły wydatku
