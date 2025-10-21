@@ -285,6 +285,10 @@ export interface Database {
         Args: { p_settlement_id: string };
         Returns: undefined;
       };
+      check_settlement_access: {
+        Args: { p_settlement_id: string; p_user_id: string };
+        Returns: Json;
+      };
       finalize_settlement: {
         Args: { p_settlement_id: string };
         Returns: undefined;
