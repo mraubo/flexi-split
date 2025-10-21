@@ -277,6 +277,10 @@ export interface Database {
         Args: { p_settlement_id: string };
         Returns: undefined;
       };
+      assert_expense_payer_is_participant: {
+        Args: { p_expense_id: string };
+        Returns: undefined;
+      };
       assert_open_settlements_limit: {
         Args: { p_owner_id: string };
         Returns: undefined;
@@ -287,6 +291,14 @@ export interface Database {
       };
       check_settlement_access: {
         Args: { p_settlement_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      check_settlement_participation: {
+        Args: { p_settlement_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      create_expense_with_participants: {
+        Args: { expense_data: Json; expense_participants_data: Json[] };
         Returns: Json;
       };
       finalize_settlement: {

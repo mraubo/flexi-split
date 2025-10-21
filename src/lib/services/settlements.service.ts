@@ -161,16 +161,13 @@ export async function checkAccessOrExistence(
   userId: string
 ): Promise<{ exists: boolean; accessible: boolean }> {
   // Use RPC call to check existence and ownership without RLS restrictions
-  // Function exists in database but types haven't been regenerated yet
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any).rpc("check_settlement_access", {
+  const { data, error } = await supabase.rpc("check_settlement_access", {
     p_settlement_id: settlementId,
     p_user_id: userId,
   });
 
   if (error) {
-    // If RPC function doesn't exist yet, provide clear error message
-    throw new Error(`RPC function check_settlement_access not available: ${error.message}`);
+    throw new Error(`RPC function check_settlement_access failed: ${error.message}`);
   }
 
   // Safely validate the response
@@ -179,6 +176,30 @@ export async function checkAccessOrExistence(
   }
 
   const result = data as { exists: boolean; accessible: boolean };
+  return result;
+}
+
+export async function checkSettlementParticipation(
+  supabase: SupabaseClient<Database>,
+  settlementId: string,
+  userId: string
+): Promise<{ exists: boolean; accessible: boolean; status: string | null }> {
+  // Use RPC call to check settlement participation (owner or participant) without RLS restrictions
+  const { data, error } = await supabase.rpc("check_settlement_participation", {
+    p_settlement_id: settlementId,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    throw new Error(`RPC function check_settlement_participation failed: ${error.message}`);
+  }
+
+  // Safely validate the response
+  if (!data || typeof data !== "object") {
+    throw new Error("Invalid response from check_settlement_participation");
+  }
+
+  const result = data as { exists: boolean; accessible: boolean; status: string | null };
   return result;
 }
 
