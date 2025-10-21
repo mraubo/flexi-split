@@ -120,6 +120,68 @@ export async function deleteSettlementSoft(
   }
 }
 
+export async function getSettlementById(
+  supabase: SupabaseClient<Database>,
+  settlementId: string
+): Promise<SettlementDetailsDTO> {
+  // Fetch settlement with expenses data for total calculation
+  const { data, error } = await supabase
+    .from("settlements")
+    .select(
+      `
+      id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at,
+      expenses(amount_cents)
+    `
+    )
+    .eq("id", settlementId)
+    .is("deleted_at", null) // Filter out soft-deleted records
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      // No rows returned - settlement doesn't exist
+      throw new Error("Settlement not found");
+    }
+    throw error;
+  }
+
+  // Calculate total expenses amount
+  const totalExpensesAmountCents =
+    (data as SettlementWithExpenses).expenses?.reduce((sum, expense) => sum + (expense.amount_cents || 0), 0) || 0;
+
+  return {
+    ...data,
+    total_expenses_amount_cents: totalExpensesAmountCents,
+  };
+}
+
+export async function checkAccessOrExistence(
+  supabase: SupabaseClient<Database>,
+  settlementId: string,
+  userId: string
+): Promise<{ exists: boolean; accessible: boolean }> {
+  // Use RPC call to check existence and ownership without RLS restrictions
+  // Function exists in database but types haven't been regenerated yet
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any).rpc("check_settlement_access", {
+    p_settlement_id: settlementId,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    // If RPC function doesn't exist yet, provide clear error message
+    throw new Error(`RPC function check_settlement_access not available: ${error.message}`);
+  }
+
+  // Safely validate the response
+  if (!data || typeof data !== "object") {
+    throw new Error("Invalid response from check_settlement_access");
+  }
+
+  const result = data as { exists: boolean; accessible: boolean };
+  return result;
+}
+
 export async function createSettlement(
   supabase: SupabaseClient<Database>,
   command: CreateSettlementCommand,
@@ -158,5 +220,77 @@ export async function createSettlement(
   return {
     ...data,
     total_expenses_amount_cents: 0,
+  };
+}
+
+export async function updateSettlementTitle(
+  supabase: SupabaseClient<Database>,
+  settlementId: string,
+  title: string,
+  userId: string
+): Promise<SettlementDetailsDTO> {
+  // First, fetch the settlement to verify ownership and status
+  const { data: settlement, error: fetchError } = await supabase
+    .from("settlements")
+    .select("id, owner_id, status, deleted_at")
+    .eq("id", settlementId)
+    .is("deleted_at", null) // Ensure it's not soft-deleted
+    .single();
+
+  if (fetchError) {
+    if (fetchError.code === "PGRST116") {
+      // No rows returned
+      throw new Error("Settlement not found");
+    }
+    throw fetchError;
+  }
+
+  // Verify ownership
+  if (settlement.owner_id !== userId) {
+    throw new Error("Forbidden: insufficient permissions");
+  }
+
+  // Verify status is open (can only update open settlements)
+  if (settlement.status !== "open") {
+    throw new Error("Unprocessable Entity: settlement is not open");
+  }
+
+  // Perform the update
+  const { data: updatedSettlement, error: updateError } = await supabase
+    .from("settlements")
+    .update({
+      title,
+      updated_at: new Date().toISOString(),
+      last_edited_by: userId,
+    })
+    .eq("id", settlementId)
+    .select(
+      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at"
+    )
+    .single();
+
+  if (updateError) {
+    throw updateError;
+  }
+
+  // Fetch expenses data for total calculation
+  const { data: expensesData, error: expensesError } = await supabase
+    .from("settlements")
+    .select("expenses(amount_cents)")
+    .eq("id", settlementId)
+    .single();
+
+  if (expensesError) {
+    throw expensesError;
+  }
+
+  // Calculate total expenses amount
+  const totalExpensesAmountCents =
+    (expensesData as SettlementWithExpenses).expenses?.reduce((sum, expense) => sum + (expense.amount_cents || 0), 0) ||
+    0;
+
+  return {
+    ...updatedSettlement,
+    total_expenses_amount_cents: totalExpensesAmountCents,
   };
 }

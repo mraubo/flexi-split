@@ -53,6 +53,22 @@ If environment variables are needed, copy the example file and adjust values:
 cp .env.example .env
 ```
 
+### Run database migrations
+
+Apply pending database migrations to your local Supabase instance:
+
+```bash
+bunx supabase migration up
+```
+
+### Generate database types
+
+Generate TypeScript types from your local Supabase database schema:
+
+```bash
+bunx supabase gen types typescript --local > src/db/database.types.ts
+```
+
 ### Development
 
 ```bash

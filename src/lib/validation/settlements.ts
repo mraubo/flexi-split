@@ -17,6 +17,12 @@ export const CreateSettlementSchema = z.object({
 
 export type CreateSettlementInput = z.infer<typeof CreateSettlementSchema>;
 
+export const UpdateSettlementSchema = z.object({
+  title: z.string().min(1, "title is required").max(100, "max 100 chars"),
+});
+
+export type UpdateSettlementInput = z.infer<typeof UpdateSettlementSchema>;
+
 // UUID validation for path parameters
 export const UUIDSchema = z.uuid();
 
