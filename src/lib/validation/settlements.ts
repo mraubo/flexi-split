@@ -64,3 +64,12 @@ export const CloseSettlementResponseSchema = z.object({
 
 export type CloseSettlementResponseInput = z.input<typeof CloseSettlementResponseSchema>;
 export type CloseSettlementResponseOutput = z.output<typeof CloseSettlementResponseSchema>;
+
+// Participants endpoint schemas
+export const GetParticipantsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+});
+
+export type GetParticipantsQueryInput = z.input<typeof GetParticipantsQuerySchema>;
+export type GetParticipantsQueryOutput = z.output<typeof GetParticipantsQuerySchema>;
