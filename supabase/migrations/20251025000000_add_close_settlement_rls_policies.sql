@@ -65,6 +65,69 @@ create policy "participants_close_select_policy" on public.participants
   );
 
 --=========================
+-- general participants policies for CRUD operations
+--=========================
+
+-- Allow reading participants from settlements owned by the user
+drop policy if exists participants_select_auth on public.participants;
+create policy participants_select_auth on public.participants
+  for select to authenticated using (
+    exists (
+      select 1 from public.settlements s
+      where s.id = participants.settlement_id
+        and s.owner_id = auth.uid()
+        and s.deleted_at is null
+    )
+  );
+
+-- Allow inserting participants into settlements owned by the user
+drop policy if exists participants_insert_auth on public.participants;
+create policy participants_insert_auth on public.participants
+  for insert to authenticated with check (
+    exists (
+      select 1 from public.settlements s
+      where s.id = participants.settlement_id
+        and s.owner_id = auth.uid()
+        and s.deleted_at is null
+        and s.status = 'open'
+    )
+  );
+
+-- Allow updating participants in settlements owned by the user
+drop policy if exists participants_update_auth on public.participants;
+create policy participants_update_auth on public.participants
+  for update to authenticated using (
+    exists (
+      select 1 from public.settlements s
+      where s.id = participants.settlement_id
+        and s.owner_id = auth.uid()
+        and s.deleted_at is null
+        and s.status = 'open'
+    )
+  ) with check (
+    exists (
+      select 1 from public.settlements s
+      where s.id = participants.settlement_id
+        and s.owner_id = auth.uid()
+        and s.deleted_at is null
+        and s.status = 'open'
+    )
+  );
+
+-- Allow deleting participants from settlements owned by the user
+drop policy if exists participants_delete_auth on public.participants;
+create policy participants_delete_auth on public.participants
+  for delete to authenticated using (
+    exists (
+      select 1 from public.settlements s
+      where s.id = participants.settlement_id
+        and s.owner_id = auth.uid()
+        and s.deleted_at is null
+        and s.status = 'open'
+    )
+  );
+
+--=========================
 -- expense_participants policies for close operation
 --=========================
 
