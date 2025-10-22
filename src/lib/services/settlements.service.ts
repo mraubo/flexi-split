@@ -129,7 +129,7 @@ export async function getSettlementById(
     .from("settlements")
     .select(
       `
-      id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at,
+      id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at, owner_id,
       expenses(amount_cents)
     `
     )

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useSettlementDetails } from "@/components/hooks/useSettlementDetails";
 import { useQueryParamStep } from "@/components/hooks/useQueryParamStep";
+import { useCurrentUser } from "@/components/hooks/useCurrentUser";
 import SettlementHeader from "./SettlementHeader";
 import SettlementStepper from "./SettlementStepper";
 import ReadOnlyBanner from "./ReadOnlyBanner";
+import ParticipantsViewShell from "./ParticipantsViewShell";
 import ToastCenter, { type ToastMessage, createSuccessToast, createErrorToast } from "./ToastCenter";
 import LoadingSkeleton from "./LoadingSkeleton";
 import ErrorState from "./ErrorState";
@@ -15,6 +17,7 @@ interface SettlementDetailsPageProps {
 export default function SettlementDetailsPage({ settlementId }: SettlementDetailsPageProps) {
   const { settlement, loading, error, reload } = useSettlementDetails(settlementId);
   const { step: activeStep, setStep: setActiveStep } = useQueryParamStep();
+  const { user } = useCurrentUser();
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = (toast: ToastMessage) => {
@@ -83,6 +86,7 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
   }
 
   const isReadOnly = settlement.status === "closed";
+  const isOwner = user && settlement.owner_id === user.id;
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -111,10 +115,12 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
       {/* Step Content - TODO: Implement step components */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         {activeStep === "participants" && (
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Uczestnicy</h2>
-            <p className="text-gray-500">Lista uczestników - wkrótce...</p>
-          </div>
+          <ParticipantsViewShell
+            settlementId={settlementId}
+            isOwner={isOwner}
+            status={settlement.status}
+            expensesCount={settlement.expenses_count}
+          />
         )}
 
         {activeStep === "expenses" && (

@@ -36,68 +36,28 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Add supabase client to context
   context.locals.supabase = supabase;
 
-  // Get user from session
-  try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      context.locals.user = user;
-    } else if (defaultUserId) {
-      // For development, mock user object with DEFAULT_USER_ID
-      context.locals.user = {
-        id: defaultUserId,
-        email: "test@test.pl",
-        created_at: "2025-10-17T09:43:35.926966+00:00",
-        confirmed_at: "2025-10-17T09:43:35.934705+00:00",
-        last_sign_in_at: undefined,
-        phone: undefined,
-        app_metadata: {
-          provider: "email",
-          providers: ["email"],
-        },
-        user_metadata: {
-          email_verified: true,
-        },
-        updated_at: "2025-10-17T09:43:35.935357+00:00",
-        confirmation_sent_at: undefined,
-        is_anonymous: false,
-        is_sso_user: false,
-        invited_at: undefined,
-        aud: "authenticated",
-      };
-    } else {
-      context.locals.user = null;
-    }
-  } catch {
-    // Fallback for development with DEFAULT_USER_ID
-    if (defaultUserId) {
-      context.locals.user = {
-        id: defaultUserId,
-        email: "test@test.pl",
-        created_at: "2025-10-17T09:43:35.926966+00:00",
-        confirmed_at: "2025-10-17T09:43:35.934705+00:00",
-        last_sign_in_at: undefined,
-        phone: undefined,
-        app_metadata: {
-          provider: "email",
-          providers: ["email"],
-        },
-        user_metadata: {
-          email_verified: true,
-        },
-        updated_at: "2025-10-17T09:43:35.935357+00:00",
-        confirmation_sent_at: undefined,
-        is_anonymous: false,
-        is_sso_user: false,
-        invited_at: undefined,
-        aud: "authenticated",
-      };
-    } else {
-      context.locals.user = null;
-    }
-  }
+  // For development purposes, always mock a user
+  context.locals.user = {
+    id: defaultUserId,
+    email: "test@test.pl",
+    created_at: "2025-10-17T09:43:35.926966+00:00",
+    confirmed_at: "2025-10-17T09:43:35.934705+00:00",
+    last_sign_in_at: undefined,
+    phone: undefined,
+    app_metadata: {
+      provider: "email",
+      providers: ["email"],
+    },
+    user_metadata: {
+      email_verified: true,
+    },
+    updated_at: "2025-10-17T09:43:35.935357+00:00",
+    confirmation_sent_at: undefined,
+    is_anonymous: false,
+    is_sso_user: false,
+    invited_at: undefined,
+    aud: "authenticated",
+  };
 
   return next();
 });
