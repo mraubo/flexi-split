@@ -46,6 +46,7 @@ type SettlementBaseFields = Pick<
   | "closed_at"
   | "last_edited_by"
   | "deleted_at"
+  | "owner_id"
 >;
 
 // Raw Supabase response with expenses for internal processing
@@ -334,4 +335,23 @@ export function formatCurrency(amountCents: number, currency = "PLN"): string {
     style: "currency",
     currency,
   }).format(amount);
+}
+
+// -----------------------------
+// Frontend-specific types for Participants view
+// -----------------------------
+
+export interface ParticipantsListVM {
+  items: ParticipantItemVM[];
+  canCreate: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+}
+
+export interface ParticipantItemVM {
+  id: string;
+  nickname: string;
+  isOwner: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
