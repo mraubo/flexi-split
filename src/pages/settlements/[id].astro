@@ -1,0 +1,14 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import SettlementDetailsPage from "@/components/SettlementDetailsPage";
+
+export async function getStaticPaths() {
+  return [];
+}
+
+const { id } = Astro.params;
+---
+
+<Layout>
+  <SettlementDetailsPage settlementId={id} client:load />
+</Layout>
