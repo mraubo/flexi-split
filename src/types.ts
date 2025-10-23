@@ -9,6 +9,8 @@ export type AmountCents = number;
 
 export type SortOrder = "asc" | "desc";
 
+export type SettlementStep = "participants" | "expenses" | "summary";
+
 export interface PaginationMeta {
   page: number;
   limit: number;
@@ -355,4 +357,33 @@ export interface ParticipantItemVM {
   isOwner: boolean;
   canEdit: boolean;
   canDelete: boolean;
+}
+
+// -----------------------------
+// Frontend-specific types for Expenses view
+// -----------------------------
+
+export interface ExpenseCardVM {
+  id: UUID;
+  payerNickname: string;
+  amountCents: number;
+  expenseDate: Date;
+  description?: string | null;
+  shareCount: number;
+  participantsShort: string[];
+  canEdit: boolean;
+  canDelete: boolean;
+}
+
+export interface ExpenseGroupVM {
+  date: Date;
+  items: ExpenseCardVM[];
+}
+
+export interface ExpensesQueryState {
+  participantId?: UUID;
+  page: number;
+  limit: number;
+  sort_by: ExpenseSortBy;
+  sort_order: SortOrder;
 }

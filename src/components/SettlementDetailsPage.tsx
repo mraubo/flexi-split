@@ -6,6 +6,7 @@ import SettlementHeader from "./SettlementHeader";
 import SettlementStepper from "./SettlementStepper";
 import ReadOnlyBanner from "./ReadOnlyBanner";
 import ParticipantsViewShell from "./ParticipantsViewShell";
+import ExpensesView from "./ExpensesView";
 import ToastCenter, { type ToastMessage, createSuccessToast, createErrorToast } from "./ToastCenter";
 import LoadingSkeleton from "./LoadingSkeleton";
 import ErrorState from "./ErrorState";
@@ -86,7 +87,7 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
   }
 
   const isReadOnly = settlement.status === "closed";
-  const isOwner = (user && settlement.owner_id === user.id) || undefined;
+  const isOwner = !!(user && settlement.owner_id === user.id);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -118,16 +119,13 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
           <ParticipantsViewShell
             settlementId={settlementId}
             isOwner={isOwner}
-            status={settlement.status}
+            status={settlement.status as "open" | "closed"}
             expensesCount={settlement.expenses_count}
           />
         )}
 
         {activeStep === "expenses" && (
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Koszty</h2>
-            <p className="text-gray-500">Lista wydatków - wkrótce...</p>
-          </div>
+          <ExpensesView settlementId={settlementId} isOwner={isOwner} isReadOnly={isReadOnly} />
         )}
 
         {activeStep === "summary" && (
