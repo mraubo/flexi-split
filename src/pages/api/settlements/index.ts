@@ -89,7 +89,6 @@ export const POST: APIRoute = async (context) => {
   try {
     // Get supabase client and user from context
     const { supabase, user } = context.locals;
-    console.log("user", user);
     // Check authentication
     if (!user) {
       return new Response(
@@ -136,7 +135,7 @@ export const POST: APIRoute = async (context) => {
     }
 
     // Create the settlement
-    const result = await createSettlement(supabase, parsed.data, user.id);
+    const result = await createSettlement(supabase, parsed.data, user.id, user.email);
 
     return new Response(JSON.stringify(result), {
       status: 201,

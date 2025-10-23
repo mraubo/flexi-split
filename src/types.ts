@@ -159,6 +159,7 @@ export interface GetSettlementsQuery {
 
 export interface CreateSettlementCommand {
   title: string; // validated: required, max 100 chars
+  ownerNickname?: string; // optional: nickname for the owner participant, defaults to "Owner"
 }
 
 export interface UpdateSettlementCommand {
