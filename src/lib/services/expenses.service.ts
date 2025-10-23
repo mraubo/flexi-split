@@ -9,6 +9,7 @@ import type {
   UpdateExpenseCommand,
   ExpenseDetailsDTO,
   CreateExpenseRpcResult,
+  UpdateExpenseRpcResult,
   ExpenseParticipantQueryResult,
 } from "@/types.ts";
 import { checkAccessOrExistence, checkSettlementParticipation } from "./settlements.service";
@@ -379,6 +380,7 @@ export async function createExpense(
   const { data: expenseResult, error: expenseInsertError } = await supabase.rpc("create_expense_with_participants", {
     expense_data: expenseData,
     expense_participants_data: expenseParticipantsArray,
+    user_id: userId,
   });
 
   if (expenseInsertError) {
@@ -481,171 +483,72 @@ export async function updateExpense(
     throw new Error("Settlement is closed - cannot update expenses");
   }
 
-  // Check if the expense exists and belongs to the settlement
-  const { data: existingExpense, error: expenseCheckError } = await supabase
-    .from("expenses")
-    .select("id")
-    .eq("id", expenseId)
-    .eq("settlement_id", settlementId)
-    .single();
-
-  if (expenseCheckError || !existingExpense) {
-    if (expenseCheckError?.code === "PGRST116") {
-      throw new Error("Expense not found");
-    }
-    throw expenseCheckError || new Error("Failed to check expense existence");
-  }
-
-  // Validate that payer_participant_id exists in this settlement
-  const { data: payerData, error: payerError } = await supabase
-    .from("participants")
-    .select("id")
-    .eq("id", command.payer_participant_id)
-    .eq("settlement_id", settlementId)
-    .single();
-
-  if (payerError || !payerData) {
-    if (payerError?.code === "PGRST116") {
-      throw new Error("Payer participant does not exist in settlement");
-    }
-    throw payerError || new Error("Failed to validate payer participant");
-  }
-
   // Remove duplicates from participant_ids and validate they all exist in the settlement
   const uniqueParticipantIds = [...new Set(command.participant_ids)];
-
-  // Validate all participants exist in the settlement
-  const { data: participantsData, error: participantsError } = await supabase
-    .from("participants")
-    .select("id")
-    .in("id", uniqueParticipantIds)
-    .eq("settlement_id", settlementId);
-
-  if (participantsError) {
-    throw participantsError;
-  }
-
-  if (!participantsData || participantsData.length !== uniqueParticipantIds.length) {
-    const foundIds = new Set(participantsData?.map((p) => p.id) || []);
-    const missingIds = uniqueParticipantIds.filter((id) => !foundIds.has(id));
-    throw new Error(`Some participants do not exist in settlement: ${missingIds.join(", ")}`);
-  }
 
   // Ensure payer is included in participants (add if not present)
   if (!uniqueParticipantIds.includes(command.payer_participant_id)) {
     uniqueParticipantIds.push(command.payer_participant_id);
   }
 
-  // Lock the expense for update to prevent race conditions
-  const { error: lockError } = await supabase
-    .from("expenses")
-    .select("id")
-    .eq("id", expenseId)
-    .eq("settlement_id", settlementId)
-    .single();
+  // Prepare expense data for update (only include fields that are being updated)
+  const expenseData = {
+    payer_participant_id: command.payer_participant_id,
+    amount_cents: command.amount_cents,
+    expense_date: command.expense_date,
+    description: command.description,
+  };
 
-  if (lockError) {
-    if (lockError.code === "PGRST116") {
-      throw new Error("Expense not found");
-    }
-    throw lockError;
-  }
+  // Prepare expense participants data
+  const expenseParticipantsArray = uniqueParticipantIds.map((participantId) => ({
+    participant_id: participantId,
+  }));
 
-  // Update the expense
-  const { data: updatedExpense, error: updateError } = await supabase
-    .from("expenses")
-    .update({
-      payer_participant_id: command.payer_participant_id,
-      amount_cents: command.amount_cents,
-      expense_date: command.expense_date,
-      description: command.description,
-      last_edited_by: userId,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", expenseId)
-    .eq("settlement_id", settlementId)
-    .select()
-    .single();
+  // Execute atomic update using RPC function for consistency
+  const { data: expenseResult, error: expenseUpdateError } = await supabase.rpc("update_expense_with_participants", {
+    p_expense_id: expenseId,
+    expense_data: expenseData,
+    expense_participants_data: expenseParticipantsArray,
+    user_id: userId,
+  });
 
-  if (updateError) {
-    console.error(`[ERROR] Failed to update expense: ${updateError.message}`, {
+  if (expenseUpdateError) {
+    console.error(`[ERROR] Failed to update expense: ${expenseUpdateError.message}`, {
       settlementId,
       expenseId,
       userId,
       command,
-      error: updateError,
+      error: expenseUpdateError,
     });
-    throw new Error(`Failed to update expense: ${updateError.message}`);
+
+    // Map specific database error codes to business logic errors
+    let errorMessage = `Failed to update expense: ${expenseUpdateError.message}`;
+
+    if (expenseUpdateError.code === "28000") {
+      errorMessage = "authentication required";
+    } else if (expenseUpdateError.code === "P0001") {
+      errorMessage = "Expense not found";
+    } else if (expenseUpdateError.code === "P0002") {
+      errorMessage = "Settlement not found";
+    } else if (expenseUpdateError.code === "42501") {
+      errorMessage = "Forbidden: insufficient permissions";
+    } else if (expenseUpdateError.code === "P0003") {
+      errorMessage = "Settlement is closed - cannot update expenses";
+    } else if (expenseUpdateError.code === "P0004") {
+      errorMessage = "Payer participant does not exist in settlement";
+    } else if (expenseUpdateError.code === "P0005") {
+      errorMessage = "Some participants do not exist in settlement";
+    }
+
+    throw new Error(errorMessage);
   }
 
-  if (!updatedExpense) {
+  if (!expenseResult) {
     throw new Error("Failed to update expense: no result returned");
   }
 
-  // Delete existing participants
-  const { error: deleteParticipantsError } = await supabase
-    .from("expense_participants")
-    .delete()
-    .eq("expense_id", expenseId);
-
-  if (deleteParticipantsError) {
-    console.error(`[ERROR] Failed to delete expense participants: ${deleteParticipantsError.message}`, {
-      expenseId,
-      settlementId,
-      userId,
-    });
-    throw new Error(`Failed to update expense participants: ${deleteParticipantsError.message}`);
-  }
-
-  // Insert new participants
-  if (uniqueParticipantIds.length > 0) {
-    const participantsToInsert = uniqueParticipantIds.map((participantId) => ({
-      expense_id: expenseId,
-      participant_id: participantId,
-      settlement_id: settlementId,
-    }));
-
-    const { error: insertParticipantsError } = await supabase.from("expense_participants").insert(participantsToInsert);
-
-    if (insertParticipantsError) {
-      console.error(`[ERROR] Failed to insert expense participants: ${insertParticipantsError.message}`, {
-        expenseId,
-        settlementId,
-        userId,
-        participantsToInsert,
-      });
-      throw new Error(`Failed to update expense participants: ${insertParticipantsError.message}`);
-    }
-  }
-
-  // Get the actual count of participants after update
-  const { count: participantCount, error: countError } = await supabase
-    .from("expense_participants")
-    .select("id", { count: "exact", head: true })
-    .eq("expense_id", expenseId);
-
-  if (countError) {
-    console.error(`[ERROR] Failed to count expense participants: ${countError.message}`, {
-      expenseId,
-      settlementId,
-      userId,
-    });
-    throw new Error("Failed to retrieve updated expense participant count");
-  }
-
-  // Cast updated expense to proper type
-  const rpcResult: CreateExpenseRpcResult = {
-    id: updatedExpense.id,
-    settlement_id: updatedExpense.settlement_id,
-    payer_participant_id: updatedExpense.payer_participant_id,
-    amount_cents: updatedExpense.amount_cents,
-    expense_date: updatedExpense.expense_date,
-    description: updatedExpense.description,
-    share_count: participantCount || 0,
-    created_at: updatedExpense.created_at,
-    updated_at: updatedExpense.updated_at,
-    last_edited_by: updatedExpense.last_edited_by,
-  };
+  // Cast RPC result to proper type
+  const rpcResult = expenseResult as unknown as UpdateExpenseRpcResult;
 
   // Fetch participants for the updated expense in a separate optimized query
   const { data: fetchedParticipantsData, error: fetchedParticipantsError } = await supabase

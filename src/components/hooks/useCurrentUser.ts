@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { User } from "@supabase/supabase-js";
 
-const defaultUserId = import.meta.env.DEFAULT_USER_ID;
+const defaultUserId = import.meta.env.PUBLIC_DEFAULT_USER_ID;
 
 export function useCurrentUser() {
   const [user, setUser] = useState<User | null>(null);
@@ -11,7 +11,7 @@ export function useCurrentUser() {
     // For development purposes, always return mock user
     setUser({
       id: defaultUserId,
-      email: "test@test.pl",
+      email: "developer@example.com",
       created_at: "2025-10-17T09:43:35.926966+00:00",
       confirmed_at: "2025-10-17T09:43:35.934705+00:00",
       last_sign_in_at: undefined,

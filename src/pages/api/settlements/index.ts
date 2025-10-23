@@ -46,7 +46,7 @@ export const GET: APIRoute = async (context) => {
     }
 
     // Call service to get settlements
-    const result = await listSettlements(supabase, parsed.data);
+    const result = await listSettlements(supabase, parsed.data, user.id);
 
     return new Response(JSON.stringify(result), {
       status: 200,
