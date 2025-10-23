@@ -10,7 +10,8 @@ export async function addParticipant(
   supabase: SupabaseClient<Database>,
   settlementId: string,
   nickname: string,
-  userId: string
+  userId: string,
+  isOwner = false
 ): Promise<ParticipantDTO> {
   // Check if settlement exists and user has access
   const { data: settlement, error: settlementError } = await supabase
@@ -38,6 +39,20 @@ export async function addParticipant(
     throw new Error("Maximum participant limit reached: cannot add more than 10 participants");
   }
 
+  // If setting as owner, check that no owner exists yet
+  if (isOwner) {
+    const { data: existingOwner } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("settlement_id", settlementId)
+      .eq("is_owner", true)
+      .maybeSingle();
+
+    if (existingOwner) {
+      throw new Error("Owner already exists for this settlement");
+    }
+  }
+
   // Check nickname uniqueness (case-insensitive)
   const nicknameNorm = nickname.toLowerCase();
   const { data: conflict } = await supabase
@@ -57,6 +72,7 @@ export async function addParticipant(
     .insert({
       settlement_id: settlementId,
       nickname,
+      is_owner: isOwner,
       last_edited_by: userId,
     })
     .select(

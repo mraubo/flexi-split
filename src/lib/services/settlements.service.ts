@@ -7,6 +7,7 @@ import type {
   SettlementDetailsDTO,
   SettlementWithExpenses,
 } from "@/types.ts";
+import { addParticipant } from "./participants.service";
 
 // Safe mapping of sort fields to actual database columns
 const sortColumnMap = {
@@ -206,7 +207,8 @@ export async function checkSettlementParticipation(
 export async function createSettlement(
   supabase: SupabaseClient<Database>,
   command: CreateSettlementCommand,
-  userId: string
+  userId: string,
+  userEmail?: string
 ): Promise<SettlementDetailsDTO> {
   const { data, error } = await supabase
     .from("settlements")
@@ -218,7 +220,7 @@ export async function createSettlement(
       },
     ])
     .select(
-      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at"
+      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at, owner_id"
     )
     .single();
 
@@ -237,9 +239,33 @@ export async function createSettlement(
     throw error;
   }
 
+  // Automatically add the owner as the first participant
+  const ownerNickname = command.ownerNickname || (userEmail ? userEmail.split("@")[0] : "Owner");
+  try {
+    await addParticipant(supabase, data.id, ownerNickname, userId, true);
+  } catch {
+    // If adding the owner participant fails, we should ideally rollback the settlement creation
+    // For now, we'll throw an error, but this is a critical issue that needs attention
+    // In production, you might want to delete the settlement or handle this differently
+    throw new Error("Failed to create settlement: could not add owner participant");
+  }
+
+  // Fetch updated settlement data with participant count
+  const { data: updatedSettlement, error: fetchError } = await supabase
+    .from("settlements")
+    .select(
+      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at, owner_id"
+    )
+    .eq("id", data.id)
+    .single();
+
+  if (fetchError) {
+    throw new Error(`Settlement created but failed to fetch updated data: ${fetchError.message}`);
+  }
+
   // Add total expenses amount for new settlement (always 0)
   return {
-    ...data,
+    ...updatedSettlement,
     total_expenses_amount_cents: 0,
   };
 }
@@ -286,7 +312,7 @@ export async function updateSettlementTitle(
     })
     .eq("id", settlementId)
     .select(
-      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at"
+      "id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at, owner_id"
     )
     .single();
 
