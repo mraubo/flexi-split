@@ -74,6 +74,7 @@ export const GET: APIRoute = async (context) => {
 };
 
 export const POST: APIRoute = async (context) => {
+  console.log("POST /settlements/:settlement_id/participants");
   try {
     // Get supabase client and user from context
     const { supabase, user } = context.locals;
