@@ -2,7 +2,7 @@ import { defineMiddleware } from "astro:middleware";
 import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@/db/database.types.ts";
 
-const defaultUserId = import.meta.env.DEFAULT_USER_ID;
+const defaultUserId = import.meta.env.PUBLIC_DEFAULT_USER_ID;
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createServerClient<Database>(
@@ -45,10 +45,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     if (user) {
       context.locals.user = user;
     } else if (defaultUserId) {
-      // For development, mock user object with DEFAULT_USER_ID
+      // For development, mock user object with PUBLIC_DEFAULT_USER_ID
       context.locals.user = {
         id: defaultUserId,
-        email: "test@test.pl",
+        email: "developer@example.com",
         created_at: "2025-10-17T09:43:35.926966+00:00",
         confirmed_at: "2025-10-17T09:43:35.934705+00:00",
         last_sign_in_at: undefined,
@@ -71,11 +71,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
       context.locals.user = null;
     }
   } catch {
-    // Fallback for development with DEFAULT_USER_ID
+    // Fallback for development with PUBLIC_DEFAULT_USER_ID
     if (defaultUserId) {
       context.locals.user = {
         id: defaultUserId,
-        email: "test@test.pl",
+        email: "developer@example.com",
         created_at: "2025-10-17T09:43:35.926966+00:00",
         confirmed_at: "2025-10-17T09:43:35.934705+00:00",
         last_sign_in_at: undefined,

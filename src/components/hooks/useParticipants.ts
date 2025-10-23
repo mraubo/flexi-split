@@ -221,7 +221,7 @@ export function createParticipantsListVM(
     nickname: participant.nickname,
     isOwner: participant.is_owner,
     canEdit: isOwner && !isLocked,
-    canDelete: isOwner && !isLocked,
+    canDelete: isOwner && !isLocked && !participant.is_owner,
   }));
 
   return {

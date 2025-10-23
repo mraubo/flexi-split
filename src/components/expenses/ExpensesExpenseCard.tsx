@@ -29,7 +29,7 @@ export default function ExpensesExpenseCard({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEdit = () => {
-    // TODO: Implement edit functionality
+    window.location.assign(`/settlements/${settlementId}/expenses/${expense.id}/edit`);
   };
 
   const handleDelete = () => {

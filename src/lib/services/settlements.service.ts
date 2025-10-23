@@ -18,7 +18,8 @@ const sortColumnMap = {
 
 export async function listSettlements(
   supabase: SupabaseClient<Database>,
-  query: GetSettlementsQuery
+  query: GetSettlementsQuery,
+  userId: string
 ): Promise<SettlementsListResponse> {
   const { status, page = 1, limit = 20, sort_by = "created_at", sort_order = "desc" } = query;
 
@@ -32,7 +33,7 @@ export async function listSettlements(
     .from("settlements")
     .select(
       `
-      id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at,
+      id, title, status, currency, participants_count, expenses_count, created_at, updated_at, closed_at, last_edited_by, deleted_at, owner_id,
       expenses(amount_cents)
     `,
       { count: "exact" }
@@ -45,6 +46,9 @@ export async function listSettlements(
   if (status) {
     dbQuery = dbQuery.eq("status", status);
   }
+
+  // Filter by owner
+  dbQuery = dbQuery.eq("owner_id", userId);
 
   // Execute the query
   const { data, count, error } = await dbQuery;

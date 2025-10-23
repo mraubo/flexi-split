@@ -321,7 +321,11 @@ export type Database = {
         Returns: Json
       }
       create_expense_with_participants: {
-        Args: { expense_data: Json; expense_participants_data: Json[] }
+        Args: {
+          expense_data: Json
+          expense_participants_data: Json[]
+          user_id?: string
+        }
         Returns: Json
       }
       create_participant_with_settlement_update: {
@@ -353,6 +357,15 @@ export type Database = {
       refresh_participants_count: {
         Args: { p_settlement_id: string }
         Returns: undefined
+      }
+      update_expense_with_participants: {
+        Args: {
+          expense_data: Json
+          expense_participants_data: Json[]
+          p_expense_id: string
+          user_id?: string
+        }
+        Returns: Json
       }
     }
     Enums: {

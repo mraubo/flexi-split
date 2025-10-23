@@ -9,7 +9,7 @@ import ExpensesEmptyState from "@/components/expenses/ExpensesEmptyState";
 import ExpensesLoadMore from "@/components/expenses/ExpensesLoadMore";
 import LoadingSkeleton from "./LoadingSkeleton";
 import ErrorState from "./ErrorState";
-
+import { Button } from "@/components/ui/button";
 interface ExpensesViewProps {
   settlementId: string;
   isOwner?: boolean;
@@ -98,6 +98,15 @@ export default function ExpensesView({ settlementId, isOwner = false, isReadOnly
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Koszty</h2>
+        {isOwner && !isReadOnly && !hasNoParticipants && (
+          <Button
+            onClick={() => window.location.assign(`/settlements/${settlementId}/expenses/new`)}
+            className="flex items-center gap-2"
+          >
+            <span>+</span>
+            Dodaj wydatek
+          </Button>
+        )}
       </div>
 
       {/* Filter Bar */}
@@ -109,7 +118,9 @@ export default function ExpensesView({ settlementId, isOwner = false, isReadOnly
       {/* Empty states */}
       {hasNoParticipants && <ExpensesEmptyState type="no-participants" isOwner={isOwner} isReadOnly={isReadOnly} />}
 
-      {hasNoExpenses && <ExpensesEmptyState type="no-expenses" isOwner={isOwner} isReadOnly={isReadOnly} />}
+      {hasNoExpenses && (
+        <ExpensesEmptyState type="no-expenses" isOwner={isOwner} isReadOnly={isReadOnly} settlementId={settlementId} />
+      )}
 
       {hasNoFilteredExpenses && (
         <ExpensesEmptyState

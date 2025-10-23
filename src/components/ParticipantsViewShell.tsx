@@ -148,7 +148,7 @@ export default function ParticipantsViewShell({
           <ParticipantForm
             ref={formInputRef}
             onCreated={handleParticipantCreated}
-            disabled={participantsListVM.canCreate}
+            disabled={!participantsListVM.canCreate}
             existingNicknames={participants.map((p) => p.nickname)}
             addParticipant={add}
           />

@@ -1,0 +1,14 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { ExpenseForm } from "@/components/expenses/ExpenseForm";
+
+export async function getStaticPaths() {
+  return [];
+}
+
+const { id: settlementId, expenseId } = Astro.params;
+---
+
+<Layout>
+  <ExpenseForm mode="edit" settlementId={settlementId} expenseId={expenseId} client:load />
+</Layout>

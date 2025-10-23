@@ -5,6 +5,7 @@ interface ExpensesEmptyStateProps {
   type: "no-participants" | "no-expenses" | "no-filtered-expenses";
   isOwner?: boolean;
   isReadOnly: boolean;
+  settlementId?: string;
   onClearFilter?: () => void;
 }
 
@@ -12,6 +13,7 @@ export default function ExpensesEmptyState({
   type,
   isOwner = false,
   isReadOnly,
+  settlementId,
   onClearFilter,
 }: ExpensesEmptyStateProps) {
   const handleAddParticipant = () => {
@@ -20,8 +22,9 @@ export default function ExpensesEmptyState({
   };
 
   const handleAddExpense = () => {
-    // TODO: Open add expense dialog
-    // For now, this will be implemented when we add expense creation
+    if (settlementId) {
+      window.location.assign(`/settlements/${settlementId}/expenses/new`);
+    }
   };
 
   const handleClearFilter = () => {

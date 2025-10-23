@@ -289,6 +289,8 @@ export interface CreateExpenseRpcResult {
   last_edited_by: string | null;
 }
 
+export type UpdateExpenseRpcResult = CreateExpenseRpcResult;
+
 export interface ExpenseParticipantQueryResult {
   participants: {
     id: string;
