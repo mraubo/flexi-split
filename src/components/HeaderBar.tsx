@@ -23,4 +23,3 @@ export default function HeaderBar({ activeCount, onNewSettlementClick, limitActi
     </div>
   );
 }
-

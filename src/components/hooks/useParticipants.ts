@@ -11,7 +11,7 @@ import type {
 } from "@/types";
 
 // View model types for participants
-export type LockReason = "closed" | "has_expenses" | null;
+export type LockReason = "closed" | null;
 
 export interface ParticipantsViewVM {
   isOwner: boolean;
@@ -58,8 +58,8 @@ export function useParticipants(
         status,
         expensesCount,
         participantsCount: participants.length,
-        isLocked: status === "closed" || expensesCount > 0,
-        lockReason: status === "closed" ? "closed" : expensesCount > 0 ? "has_expenses" : null,
+        isLocked: status === "closed",
+        lockReason: status === "closed" ? "closed" : null,
       }
     : null;
 
@@ -102,6 +102,8 @@ export function useParticipants(
       });
 
       const data = await response.json();
+
+      console.log(data);
 
       if (!response.ok) {
         throw {

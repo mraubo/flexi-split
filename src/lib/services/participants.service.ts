@@ -9,63 +9,96 @@ import { checkAccessOrExistence } from "@/lib/services/settlements.service";
 export async function addParticipant(
   supabase: SupabaseClient<Database>,
   settlementId: string,
-  nickname: string
+  nickname: string,
+  userId: string
 ): Promise<ParticipantDTO> {
-  // Execute participant creation and settlement update in a single transaction using stored function
-  // The stored function handles all access control, validation, and business logic
-  const { data: newParticipant, error: transactionError } = await supabase.rpc(
-    "create_participant_with_settlement_update",
-    {
-      participant_data: {
-        settlement_id: settlementId,
-        nickname,
-      },
-    }
-  );
+  // Check if settlement exists and user has access
+  const { data: settlement, error: settlementError } = await supabase
+    .from("settlements")
+    .select("owner_id, status, participants_count")
+    .eq("id", settlementId)
+    .is("deleted_at", null)
+    .single();
 
-  if (transactionError) {
-    // Map database errors to user-friendly messages
-    const errorMessage = transactionError.message;
-
-    if (errorMessage.includes("authentication required")) {
-      throw new Error("Authentication required");
-    } else if (errorMessage.includes("settlement not found")) {
-      throw new Error("Settlement not found");
-    } else if (errorMessage.includes("insufficient permissions")) {
-      throw new Error("Forbidden: insufficient permissions");
-    } else if (errorMessage.includes("settlement is closed")) {
-      throw new Error("Settlement is closed: cannot add participants to closed settlements");
-    } else if (errorMessage.includes("maximum participant limit reached")) {
-      throw new Error("Maximum participant limit reached: cannot add more than 10 participants");
-    } else if (errorMessage.includes("nickname already exists")) {
-      throw new Error("Nickname already exists in this settlement");
-    } else {
-      throw new Error(`Failed to add participant: ${errorMessage}`);
-    }
+  if (settlementError || !settlement) {
+    throw new Error("Settlement not found");
   }
 
-  if (!newParticipant) {
-    throw new Error("Failed to add participant: no data returned from transaction");
+  if (settlement.owner_id !== userId) {
+    throw new Error("Forbidden: insufficient permissions");
   }
 
-  // Cast the JSON response to proper types
-  const participantData = newParticipant as {
-    id: string;
-    nickname: string;
-    is_owner: boolean;
-    created_at: string;
-    updated_at: string;
-    last_edited_by: string | null;
-  };
+  // Check that settlement is open (business rule)
+  if (settlement.status !== "open") {
+    throw new Error("Settlement is closed: cannot add participants to closed settlements");
+  }
+
+  // Check participant limit (max 10 participants)
+  if ((settlement.participants_count || 0) >= 10) {
+    throw new Error("Maximum participant limit reached: cannot add more than 10 participants");
+  }
+
+  // Check nickname uniqueness (case-insensitive)
+  const nicknameNorm = nickname.toLowerCase();
+  const { data: conflict } = await supabase
+    .from("participants")
+    .select("id")
+    .eq("settlement_id", settlementId)
+    .eq("nickname_norm", nicknameNorm)
+    .maybeSingle();
+
+  if (conflict) {
+    throw new Error("Nickname already exists in this settlement");
+  }
+
+  // Insert the participant
+  const { data: newParticipant, error: insertError } = await supabase
+    .from("participants")
+    .insert({
+      settlement_id: settlementId,
+      nickname,
+      last_edited_by: userId,
+    })
+    .select(
+      `
+      id,
+      nickname,
+      is_owner,
+      created_at,
+      updated_at,
+      last_edited_by
+    `
+    )
+    .single();
+
+  if (insertError || !newParticipant) {
+    throw new Error(`Failed to add participant: ${insertError?.message || "unknown error"}`);
+  }
+
+  // Update participants_count in settlements table
+  const { error: updateError } = await supabase
+    .from("settlements")
+    .update({
+      participants_count: (settlement.participants_count || 0) + 1,
+      updated_at: new Date().toISOString(),
+      last_edited_by: userId,
+    })
+    .eq("id", settlementId);
+
+  if (updateError) {
+    // If settlement update fails, we should ideally rollback the participant insertion
+    // For now, we'll throw an error and let the user know
+    throw new Error(`Failed to update settlement count: ${updateError.message}`);
+  }
 
   // Return the newly created participant as DTO
   return {
-    id: participantData.id,
-    nickname: participantData.nickname,
-    is_owner: participantData.is_owner,
-    created_at: participantData.created_at,
-    updated_at: participantData.updated_at,
-    last_edited_by: participantData.last_edited_by,
+    id: newParticipant.id,
+    nickname: newParticipant.nickname,
+    is_owner: newParticipant.is_owner,
+    created_at: newParticipant.created_at,
+    updated_at: newParticipant.updated_at,
+    last_edited_by: newParticipant.last_edited_by,
   };
 }
 

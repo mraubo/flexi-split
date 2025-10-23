@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParticipants, createParticipantsListVM } from "@/components/hooks/useParticipants";
 import ParticipantForm from "./ParticipantForm";
 import ParticipantsList from "./ParticipantsList";
@@ -32,6 +32,9 @@ export default function ParticipantsViewShell({
   // Modal state
   const [editingParticipant, setEditingParticipant] = useState<ParticipantItemVM | null>(null);
   const [deletingParticipant, setDeletingParticipant] = useState<ParticipantItemVM | null>(null);
+
+  // Ref to focus on participant form input
+  const formInputRef = useRef<HTMLInputElement>(null);
 
   // Handle loading state
   if (loading) {
@@ -133,7 +136,7 @@ export default function ParticipantsViewShell({
       {viewModel.participantsCount === 0 && !viewModel.isLocked && (
         <ParticipantsEmptyState
           onCta={() => {
-            // Focus on the form input - will be implemented in ParticipantForm
+            formInputRef.current?.focus();
           }}
         />
       )}
@@ -143,8 +146,9 @@ export default function ParticipantsViewShell({
         <div className="space-y-6">
           {/* Add Participant Form */}
           <ParticipantForm
+            ref={formInputRef}
             onCreated={handleParticipantCreated}
-            disabled={!participantsListVM.canCreate}
+            disabled={participantsListVM.canCreate}
             existingNicknames={participants.map((p) => p.nickname)}
             addParticipant={add}
           />

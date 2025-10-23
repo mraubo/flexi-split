@@ -86,7 +86,7 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
   }
 
   const isReadOnly = settlement.status === "closed";
-  const isOwner = user && settlement.owner_id === user.id;
+  const isOwner = (user && settlement.owner_id === user.id) || undefined;
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
