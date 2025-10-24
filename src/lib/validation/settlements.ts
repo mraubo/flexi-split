@@ -88,3 +88,22 @@ export const ParticipantPathParamsSchema = z.object({
 
 export type ParticipantPathParamsInput = z.input<typeof ParticipantPathParamsSchema>;
 export type ParticipantPathParamsOutput = z.output<typeof ParticipantPathParamsSchema>;
+
+// Settlement Snapshot endpoint schemas
+export const GetSettlementSnapshotParamsSchema = z.object({
+  id: UUIDSchema,
+});
+
+export type GetSettlementSnapshotParamsInput = z.input<typeof GetSettlementSnapshotParamsSchema>;
+export type GetSettlementSnapshotParamsOutput = z.output<typeof GetSettlementSnapshotParamsSchema>;
+
+export const SettlementSnapshotResponseSchema = z.object({
+  settlement_id: UUIDSchema,
+  algorithm_version: z.number().int().min(1),
+  created_at: z.string(), // ISO timestamp
+  balances: z.record(UUIDSchema, z.number().int()), // participant_id -> amount_cents
+  transfers: z.array(TransferSchema),
+});
+
+export type SettlementSnapshotResponseInput = z.input<typeof SettlementSnapshotResponseSchema>;
+export type SettlementSnapshotResponseOutput = z.output<typeof SettlementSnapshotResponseSchema>;
