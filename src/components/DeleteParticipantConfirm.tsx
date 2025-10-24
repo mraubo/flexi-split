@@ -75,8 +75,7 @@ export default function DeleteParticipantConfirm({
             <div>
               <AlertDialogTitle>Usuń uczestnika</AlertDialogTitle>
               <AlertDialogDescription className="mt-2">
-                Czy na pewno chcesz usunąć uczestnika{" "}
-                <span className="font-medium">"{participant.nickname}"</span>?
+                Czy na pewno chcesz usunąć uczestnika <span className="font-medium">"{participant.nickname}"</span>?
                 {participant.isOwner && (
                   <span className="block mt-1 text-yellow-600 font-medium">
                     ⚠️ To jest właściciel rozliczenia. Usunięcie może wpłynąć na uprawnienia.
@@ -91,9 +90,7 @@ export default function DeleteParticipantConfirm({
           <div className="text-sm text-gray-600 space-y-2">
             <p>• Uczestnik zostanie trwale usunięty z rozliczenia.</p>
             <p>• Wszystkie powiązane dane zostaną usunięte.</p>
-            {!participant.isOwner && (
-              <p>• Jeśli uczestnik ma powiązane wydatki, usunięcie nie będzie możliwe.</p>
-            )}
+            {!participant.isOwner && <p>• Jeśli uczestnik ma powiązane wydatki, usunięcie nie będzie możliwe.</p>}
           </div>
 
           {errorMessage && (
@@ -106,11 +103,7 @@ export default function DeleteParticipantConfirm({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel
-            onClick={handleClose}
-            disabled={isDeleting}
-            className="h-12 px-6 text-base min-w-[100px]"
-          >
+          <AlertDialogCancel onClick={handleClose} disabled={isDeleting} className="h-12 px-6 text-base min-w-[100px]">
             Anuluj
           </AlertDialogCancel>
           <AlertDialogAction
@@ -125,4 +118,3 @@ export default function DeleteParticipantConfirm({
     </AlertDialog>
   );
 }
-

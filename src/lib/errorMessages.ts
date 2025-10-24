@@ -56,11 +56,27 @@ export function getSettlementErrorMessage(error: ApiError): string {
   }
 }
 
-export function getValidationErrorMessage(field: string, error: any): string {
-  if (error?.issues && Array.isArray(error.issues)) {
-    const fieldError = error.issues.find((issue: any) => issue.path?.includes(field));
-    if (fieldError) {
-      return fieldError.message;
+export function getValidationErrorMessage(field: string, error: unknown): string {
+  if (error && typeof error === "object" && "issues" in error) {
+    const errorWithIssues = error as { issues?: unknown[] };
+    if (Array.isArray(errorWithIssues.issues)) {
+      const fieldError = errorWithIssues.issues.find((issue: unknown) => {
+        return (
+          issue &&
+          typeof issue === "object" &&
+          "path" in issue &&
+          Array.isArray((issue as { path?: unknown }).path) &&
+          (issue as { path?: unknown[] }).path?.includes(field)
+        );
+      });
+      if (
+        fieldError &&
+        typeof fieldError === "object" &&
+        "message" in fieldError &&
+        typeof (fieldError as { message: unknown }).message === "string"
+      ) {
+        return (fieldError as { message: string }).message;
+      }
     }
   }
 
@@ -72,5 +88,48 @@ export function getValidationErrorMessage(field: string, error: any): string {
       return "Nieprawidłowy tytuł rozliczenia.";
     default:
       return "Nieprawidłowe dane.";
+  }
+}
+
+export function getPageErrorMessage(statusCode: number): string {
+  switch (statusCode) {
+    case 400:
+      return "Żądanie zawiera nieprawidłowe dane.";
+    case 401:
+      return "Wymagane jest zalogowanie się, aby uzyskać dostęp do tej strony.";
+    case 403:
+      return "Nie masz uprawnień do wyświetlenia tej strony.";
+    case 404:
+      return "Strona, której szukasz, nie została znaleziona.";
+    case 429:
+      return "Wykonałeś zbyt wiele żądań. Spróbuj ponownie za chwilę.";
+    case 500:
+      return "Wystąpił błąd serwera. Spróbuj ponownie później.";
+    case 502:
+      return "Błąd połączenia z serwerem. Spróbuj ponownie.";
+    case 503:
+      return "Serwis jest tymczasowo niedostępny. Spróbuj ponownie później.";
+    default:
+      return "Wystąpił nieoczekiwany błąd.";
+  }
+}
+
+export function getPageErrorDescription(statusCode: number): string {
+  switch (statusCode) {
+    case 401:
+      return "Twoja sesja mogła wygasnąć lub nie jesteś zalogowany. Zaloguj się ponownie, aby kontynuować.";
+    case 403:
+      return "Możesz nie mieć wystarczających uprawnień lub zasób może być prywatny.";
+    case 404:
+      return "Sprawdź czy adres URL jest poprawny lub wróć do strony głównej.";
+    case 429:
+      return "Serwer chroni się przed nadmiernym ruchem. Odczekaj chwilę przed ponowną próbą.";
+    case 500:
+      return "To nie Twoja wina - problem leży po stronie serwera. Spróbuj odświeżyć stronę za chwilę.";
+    case 502:
+    case 503:
+      return "Serwis może być w trakcie konserwacji lub doświadczamy tymczasowych problemów technicznych.";
+    default:
+      return "Jeśli problem będzie się powtarzał, skontaktuj się z administratorem.";
   }
 }

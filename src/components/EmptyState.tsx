@@ -34,4 +34,3 @@ export default function EmptyState({ variant, canCreate, onCreateClick }: EmptyS
     </div>
   );
 }
-
