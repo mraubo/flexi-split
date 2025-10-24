@@ -1,0 +1,17 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { ErrorPage } from "@/components/ErrorPage";
+import { getErrorConfig, getIntendedPath } from "@/lib/errorPage";
+
+export async function getStaticPaths() {
+  return [];
+}
+
+const statusCode = Astro.params.statusCode ? parseInt(Astro.params.statusCode) : 500;
+const config = getErrorConfig(statusCode);
+const intendedPath = getIntendedPath();
+---
+
+<Layout title={`${config.title} - FlexSplit`}>
+  <ErrorPage config={config} intendedPath={intendedPath} client:load />
+</Layout>

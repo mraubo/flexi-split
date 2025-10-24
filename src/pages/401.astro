@@ -1,0 +1,12 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { ErrorPage } from "@/components/ErrorPage";
+import { getErrorConfig, getIntendedPath } from "@/lib/errorPage";
+
+const config = getErrorConfig(401);
+const intendedPath = getIntendedPath();
+---
+
+<Layout title={`${config.title} - FlexSplit`}>
+  <ErrorPage config={config} intendedPath={intendedPath} client:load />
+</Layout>

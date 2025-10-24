@@ -20,4 +20,3 @@ export default function LoadingSkeleton({ rows = 5 }: LoadingSkeletonProps) {
     </div>
   );
 }
-

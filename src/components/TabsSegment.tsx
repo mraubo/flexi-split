@@ -20,4 +20,3 @@ export default function TabsSegment({ value, onChange }: TabsSegmentProps) {
     </Tabs>
   );
 }
-

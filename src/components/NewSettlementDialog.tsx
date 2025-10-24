@@ -115,4 +115,3 @@ export default function NewSettlementDialog({ open, onOpenChange, onCreated }: N
     </Dialog>
   );
 }
-
