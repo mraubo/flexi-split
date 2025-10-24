@@ -6,6 +6,7 @@ import type {
   CreateSettlementCommand,
   SettlementDetailsDTO,
   SettlementWithExpenses,
+  SettlementSnapshotDTO,
 } from "@/types.ts";
 import { addParticipant } from "./participants.service";
 
@@ -344,4 +345,53 @@ export async function updateSettlementTitle(
     ...updatedSettlement,
     total_expenses_amount_cents: totalExpensesAmountCents,
   };
+}
+
+export async function getSettlementSnapshot(
+  supabase: SupabaseClient<Database>,
+  settlementId: string,
+  userId: string
+): Promise<SettlementSnapshotDTO> {
+  // First, check access and participation in the settlement
+  const participationCheck = await checkSettlementParticipation(supabase, settlementId, userId);
+  if (!participationCheck.exists) {
+    throw new Error("Settlement not found");
+  }
+
+  if (!participationCheck.accessible) {
+    throw new Error("Forbidden: insufficient permissions");
+  }
+
+  // Check if settlement is closed
+  if (participationCheck.status !== "closed") {
+    throw new Error("Unprocessable Entity: settlement is not closed");
+  }
+
+  // Fetch the latest snapshot for the closed settlement
+  const { data: snapshot, error } = await supabase
+    .from("settlement_snapshots")
+    .select("settlement_id, algorithm_version, created_at, balances, transfers")
+    .eq("settlement_id", settlementId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      // No rows returned - snapshot doesn't exist for closed settlement
+      throw new Error("Snapshot not found for closed settlement");
+    }
+    throw error;
+  }
+
+  // Transform and validate the response data
+  const result: SettlementSnapshotDTO = {
+    settlement_id: snapshot.settlement_id,
+    algorithm_version: snapshot.algorithm_version,
+    created_at: snapshot.created_at,
+    balances: snapshot.balances as Record<string, number>,
+    transfers: snapshot.transfers as { from: string; to: string; amount_cents: number }[],
+  };
+
+  return result;
 }
