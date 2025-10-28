@@ -1,0 +1,105 @@
+flowchart TD
+  %% Układ główny
+  subgraph "Warstwa SSR i Sesja"
+    MW[Middleware\nsrc/middleware/index.ts]
+    Ctx["Astro.locals<br>{ supabase, user }"]
+    MW --> Ctx
+  end
+
+  subgraph "Layout i Nawigacja"
+    L[Layout.astro]
+    Nav["Pasek nawigacji\n(Login/Register lub Wyloguj)"]
+    L --> Nav
+  end
+
+  subgraph "Strony Autentykacji (Astro)"
+    direction TB
+    AL[auth/login.astro]
+    AR[auth/register.astro]
+    AF[auth/forgot-password.astro]
+    AZ[auth/reset-password.astro]
+    AL --> RL[LoginForm.tsx]
+    AR --> RR[RegisterForm.tsx]
+    AF --> RF[ForgotPasswordForm.tsx]
+    AZ --> RZ[ResetPasswordForm.tsx]
+  end
+
+  subgraph "Aplikacja (Astro)"
+    direction TB
+    IDX[index.astro]
+    SETL[settlements.astro]
+    SETID["settlements/[id].astro"]
+    IDX -->|redirect| SETL
+    SETL --> SP[SettlementsPage.tsx]
+    SP --> SL[SettlementsList.tsx]
+    SETID --> SDP[SettlementDetailsPage.tsx]
+
+    subgraph "Kroki Rozliczenia"
+      direction LR
+      PVS[ParticipantsViewShell.tsx]
+      EV[ExpensesView.tsx]
+      SUM[SummaryPage.tsx]
+    end
+
+    SDP --> PVS --> EV --> SUM
+  end
+
+  subgraph "Summary i Bilans"
+    direction TB
+    SH[SummaryHeader.tsx]
+    BS[BalancesSection.tsx]
+    TS[TransfersSection.tsx]
+    CSN[ControlSumNote.tsx]
+    CSB[CopySummaryButton.tsx]
+    SUM --> SH
+    SUM --> BS
+    SUM --> TS
+    SUM --> CSN
+    SUM --> CSB
+  end
+
+  subgraph "Stan i Read-only"
+    ROB[ReadOnlyBanner.tsx]
+    LB[LockBanner.tsx]
+  end
+
+  subgraph "UI wspólne"
+    NDB[NewSettlementButton.tsx]
+    NDD[NewSettlementDialog.tsx]
+    TM[TabsSegment.tsx]
+    TC[ToastCenter.tsx]
+    EP[ErrorPage.tsx]
+  end
+
+  subgraph "API i Supabase"
+    direction TB
+    APISET[/API: /api/settlements/*/]
+    APIAUTH[/API: /api/auth/*/]
+    SBC[Browser Supabase\n supabaseClient]
+  end
+
+  %% Połączenia sesji i dostępów
+  Ctx -->|user| L
+  L -->|user==null| AL
+  L -->|user!=null| SETL
+
+  %% Formularze auth
+  RL -.->|POST| APIAUTH
+  RR -.->|POST| APIAUTH
+  RF -.->|POST| APIAUTH
+  RZ -.->|updateUser| SBC
+
+  %% Widoki rozliczeń ↔ API
+  SP -->|GET list| APISET
+  PVS -->|CRUD participants| APISET
+  EV -->|CRUD expenses| APISET
+  SUM -->|GET snapshot| APISET
+
+  %% Read-only
+  SDP --> ROB
+  SDP --> LB
+
+  classDef updated fill:#E8F5E9,stroke:#2E7D32,stroke-width:1px;
+  classDef auth fill:#E3F2FD,stroke:#1565C0,stroke-width:1px;
+  class AL,AR,AF,AZ,RL,RR,RF,RZ,APIAUTH,SBC auth;
+  class L,Nav updated;
