@@ -2,8 +2,6 @@
 
 ![Status](https://img.shields.io/badge/status-WIP-orange) ![Astro](https://img.shields.io/badge/Astro-5.13.7-0f172a?logo=astro) ![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react) ![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.13-38B2AC?logo=tailwindcss) ![Bun](https://img.shields.io/badge/Bun-1.x-000000?logo=bun) ![Node](https://img.shields.io/badge/Node.js-22.18.0-339933?logo=node.js)
 
-A modern Astro 5 + React 19 starter configured for SSR (Node adapter), Tailwind CSS 4, and shadcn/ui, optimized for Bun. Includes ESLint 9, Prettier, Husky, and lint-staged.
-
 ## Table of Contents
 
 - [Project description](#project-description)
@@ -16,7 +14,7 @@ A modern Astro 5 + React 19 starter configured for SSR (Node adapter), Tailwind 
 
 ## Project description
 
-Flexi Split is a lightweight web app scaffold built on Astro 5 with React 19 and Tailwind 4, ready for server-side rendering via the Node adapter. It is set up for fast local development with Bun and ships with opinionated linting, formatting, and UI utilities out of the box.
+FlexiSplit is a simple, mobile application for one-time settlement of shared costs among groups of friends and families during trips and events.
 
 ## Tech stack
 
@@ -45,6 +43,7 @@ Key runtime/config files:
 ```bash
 nvm use
 bun install
+bunx supabase init
 ```
 
 If environment variables are needed, copy the example file and adjust values:
@@ -53,25 +52,11 @@ If environment variables are needed, copy the example file and adjust values:
 cp .env.example .env
 ```
 
-### Run database migrations
-
-Apply pending database migrations to your local Supabase instance:
-
-```bash
-bunx supabase migration up
-```
-
-### Generate database types
-
-Generate TypeScript types from your local Supabase database schema:
-
-```bash
-bunx supabase gen types typescript --local > src/db/database.types.ts
-```
-
 ### Development
 
 ```bash
+bunx supabase start/stop
+
 bun run dev
 ```
 
@@ -95,6 +80,22 @@ bun run preview
 bun run lint
 bun run lint:fix
 bun run format
+```
+
+### Run database migrations
+
+Apply pending database migrations to your local Supabase instance:
+
+```bash
+bunx supabase migration up
+```
+
+### Generate database types
+
+Generate TypeScript types from your local Supabase database schema:
+
+```bash
+bunx supabase gen types typescript --local > src/db/database.types.ts
 ```
 
 ## Available scripts
