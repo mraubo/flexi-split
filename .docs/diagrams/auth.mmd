@@ -1,0 +1,67 @@
+sequenceDiagram
+  autonumber
+  participant B as Przeglądarka
+  participant MW as Middleware
+  participant API as Astro API
+  participant AUTH as Supabase Auth
+
+  Note over B: Logowanie (US-002)
+  B->>API: POST /api/auth/login (email, hasło)
+  API->>AUTH: signInWithPassword
+  AUTH-->>API: wynik + tokeny
+  API-->>B: 200 + set-cookie (httpOnly)
+  activate MW
+  MW->>AUTH: getUser() na kolejnym żądaniu
+  AUTH-->>MW: user
+  MW-->>B: locals.user dostępny (SSR)
+  deactivate MW
+  B->>B: Redirect do /settlements
+
+  Note over B: Rejestracja (US-001)
+  B->>API: POST /api/auth/register
+  API->>AUTH: signUp(email, password)
+  alt Wymagana weryfikacja e-mail
+    AUTH-->>API: 202 Accepted
+    API-->>B: Komunikat "Sprawdź e‑mail"
+  else Automatyczna sesja
+    AUTH-->>API: 201 + tokeny
+    API-->>B: set-cookie (httpOnly)
+    B->>B: Redirect do /settlements
+  end
+
+  Note over B,MW: Utrzymanie sesji (US-003)
+  loop każde żądanie
+    B->>MW: Request do strony/API
+    MW->>AUTH: getUser()
+    AUTH-->>MW: user lub null
+    alt user
+      MW-->>B: locals.user ustawiony
+    else brak sesji
+      MW-->>B: locals.user = null
+    end
+  end
+
+  Note over B: Reset hasła (US-005)
+  B->>API: POST /api/auth/forgot-password
+  API->>AUTH: resetPasswordForEmail(redirectTo=/auth/reset-password)
+  AUTH-->>B: E-mail z linkiem
+  B->>B: Otwiera /auth/reset-password z tokenem
+  B->>AUTH: updateUser({ password }) (klient)
+  AUTH-->>B: Sukces
+  B->>B: Redirect do /auth/login
+
+  Note over B: Wylogowanie (US-004)
+  B->>API: POST /api/auth/logout
+  API->>AUTH: signOut()
+  AUTH-->>API: OK + clear cookies
+  API-->>B: 200 + redirect /auth/login
+
+  Note over B,MW: Dostęp do stron chronionych
+  B->>MW: GET /settlements/*
+  MW->>AUTH: getUser()
+  AUTH-->>MW: user lub null
+  alt user==null
+    MW-->>B: Redirect 302 → /auth/login
+  else user!=null
+    MW-->>B: SSR + dostęp
+  end

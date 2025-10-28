@@ -1,0 +1,47 @@
+stateDiagram-v2
+  [*] --> Wejscie
+  Wejscie --> DecyzjaZalogowany
+  state DecyzjaZalogowany <<choice>>
+  DecyzjaZalogowany --> Login: user == null
+  DecyzjaZalogowany --> ListaRozliczen: user != null
+
+  state "Autentykacja" as Auth {
+    [*] --> Login
+    Login --> ListaRozliczen: Dane poprawne
+    Login --> Login: Błąd danych
+
+    Login --> Rejestracja: Przejdź do rejestracji
+    Rejestracja --> ListaRozliczen: Auto-sesja
+    Rejestracja --> PotwierdzEmail: Wymagana weryfikacja
+    PotwierdzEmail --> Login: Po weryfikacji
+
+    Login --> ZapomnianeHaslo: Nie pamiętam hasła
+    ZapomnianeHaslo --> PotwierdzenieResetu: E-mail wysłany
+    PotwierdzenieResetu --> ResetHasla: Link z e‑maila
+    ResetHasla --> Login: Hasło ustawione
+  }
+
+  state "Aplikacja" as App {
+    [*] --> ListaRozliczen
+    ListaRozliczen --> NoweRozliczenie: Rozpocznij
+    ListaRozliczen --> Szczegoly: Wejdź w istniejące
+
+    state "Szczegóły Rozliczenia" as Szczegoly {
+      [*] --> Uczestnicy
+      Uczestnicy --> Koszty: Dalej
+      Koszty --> Podsumowanie: Dalej
+      Podsumowanie --> Zamkniecie: Potwierdź
+      Zamkniecie --> Archiwum: Status closed
+
+      Podsumowanie --> Uczestnicy: Wróć i popraw
+      Koszty --> Uczestnicy: Wróć
+    }
+
+    Archiwum --> ListaRozliczen: Wróć do listy
+    ListaRozliczen --> Wylogowanie: Akcja wyloguj
+    Wylogowanie --> Login
+  }
+
+  %% Ochrona dostępu
+  ListaRozliczen --> Login: Sesja wygasła / brak sesji
+  Szczegoly --> Login: Sesja wygasła / brak sesji
