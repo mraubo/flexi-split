@@ -7,6 +7,7 @@ import SettlementStepper from "./SettlementStepper";
 import ReadOnlyBanner from "./ReadOnlyBanner";
 import ParticipantsViewShell from "./ParticipantsViewShell";
 import ExpensesView from "./ExpensesView";
+import SummaryPage from "./SummaryPage";
 import ToastCenter, { type ToastMessage, createSuccessToast, createErrorToast } from "./ToastCenter";
 import LoadingSkeleton from "./LoadingSkeleton";
 import ErrorState from "./ErrorState";
@@ -107,8 +108,8 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
         />
       </div>
 
-      {/* Settlement Stepper */}
-      <SettlementStepper activeStep={activeStep} onStepChange={setActiveStep} isReadOnly={isReadOnly} />
+      {/* Settlement Stepper - always allow navigation, individual components handle read-only state */}
+      <SettlementStepper activeStep={activeStep} onStepChange={setActiveStep} isReadOnly={false} />
 
       {/* Read Only Banner */}
       <ReadOnlyBanner isVisible={isReadOnly} />
@@ -128,12 +129,7 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
           <ExpensesView settlementId={settlementId} isOwner={isOwner} isReadOnly={isReadOnly} />
         )}
 
-        {activeStep === "summary" && (
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Podsumowanie</h2>
-            <p className="text-gray-500">Podsumowanie rozliczenia - wkrótce...</p>
-          </div>
-        )}
+        {activeStep === "summary" && <SummaryPage settlement={settlement} isOwner={isOwner} />}
       </div>
 
       {/* Toast Center */}

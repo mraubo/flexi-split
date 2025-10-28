@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { useParticipants, createParticipantsListVM } from "@/components/hooks/useParticipants";
 import ParticipantForm from "./ParticipantForm";
 import ParticipantsList from "./ParticipantsList";
-import LockBanner from "./LockBanner";
 import ParticipantsEmptyState from "./ParticipantsEmptyState";
 import EditParticipantModal from "./EditParticipantModal";
 import DeleteParticipantConfirm from "./DeleteParticipantConfirm";
@@ -128,9 +127,6 @@ export default function ParticipantsViewShell({
         </div>
         <div className="text-sm text-gray-500">{viewModel.participantsCount}/10 uczestników</div>
       </div>
-
-      {/* Lock Banner */}
-      {viewModel.lockReason && <LockBanner reason={viewModel.lockReason} expensesCount={viewModel.expensesCount} />}
 
       {/* Empty State */}
       {viewModel.participantsCount === 0 && !viewModel.isLocked && (
