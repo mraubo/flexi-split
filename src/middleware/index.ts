@@ -1,35 +1,29 @@
 import { defineMiddleware } from "astro:middleware";
-import { createServerClient } from "@supabase/ssr";
-import type { Database } from "@/db/database.types.ts";
+import { createSupabaseServerInstance } from "../db/supabase.client.ts";
+
+// Public paths that don't require authentication
+const PUBLIC_PATHS = [
+  // Root page
+  "/",
+  // Auth pages
+  "/auth/login",
+  "/auth/register",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  // Auth API endpoints
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/logout",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
+];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const supabase = createServerClient<Database>(
-    import.meta.env.SUPABASE_URL as string,
-    import.meta.env.SUPABASE_KEY as string,
-    {
-      cookies: {
-        getAll() {
-          const cookies: { name: string; value: string }[] = [];
-          // Get all cookie names from the request headers
-          const cookieHeader = context.request.headers.get("cookie");
-          if (cookieHeader) {
-            cookieHeader.split(";").forEach((cookie) => {
-              const [name, ...rest] = cookie.trim().split("=");
-              if (name && rest.length > 0) {
-                cookies.push({ name, value: rest.join("=") });
-              }
-            });
-          }
-          return cookies;
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            context.cookies.set(name, value, options);
-          });
-        },
-      },
-    }
-  );
+  // Create Supabase server instance
+  const supabase = createSupabaseServerInstance({
+    cookies: context.cookies,
+    headers: context.request.headers,
+  });
 
   // Add supabase client to context
   context.locals.supabase = supabase;
@@ -67,8 +61,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return context.redirect("/settlements");
   }
 
-  // App pages: redirect unauthenticated users to login
-  if (!pathname.startsWith("/auth/") && !context.locals.user) {
+  // App pages: redirect unauthenticated users to login (except public paths)
+  if (!PUBLIC_PATHS.includes(pathname) && !context.locals.user) {
     return context.redirect("/auth/login");
   }
 
