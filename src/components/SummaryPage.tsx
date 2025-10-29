@@ -13,9 +13,10 @@ import type { SettlementDetailsDTO } from "@/types";
 interface SummaryPageProps {
   settlement: SettlementDetailsDTO;
   isOwner: boolean;
+  onSettlementClosed?: () => void;
 }
 
-export default function SummaryPage({ settlement, isOwner }: SummaryPageProps) {
+export default function SummaryPage({ settlement, isOwner, onSettlementClosed }: SummaryPageProps) {
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [copySuccessToast, setCopySuccessToast] = useState(false);
 
@@ -42,8 +43,9 @@ export default function SummaryPage({ settlement, isOwner }: SummaryPageProps) {
 
   const handleCloseConfirm = async () => {
     await closeSettlement();
-    // After successful close, the settlement status will be updated
-    // This will trigger a reload and show the snapshot
+    // After successful close, notify parent component to reload settlement data
+    // This will update the settlement status and show the snapshot
+    onSettlementClosed?.();
   };
 
   const handleCopySuccess = () => {

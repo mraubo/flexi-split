@@ -56,32 +56,6 @@ export default function SettlementStepper({ activeStep, onStepChange, isReadOnly
           </button>
         ))}
       </div>
-
-      {/* Progress indicator for mobile/small screens */}
-      <div className="mt-4 flex justify-center sm:hidden">
-        <div className="flex items-center space-x-2">
-          {steps.map((step, index) => (
-            <div key={step.key} className="flex items-center">
-              <div
-                className={`
-                  w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium
-                  ${activeStep === step.key ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"}
-                `}
-              >
-                {index + 1}
-              </div>
-              {index < steps.length - 1 && (
-                <div
-                  className={`
-                    w-8 h-0.5 mx-2
-                    ${steps.findIndex((s) => s.key === activeStep) > index ? "bg-blue-600" : "bg-gray-200"}
-                  `}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
     </nav>
   );
 }
