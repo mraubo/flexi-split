@@ -288,6 +288,7 @@ export interface LoginDto {
 export interface RegisterDto {
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export interface ForgotPasswordDto {

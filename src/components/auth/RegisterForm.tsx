@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,12 +16,28 @@ export default function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (redirectCountdown && redirectCountdown > 0) {
+      const timer = setTimeout(() => {
+        setRedirectCountdown(redirectCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (redirectCountdown === 0) {
+      setRedirectCountdown(null);
+    }
+  }, [redirectCountdown]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
     setFieldErrors({});
+    setIsSuccess(false);
+    setRedirectCountdown(null);
 
     // Validate form
     const result = RegisterSchema.safeParse(formData);
@@ -48,6 +64,7 @@ export default function RegisterForm() {
         body: JSON.stringify({
           email: result.data.email,
           password: result.data.password,
+          confirmPassword: result.data.confirmPassword,
         }),
       });
 
@@ -58,7 +75,7 @@ export default function RegisterForm() {
           // Handle validation errors
           if (data.details && Array.isArray(data.details)) {
             const errors: Record<string, string> = {};
-            data.details.forEach((detail: any) => {
+            data.details.forEach((detail: { field?: string; message?: string }) => {
               if (detail.field && detail.message) {
                 errors[detail.field] = detail.message;
               }
@@ -79,15 +96,20 @@ export default function RegisterForm() {
 
       // Success - check if email confirmation is required
       if (response.status === 202) {
-        setSuccessMessage("Rejestracja zakończona pomyślnie. Sprawdź swoją skrzynkę e-mail i potwierdź konto.");
+        setSuccessMessage(
+          data.message || "Rejestracja zakończona pomyślnie. Sprawdź swoją skrzynkę e-mail i potwierdź konto."
+        );
+        setIsSuccess(true);
       } else if (response.status === 201) {
-        setSuccessMessage("Rejestracja zakończona pomyślnie. Zostaniesz automatycznie zalogowany.");
-        // Redirect after a short delay
+        setSuccessMessage("Rejestracja zakończona pomyślnie. Zostaniesz automatycznie przekierowany za ");
+        setIsSuccess(true);
+        setRedirectCountdown(5);
+        // Redirect after 5 seconds
         setTimeout(() => {
           window.location.href = "/settlements";
-        }, 2000);
+        }, 5000);
       }
-    } catch (err) {
+    } catch {
       setError("Wystąpił błąd połączenia. Spróbuj ponownie.");
     } finally {
       setIsSubmitting(false);
@@ -95,10 +117,10 @@ export default function RegisterForm() {
   };
 
   const handleInputChange = (field: keyof RegisterInput) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
-      setFieldErrors(prev => ({ ...prev, [field]: "" }));
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -109,86 +131,102 @@ export default function RegisterForm() {
         <p className="text-muted-foreground">Utwórz nowe konto, aby rozpocząć rozliczanie wydatków</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-        {successMessage && (
-          <Alert>
-            <AlertDescription>{successMessage}</AlertDescription>
-          </Alert>
-        )}
+      {successMessage && (
+        <Alert>
+          <AlertDescription>
+            {successMessage}
+            {redirectCountdown !== null && <span className="font-semibold">{redirectCountdown}</span>}
+          </AlertDescription>
+        </Alert>
+      )}
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Adres e-mail</Label>
-          <Input
-            id="email"
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange("email")}
-            placeholder="twoj@email.com"
-            disabled={isSubmitting}
-            aria-describedby={fieldErrors.email ? "email-error" : undefined}
-          />
-          {fieldErrors.email && (
-            <p id="email-error" className="text-sm text-destructive">
-              {fieldErrors.email}
-            </p>
-          )}
+      {isSuccess && redirectCountdown !== null && (
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground mb-2">Nie chcesz czekać? Przejdź od razu do swoich rozliczeń.</p>
+          <Button onClick={() => (window.location.href = "/settlements")} variant="outline" size="sm">
+            Przejdź do rozliczeń
+          </Button>
         </div>
+      )}
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Hasło</Label>
-          <Input
-            id="password"
-            type="password"
-            value={formData.password}
-            onChange={handleInputChange("password")}
-            placeholder="Minimum 8 znaków z literami i cyframi"
-            disabled={isSubmitting}
-            aria-describedby={fieldErrors.password ? "password-error" : undefined}
-          />
-          {fieldErrors.password && (
-            <p id="password-error" className="text-sm text-destructive">
-              {fieldErrors.password}
-            </p>
-          )}
+      {!isSuccess && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Adres e-mail</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange("email")}
+              placeholder="twoj@email.com"
+              disabled={isSubmitting}
+              aria-describedby={fieldErrors.email ? "email-error" : undefined}
+            />
+            {fieldErrors.email && (
+              <p id="email-error" className="text-sm text-destructive">
+                {fieldErrors.email}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Hasło</Label>
+            <Input
+              id="password"
+              type="password"
+              value={formData.password}
+              onChange={handleInputChange("password")}
+              placeholder="Minimum 8 znaków z literami i cyframi"
+              disabled={isSubmitting}
+              aria-describedby={fieldErrors.password ? "password-error" : undefined}
+            />
+            {fieldErrors.password && (
+              <p id="password-error" className="text-sm text-destructive">
+                {fieldErrors.password}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Potwierdź hasło</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleInputChange("confirmPassword")}
+              placeholder="Powtórz hasło"
+              disabled={isSubmitting}
+              aria-describedby={fieldErrors.confirmPassword ? "confirmPassword-error" : undefined}
+            />
+            {fieldErrors.confirmPassword && (
+              <p id="confirmPassword-error" className="text-sm text-destructive">
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Rejestrowanie..." : "Zarejestruj się"}
+          </Button>
+        </form>
+      )}
+
+      {!isSuccess && (
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">
+            Masz już konto?{" "}
+            <a href="/auth/login" className="text-primary hover:underline">
+              Zaloguj się
+            </a>
+          </p>
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Potwierdź hasło</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleInputChange("confirmPassword")}
-            placeholder="Powtórz hasło"
-            disabled={isSubmitting}
-            aria-describedby={fieldErrors.confirmPassword ? "confirmPassword-error" : undefined}
-          />
-          {fieldErrors.confirmPassword && (
-            <p id="confirmPassword-error" className="text-sm text-destructive">
-              {fieldErrors.confirmPassword}
-            </p>
-          )}
-        </div>
-
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Rejestrowanie..." : "Zarejestruj się"}
-        </Button>
-      </form>
-
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">
-          Masz już konto?{" "}
-          <a href="/auth/login" className="text-primary hover:underline">
-            Zaloguj się
-          </a>
-        </p>
-      </div>
+      )}
     </div>
   );
 }

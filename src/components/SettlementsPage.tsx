@@ -71,13 +71,11 @@ export default function SettlementsPage() {
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       <TabsSegment value={tab} onChange={handleTabChange} />
-
       <HeaderBar
         activeCount={tab === "active" ? settlements.items.length : undefined}
         onNewSettlementClick={handleNewSettlementClick}
         limitActive={3}
       />
-
       <div className="mt-6">
         {(settlements.initialLoading || settlements.loading) && <LoadingSkeleton />}
 
@@ -106,9 +104,7 @@ export default function SettlementsPage() {
           />
         )}
       </div>
-
       <NewSettlementDialog open={newDialogOpen} onOpenChange={setNewDialogOpen} onCreated={handleSettlementCreated} />
-
       <ConfirmDeleteDialog
         open={confirmDelete.open}
         settlementId={confirmDelete.id}
@@ -116,7 +112,6 @@ export default function SettlementsPage() {
         onOpenChange={(open) => setConfirmDelete({ open })}
         onDeleted={handleDeleteConfirm}
       />
-
       {/* TODO: Add ToastsProvider */}
     </div>
   );

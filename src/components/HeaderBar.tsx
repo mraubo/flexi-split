@@ -10,16 +10,18 @@ export default function HeaderBar({ activeCount, onNewSettlementClick, limitActi
   const isLimitReached = activeCount !== undefined && activeCount >= limitActive;
 
   return (
-    <div className="flex items-center justify-between py-4">
-      <div className="flex items-center gap-4">
-        <h1 className="text-2xl font-bold">Rozliczenia</h1>
-        {activeCount !== undefined && (
-          <span className="text-sm text-muted-foreground">
-            {activeCount}/{limitActive} aktywnych
-          </span>
-        )}
+    <div className="py-4">
+      <div className="flex items-center justify-between ">
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold">Rozliczenia</h1>
+        </div>
+        <NewSettlementButton disabled={isLimitReached} onClick={onNewSettlementClick} />
       </div>
-      <NewSettlementButton disabled={isLimitReached} onClick={onNewSettlementClick} />
+      {activeCount !== undefined && (
+        <span className="text-sm text-muted-foreground">
+          {activeCount}/{limitActive} aktywnych
+        </span>
+      )}
     </div>
   );
 }
