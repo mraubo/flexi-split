@@ -56,7 +56,7 @@ export default function ResetPasswordForm() {
           // Handle validation errors
           if (data.details && Array.isArray(data.details)) {
             const errors: Record<string, string> = {};
-            data.details.forEach((detail: any) => {
+            data.details.forEach((detail: { field: string; message: string }) => {
               if (detail.field && detail.message) {
                 errors[detail.field] = detail.message;
               }
@@ -78,12 +78,12 @@ export default function ResetPasswordForm() {
       }
 
       // Success
-      setSuccessMessage("Hasło zostało pomyślnie zmienione. Możesz się teraz zalogować.");
+      setSuccessMessage(data.message || "Hasło zostało pomyślnie zmienione. Możesz się teraz zalogować.");
       // Redirect to login after a short delay
       setTimeout(() => {
         window.location.href = "/auth/login";
       }, 2000);
-    } catch (err) {
+    } catch {
       setError("Wystąpił błąd połączenia. Spróbuj ponownie.");
     } finally {
       setIsSubmitting(false);
@@ -91,10 +91,10 @@ export default function ResetPasswordForm() {
   };
 
   const handleInputChange = (field: keyof ResetPasswordInput) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
-      setFieldErrors(prev => ({ ...prev, [field]: "" }));
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 

@@ -53,7 +53,7 @@ export default function ForgotPasswordForm() {
           // Handle validation errors
           if (data.details && Array.isArray(data.details)) {
             const errors: Record<string, string> = {};
-            data.details.forEach((detail: any) => {
+            data.details.forEach((detail: { field: string; message: string }) => {
               if (detail.field && detail.message) {
                 errors[detail.field] = detail.message;
               }
@@ -71,8 +71,10 @@ export default function ForgotPasswordForm() {
       }
 
       // Success - show neutral message regardless of whether email exists
-      setSuccessMessage("Jeśli podany adres e-mail istnieje w systemie, otrzymasz wiadomość z linkiem do resetowania hasła.");
-    } catch (err) {
+      setSuccessMessage(
+        "Jeśli podany adres e-mail istnieje w systemie, otrzymasz wiadomość z linkiem do resetowania hasła."
+      );
+    } catch {
       setError("Wystąpił błąd połączenia. Spróbuj ponownie.");
     } finally {
       setIsSubmitting(false);
@@ -80,10 +82,10 @@ export default function ForgotPasswordForm() {
   };
 
   const handleInputChange = (field: keyof ForgotPasswordInput) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
-      setFieldErrors(prev => ({ ...prev, [field]: "" }));
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -91,56 +93,76 @@ export default function ForgotPasswordForm() {
     <div className="space-y-6">
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-bold">Resetowanie hasła</h1>
-        <p className="text-muted-foreground">Wprowadź swój adres e-mail, aby otrzymać link do resetowania hasła</p>
+        {!successMessage && (
+          <p className="text-muted-foreground">Wprowadź swój adres e-mail, aby otrzymać link do resetowania hasła</p>
+        )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {successMessage && (
+      {successMessage ? (
+        // Success state - show only success message and navigation links
+        <>
           <Alert>
             <AlertDescription>{successMessage}</AlertDescription>
           </Alert>
-        )}
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Adres e-mail</Label>
-          <Input
-            id="email"
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange("email")}
-            placeholder="twoj@email.com"
-            disabled={isSubmitting}
-            aria-describedby={fieldErrors.email ? "email-error" : undefined}
-          />
-          {fieldErrors.email && (
-            <p id="email-error" className="text-sm text-destructive">
-              {fieldErrors.email}
+          <div className="text-center space-y-2">
+            <a href="/auth/login" className="text-sm text-primary hover:underline">
+              Powrót do logowania
+            </a>
+            <p className="text-sm text-muted-foreground">
+              Nie masz konta?{" "}
+              <a href="/auth/register" className="text-sm text-primary hover:underline">
+                Zarejestruj się
+              </a>
             </p>
-          )}
-        </div>
+          </div>
+        </>
+      ) : (
+        // Form state - show the form
+        <>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Wysyłanie..." : "Wyślij link resetowania"}
-        </Button>
-      </form>
+            <div className="space-y-2">
+              <Label htmlFor="email">Adres e-mail</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange("email")}
+                placeholder="twoj@email.com"
+                disabled={isSubmitting}
+                aria-describedby={fieldErrors.email ? "email-error" : undefined}
+              />
+              {fieldErrors.email && (
+                <p id="email-error" className="text-sm text-destructive">
+                  {fieldErrors.email}
+                </p>
+              )}
+            </div>
 
-      <div className="text-center space-y-2">
-        <a href="/auth/login" className="text-sm text-primary hover:underline">
-          Powrót do logowania
-        </a>
-        <p className="text-sm text-muted-foreground">
-          Nie masz konta?{" "}
-          <a href="/auth/register" className="text-sm text-primary hover:underline">
-            Zarejestruj się
-          </a>
-        </p>
-      </div>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Wysyłanie..." : "Wyślij link resetowania"}
+            </Button>
+          </form>
+
+          <div className="text-center space-y-2">
+            <a href="/auth/login" className="text-sm text-primary hover:underline">
+              Powrót do logowania
+            </a>
+            <p className="text-sm text-muted-foreground">
+              Nie masz konta?{" "}
+              <a href="/auth/register" className="text-sm text-primary hover:underline">
+                Zarejestruj się
+              </a>
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
