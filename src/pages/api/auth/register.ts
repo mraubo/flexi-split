@@ -36,6 +36,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const { data, error: supabaseError } = await locals.supabase.auth.signUp({
       email: result.data.email,
       password: result.data.password,
+      options: {
+        emailRedirectTo: `${new URL(request.url).origin}/auth/login`,
+      },
     });
 
     if (supabaseError) {
