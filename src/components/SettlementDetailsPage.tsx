@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSettlementDetails } from "@/components/hooks/useSettlementDetails";
 import { useQueryParamStep } from "@/components/hooks/useQueryParamStep";
-import { useCurrentUser } from "@/components/hooks/useCurrentUser";
 import SettlementHeader from "./SettlementHeader";
 import SettlementStepper from "./SettlementStepper";
 import ReadOnlyBanner from "./ReadOnlyBanner";
@@ -11,15 +10,16 @@ import SummaryPage from "./SummaryPage";
 import ToastCenter, { type ToastMessage, createSuccessToast, createErrorToast } from "./ToastCenter";
 import LoadingSkeleton from "./LoadingSkeleton";
 import ErrorState from "./ErrorState";
+import type { User } from "@supabase/supabase-js";
 
 interface SettlementDetailsPageProps {
   settlementId: string;
+  user: User | null;
 }
 
-export default function SettlementDetailsPage({ settlementId }: SettlementDetailsPageProps) {
+export default function SettlementDetailsPage({ settlementId, user }: SettlementDetailsPageProps) {
   const { settlement, loading, error, reload } = useSettlementDetails(settlementId);
   const { step: activeStep, setStep: setActiveStep } = useQueryParamStep();
-  const { user } = useCurrentUser();
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = (toast: ToastMessage) => {
@@ -30,32 +30,23 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   };
 
+  // Handle redirects for error states
+  useEffect(() => {
+    if (!loading && error) {
+      if (error.status === 404) {
+        window.location.href = "/404";
+      } else if (error.status === 403) {
+        window.location.href = "/403";
+      } else if (error.status === 401) {
+        window.location.href = "/401";
+      }
+    }
+  }, [loading, error]);
+
   // Handle error states
   if (!loading && error) {
-    if (error.status === 404) {
-      return (
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="h-12 w-12 text-muted-foreground mb-4">🔍</div>
-            <h3 className="text-lg font-semibold mb-2">Rozliczenie nie zostało znalezione</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Sprawdź czy link jest poprawny lub wróć do listy rozliczeń.
-            </p>
-          </div>
-        </div>
-      );
-    }
-
-    if (error.status === 403) {
-      return (
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="h-12 w-12 text-muted-foreground mb-4">🚫</div>
-            <h3 className="text-lg font-semibold mb-2">Brak dostępu do rozliczenia</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">Nie masz uprawnień do wyświetlenia tego rozliczenia.</p>
-          </div>
-        </div>
-      );
+    if (error.status === 404 || error.status === 403 || error.status === 401) {
+      return null; // Will redirect via useEffect
     }
 
     return (
@@ -108,7 +99,6 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
         />
       </div>
 
-      {/* Settlement Stepper - always allow navigation, individual components handle read-only state */}
       <SettlementStepper activeStep={activeStep} onStepChange={setActiveStep} isReadOnly={false} />
 
       {/* Read Only Banner */}
@@ -129,7 +119,9 @@ export default function SettlementDetailsPage({ settlementId }: SettlementDetail
           <ExpensesView settlementId={settlementId} isOwner={isOwner} isReadOnly={isReadOnly} />
         )}
 
-        {activeStep === "summary" && <SummaryPage settlement={settlement} isOwner={isOwner} />}
+        {activeStep === "summary" && (
+          <SummaryPage settlement={settlement} isOwner={isOwner} onSettlementClosed={reload} />
+        )}
       </div>
 
       {/* Toast Center */}

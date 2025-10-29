@@ -45,10 +45,9 @@ export default function SettlementsPage() {
     setNewDialogOpen(true);
   };
 
-  const handleSettlementCreated = (_created: SettlementSummaryDTO) => {
+  const handleSettlementCreated = (created: SettlementSummaryDTO) => {
     setNewDialogOpen(false);
-    // TODO: Navigate to /settlements/{id} or refresh active list
-    settlements.reload();
+    window.location.assign(`/settlements/${created.id}`);
   };
 
   const handleDeleteClick = (id: string, title: string) => {
