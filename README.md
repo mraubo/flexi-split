@@ -25,6 +25,8 @@ FlexiSplit is a simple, mobile application for one-time settlement of shared cos
 - Bun (preferred package/runtime) and Node.js 22 (via `.nvmrc`)
 - Tooling: ESLint 9, Prettier, Husky, lint-staged
 
+- Testing: Unit — Vitest, React Testing Library, MSW, Supertest (API routes); E2E — Playwright; Coverage — c8/istanbul
+
 Key runtime/config files:
 
 - `astro.config.mjs` — SSR enabled (`output: "server"`), Node adapter in standalone mode, Tailwind Vite plugin, server on port 3000.
