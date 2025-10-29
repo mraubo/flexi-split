@@ -1,0 +1,13 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import RegisterForm from "@/components/auth/RegisterForm";
+
+// Redirect authenticated users to settlements
+if (Astro.locals.user) {
+  return Astro.redirect("/settlements");
+}
+---
+
+<AuthLayout title="Rejestracja - FlexiSplit">
+  <RegisterForm client:load />
+</AuthLayout>

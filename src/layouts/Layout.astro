@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import LogoutButton from "../components/auth/LogoutButton";
 
 interface Props {
   title?: string;
@@ -27,38 +28,78 @@ const { title = "FlexiSplit" } = Astro.props;
     <title>{title}</title>
   </head>
   <body class="bg-background text-foreground min-h-screen flex flex-col">
+    <!-- Header Navigation -->
+    <header class="border-b border-border bg-background">
+      <div class="container mx-auto px-4 max-w-4xl">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center">
+            <a href="/" class="text-xl font-bold text-foreground"> FlexiSplit </a>
+          </div>
+
+          <nav class="flex items-center space-x-4">
+            {
+              Astro.locals.user ? (
+                <>
+                  <a href="/settlements" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Rozliczenia
+                  </a>
+                  <LogoutButton client:load />
+                </>
+              ) : (
+                <>
+                  <a href="/auth/login" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Zaloguj się
+                  </a>
+                  <a
+                    href="/auth/register"
+                    class="text-sm bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
+                  >
+                    Zarejestruj się
+                  </a>
+                </>
+              )
+            }
+          </nav>
+        </div>
+      </div>
+    </header>
+
     <main class="flex-1 pb-24">
       <slot />
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-background border-t border-border shadow-lg">
-      <div class="container mx-auto px-4 max-w-4xl">
-        <div class="flex items-center justify-center">
-          <a
-            href="/settlements"
-            class="flex flex-col items-center justify-center space-y-1 p-2 rounded-lg hover:bg-accent transition-colors"
-            aria-label="Przejdź do listy rozliczeń"
-          >
-            <svg
-              class="w-6 h-6 text-foreground"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              ></path>
-            </svg>
-            <span class="text-xs text-muted-foreground">Rozliczenia</span>
-          </a>
-        </div>
-      </div>
-    </nav>
+    <!-- Bottom Navigation - only show for authenticated users -->
+    {
+      Astro.locals.user && (
+        <nav class="fixed bottom-0 left-0 right-0 bg-background border-t border-border shadow-lg">
+          <div class="container mx-auto px-4 max-w-4xl">
+            <div class="flex items-center justify-center">
+              <a
+                href="/settlements"
+                class="flex flex-col items-center justify-center space-y-1 p-2 rounded-lg hover:bg-accent transition-colors"
+                aria-label="Przejdź do listy rozliczeń"
+              >
+                <svg
+                  class="w-6 h-6 text-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <span class="text-xs text-muted-foreground">Rozliczenia</span>
+              </a>
+            </div>
+          </div>
+        </nav>
+      )
+    }
   </body>
 </html>
 

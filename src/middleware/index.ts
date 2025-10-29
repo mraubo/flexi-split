@@ -2,8 +2,6 @@ import { defineMiddleware } from "astro:middleware";
 import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@/db/database.types.ts";
 
-const defaultUserId = import.meta.env.PUBLIC_DEFAULT_USER_ID;
-
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createServerClient<Database>(
     import.meta.env.SUPABASE_URL as string,
@@ -44,59 +42,34 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     if (user) {
       context.locals.user = user;
-    } else if (defaultUserId) {
-      // For development, mock user object with PUBLIC_DEFAULT_USER_ID
-      context.locals.user = {
-        id: defaultUserId,
-        email: "developer@example.com",
-        created_at: "2025-10-17T09:43:35.926966+00:00",
-        confirmed_at: "2025-10-17T09:43:35.934705+00:00",
-        last_sign_in_at: undefined,
-        phone: undefined,
-        app_metadata: {
-          provider: "email",
-          providers: ["email"],
-        },
-        user_metadata: {
-          email_verified: true,
-        },
-        updated_at: "2025-10-17T09:43:35.935357+00:00",
-        confirmation_sent_at: undefined,
-        is_anonymous: false,
-        is_sso_user: false,
-        invited_at: undefined,
-        aud: "authenticated",
-      };
     } else {
       context.locals.user = null;
     }
   } catch {
-    // Fallback for development with PUBLIC_DEFAULT_USER_ID
-    if (defaultUserId) {
-      context.locals.user = {
-        id: defaultUserId,
-        email: "developer@example.com",
-        created_at: "2025-10-17T09:43:35.926966+00:00",
-        confirmed_at: "2025-10-17T09:43:35.934705+00:00",
-        last_sign_in_at: undefined,
-        phone: undefined,
-        app_metadata: {
-          provider: "email",
-          providers: ["email"],
-        },
-        user_metadata: {
-          email_verified: true,
-        },
-        updated_at: "2025-10-17T09:43:35.935357+00:00",
-        confirmation_sent_at: undefined,
-        is_anonymous: false,
-        is_sso_user: false,
-        invited_at: undefined,
-        aud: "authenticated",
-      };
-    } else {
-      context.locals.user = null;
-    }
+    context.locals.user = null;
+  }
+
+  // Handle authentication redirects
+  const pathname = context.url.pathname;
+
+  // Skip auth redirects for API routes - they handle auth internally
+  if (pathname.startsWith("/api/")) {
+    return next();
+  }
+
+  // Skip auth redirects for error pages
+  if (pathname.match(/^\/[0-9]{3}(\.astro)?$/)) {
+    return next();
+  }
+
+  // Auth pages: redirect logged-in users to settlements
+  if (pathname.startsWith("/auth/") && context.locals.user) {
+    return context.redirect("/settlements");
+  }
+
+  // App pages: redirect unauthenticated users to login
+  if (!pathname.startsWith("/auth/") && !context.locals.user) {
+    return context.redirect("/auth/login");
   }
 
   return next();
