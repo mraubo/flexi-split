@@ -276,6 +276,28 @@ export interface ApiError {
   details?: unknown;
 }
 
+// -----------------------------
+// Auth DTOs
+// -----------------------------
+
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+export interface RegisterDto {
+  email: string;
+  password: string;
+}
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  password: string;
+}
+
 export interface CreateExpenseRpcResult {
   id: string;
   settlement_id: string;
