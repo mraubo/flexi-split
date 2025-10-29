@@ -15,11 +15,19 @@ export default function LogoutButton() {
         },
       });
 
-      // Regardless of response status, redirect to login
-      // This handles both successful logout and cases where endpoint doesn't exist yet
-      window.location.href = "/auth/login";
+      // Check if logout was successful
+      if (response.ok) {
+        // Success - redirect to login
+        window.location.href = "/auth/login";
+      } else {
+        // Logout failed - show error and still redirect
+        console.error("Logout failed:", response.status, response.statusText);
+        // Still redirect to login for security
+        window.location.href = "/auth/login";
+      }
     } catch (err) {
-      // On network error, still redirect to login
+      // Network error - log and still redirect to login for security
+      console.error("Logout network error:", err);
       window.location.href = "/auth/login";
     }
   };

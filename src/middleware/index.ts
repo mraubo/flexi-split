@@ -56,6 +56,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
+  // Root page: redirect authenticated users to settlements
+  // In futre we will have landing page on this route
+  if (pathname === "/" && context.locals.user) {
+    return context.redirect("/settlements");
+  }
+
   // Auth pages: redirect logged-in users to settlements
   if (pathname.startsWith("/auth/") && context.locals.user) {
     return context.redirect("/settlements");

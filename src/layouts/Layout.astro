@@ -40,9 +40,6 @@ const { title = "FlexiSplit" } = Astro.props;
             {
               Astro.locals.user ? (
                 <>
-                  <a href="/settlements" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Rozliczenia
-                  </a>
                   <LogoutButton client:load />
                 </>
               ) : (
