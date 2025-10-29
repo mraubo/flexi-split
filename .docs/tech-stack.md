@@ -22,3 +22,8 @@ CI/CD i Hosting:
 
 - Github Actions do tworzenia pipeline’ów CI/CD
 - CludeFlare dla hostowania JS stacku aplikacji
+
+Testy:
+
+- Jednostkowe i integracyjne: Vitest + React Testing Library, MSW do mockowania sieci, Supertest do testów Astro API routes; pokrycie: c8/istanbul
+- End-to-end: Playwright

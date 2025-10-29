@@ -56,11 +56,26 @@ const reactConfig = tseslint.config({
   },
 });
 
+const testConfig = tseslint.config({
+  files: [
+    "**/*.{test,spec}.{js,ts,jsx,tsx}",
+    "**/tests/**/*.{js,ts,jsx,tsx}",
+    "**/*.test.{js,ts,jsx,tsx}",
+    "**/*.spec.{js,ts,jsx,tsx}",
+  ],
+  rules: {
+    "no-console": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
   jsxA11yConfig,
   reactConfig,
+  testConfig,
   eslintPluginAstro.configs["flat/recommended"],
   eslintPluginPrettier
 );
