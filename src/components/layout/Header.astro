@@ -1,0 +1,49 @@
+---
+import LogoutButton from "../auth/LogoutButton";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "FlexiSplit" } = Astro.props;
+---
+
+<header class="border-b border-border bg-background">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+        <a href="/" class="text-xl font-bold text-foreground">
+          {title}
+        </a>
+      </div>
+
+      <nav class="flex items-center space-x-4">
+        {
+          Astro.locals.user ? (
+            <>
+              <span class="text-sm text-muted-foreground mr-4">
+                {Astro.locals.user.email}
+              </span>
+              <LogoutButton client:load />
+            </>
+          ) : (
+            <>
+              <a
+                href="/auth/login"
+                class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Zaloguj się
+              </a>
+              <a
+                href="/auth/register"
+                class="text-sm bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Zarejestruj się
+              </a>
+            </>
+          )
+        }
+      </nav>
+    </div>
+  </div>
+</header>
