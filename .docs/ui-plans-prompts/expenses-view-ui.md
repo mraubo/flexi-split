@@ -3,7 +3,8 @@ Jako starszy programista frontendu Twoim zadaniem jest stworzenie szczegółoweg
 Najpierw przejrzyj następujące informacje:
 
 1. Product Requirements Document (PRD):
-<prd>
+   <prd>
+
 # Dokument wymagań produktu (PRD) - FlexiSplit
 
 ## 1. Przegląd produktu
@@ -506,18 +507,19 @@ Kryteria akceptacji:
 </prd>
 
 2. Opis widoku:
-<view_description>
+   <view_description>
+
 - Nazwa widoku: Koszty – lista i filtr (krok 2)
 - Ścieżka widoku: /settlements/:id?step=expenses
 - Główny cel: Przeglądać i zarządzać wydatkami, filtrować po osobie (US‑030, US‑031, US‑032, US‑034, US‑074).
 - Kluczowe informacje do wyświetlenia: lista grupowana po dacie, na pozycji płacący, kwota, liczba osób w podziale, skrót opisu, filtr po osobie.
 - Kluczowe komponenty widoku: pasek filtra z wyborem osoby, lista grup dat, karty wydatków z akcjami, przycisk Dodaj wydatek, puste stany; połączenia API: GET /settlements/{id}/expenses (z parametrami), DELETE /settlements/{id}/expenses/{id}.
 - UX, dostępność i względy bezpieczeństwa: stabilne sortowanie w grupach, czytelne kontrasty, duże hit‑targety, komunikaty po polsku bez żargonu księgowego.
-</view_description>
+  </view_description>
 
 3. User Stories:
-<user_stories>
-US‑030
+   <user_stories>
+   US‑030
 
 Tytuł: Dodanie wydatku
 
@@ -569,10 +571,11 @@ Opis: Jako użytkownik chcę przewidywalnego sortowania list i filtrów.
 Kryteria akceptacji:
 
 - Listy wydatków są grupowane po dacie i sortowane stabilnie; filtry nie zmieniają kolejności w ramach grupy.
-</user_stories>
+  </user_stories>
 
 4. Endpoint Description:
-<endpoint_description>
+   <endpoint_description>
+
 #### GET /settlements/{settlement_id}/expenses
 
 - **Description**: Retrieve expenses for a settlement with filtering
@@ -625,20 +628,20 @@ Kryteria akceptacji:
 - **Response Structure**: Empty
 - **Success Codes**: 204 No Content
 - **Error Codes**: 401 Unauthorized, 403 Forbidden, 404 Not Found, 422 Unprocessable Entity (closed settlement)
-</endpoint_description>
+  </endpoint_description>
 
 5. Endpoint Implementation:
-<endpoint_implementation>
-import type { APIRoute } from "astro";
-import { getExpenses, createExpense } from "@/lib/services/expenses.service";
-import { GetExpensesQuerySchema, UUIDSchema, CreateExpenseCommandSchema } from "@/lib/validation/expenses";
+   <endpoint_implementation>
+   import type { APIRoute } from "astro";
+   import { getExpenses, createExpense } from "@/lib/services/expenses.service";
+   import { GetExpensesQuerySchema, UUIDSchema, CreateExpenseCommandSchema } from "@/lib/validation/expenses";
 
 export const prerender = false;
 
 export const GET: APIRoute = async (context) => {
-  try {
-    // Get supabase client and user from context
-    const { supabase, user } = context.locals;
+try {
+// Get supabase client and user from context
+const { supabase, user } = context.locals;
 
     // Check authentication
     if (!user) {
@@ -747,11 +750,12 @@ export const GET: APIRoute = async (context) => {
         "Cache-Control": "private, no-store",
       },
     });
-  } catch (error: unknown) {
-    // Map service errors to appropriate HTTP status codes
-    let status = 500;
-    let code = "server_error";
-    let message = "An unexpected error occurred";
+
+} catch (error: unknown) {
+// Map service errors to appropriate HTTP status codes
+let status = 500;
+let code = "server_error";
+let message = "An unexpected error occurred";
 
     const errorMessage = error instanceof Error ? error.message : "";
 
@@ -781,13 +785,14 @@ export const GET: APIRoute = async (context) => {
         headers: { "content-type": "application/json" },
       }
     );
-  }
+
+}
 };
 
 export const POST: APIRoute = async (context) => {
-  try {
-    // Get supabase client and user from context
-    const { supabase, user } = context.locals;
+try {
+// Get supabase client and user from context
+const { supabase, user } = context.locals;
 
     // Check authentication
     if (!user) {
@@ -887,11 +892,12 @@ export const POST: APIRoute = async (context) => {
         "Cache-Control": "no-store",
       },
     });
-  } catch (error: unknown) {
-    // Map service errors to appropriate HTTP status codes
-    let status = 500;
-    let code = "server_error";
-    let message = "An unexpected error occurred";
+
+} catch (error: unknown) {
+// Map service errors to appropriate HTTP status codes
+let status = 500;
+let code = "server_error";
+let message = "An unexpected error occurred";
 
     const errorMessage = error instanceof Error ? error.message : "";
 
@@ -933,51 +939,52 @@ export const POST: APIRoute = async (context) => {
         headers: { "content-type": "application/json" },
       }
     );
-  }
+
+}
 };
 
+/\*\*
 
-/**
- * DELETE /settlements/{settlement_id}/expenses/{id}
- *
- * Deletes an expense from a settlement. Only allowed when settlement status is 'open'.
- * Returns 204 No Content on success.
- */
-export const DELETE: APIRoute = async (context) => {
+- DELETE /settlements/{settlement_id}/expenses/{id}
+-
+- Deletes an expense from a settlement. Only allowed when settlement status is 'open'.
+- Returns 204 No Content on success.
+  \*/
+  export const DELETE: APIRoute = async (context) => {
   // Extract parameters for logging in case of errors
   const { settlement_id, id } = context.params;
   const { supabase, user } = context.locals;
 
-  try {
-    // Check authentication
-    if (!user) {
-      return new Response(
-        JSON.stringify({
-          error: {
-            code: "unauthorized",
-            message: "authentication required",
-          },
-        }),
-        {
-          status: 401,
-          headers: { "content-type": "application/json" },
-        }
-      );
-    }
-    if (!settlement_id || !id) {
-      return new Response(
-        JSON.stringify({
-          error: {
-            code: "invalid_request",
-            message: "settlement ID and expense ID are required",
-          },
-        }),
-        {
-          status: 400,
-          headers: { "content-type": "application/json" },
-        }
-      );
-    }
+try {
+// Check authentication
+if (!user) {
+return new Response(
+JSON.stringify({
+error: {
+code: "unauthorized",
+message: "authentication required",
+},
+}),
+{
+status: 401,
+headers: { "content-type": "application/json" },
+}
+);
+}
+if (!settlement_id || !id) {
+return new Response(
+JSON.stringify({
+error: {
+code: "invalid_request",
+message: "settlement ID and expense ID are required",
+},
+}),
+{
+status: 400,
+headers: { "content-type": "application/json" },
+}
+);
+}
 
     // Validate UUID format for both settlement_id and id
     const paramsValidation = DeleteExpenseParamsSchema.safeParse({
@@ -1089,18 +1096,19 @@ export const DELETE: APIRoute = async (context) => {
           }
         );
     }
-  } catch (error: unknown) {
-    // Log unexpected errors with context for debugging and audit trail
-    const errorMessage = error instanceof Error ? error.message : "unknown error";
-    const errorDetails = {
-      endpoint: "DELETE /settlements/[settlement_id]/expenses/[id]",
-      settlement_id: settlement_id,
-      expense_id: id,
-      user_id: user?.id,
-      timestamp: new Date().toISOString(),
-      error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
-    };
+
+} catch (error: unknown) {
+// Log unexpected errors with context for debugging and audit trail
+const errorMessage = error instanceof Error ? error.message : "unknown error";
+const errorDetails = {
+endpoint: "DELETE /settlements/[settlement_id]/expenses/[id]",
+settlement_id: settlement_id,
+expense_id: id,
+user_id: user?.id,
+timestamp: new Date().toISOString(),
+error: errorMessage,
+stack: error instanceof Error ? error.stack : undefined,
+};
 
     console.error("Unexpected error in DELETE expense endpoint:", errorDetails);
 
@@ -1120,13 +1128,14 @@ export const DELETE: APIRoute = async (context) => {
         headers: { "content-type": "application/json" },
       }
     );
-  }
+
+}
 };
 </endpoint_implementation>
 
 6. Type Definitions:
-<type_definitions>
-import type { Tables } from "@/db/database.types";
+   <type_definitions>
+   import type { Tables } from "@/db/database.types";
 
 // Shared foundational scalar aliases. These align with DB column types but
 // provide semantic meaning across DTOs and command models.
@@ -1138,15 +1147,15 @@ export type AmountCents = number;
 export type SortOrder = "asc" | "desc";
 
 export interface PaginationMeta {
-  page: number;
-  limit: number;
-  total: number;
-  total_pages: number;
+page: number;
+limit: number;
+total: number;
+total_pages: number;
 }
 
 export interface PagedResponse<T> {
-  data: T[];
-  pagination: PaginationMeta;
+data: T[];
+pagination: PaginationMeta;
 }
 
 // Base DB row bindings for derivation. These keep DTOs connected to entities.
@@ -1162,28 +1171,29 @@ type EventRow = Tables<"events">;
 
 // Shared fields used by multiple Settlement DTOs
 type SettlementBaseFields = Pick<
-  SettlementRow,
-  | "id"
-  | "title"
-  | "status"
-  | "currency"
-  | "participants_count"
-  | "expenses_count"
-  | "created_at"
-  | "updated_at"
-  | "closed_at"
-  | "last_edited_by"
-  | "deleted_at"
->;
+SettlementRow,
+| "id"
+| "title"
+| "status"
+| "currency"
+| "participants_count"
+| "expenses_count"
+| "created_at"
+| "updated_at"
+| "closed_at"
+| "last_edited_by"
+| "deleted_at"
+
+> ;
 
 // Raw Supabase response with expenses for internal processing
 export type SettlementWithExpenses = SettlementBaseFields & {
-  expenses: { amount_cents: number }[] | null;
+expenses: { amount_cents: number }[] | null;
 };
 
 // Summary DTO returned by list/detail endpoints
 export type SettlementSummaryDTO = SettlementBaseFields & {
-  total_expenses_amount_cents: number;
+total_expenses_amount_cents: number;
 };
 
 // Detail is the same structure per API plan
@@ -1194,9 +1204,10 @@ export type SettlementDetailsDTO = SettlementSummaryDTO;
 // -----------------------------
 
 export type ParticipantDTO = Pick<
-  ParticipantRow,
-  "id" | "nickname" | "is_owner" | "created_at" | "updated_at" | "last_edited_by"
->;
+ParticipantRow,
+"id" | "nickname" | "is_owner" | "created_at" | "updated_at" | "last_edited_by"
+
+> ;
 
 // -----------------------------
 // Expenses - DTOs
@@ -1205,19 +1216,20 @@ export type ParticipantDTO = Pick<
 export type ExpenseParticipantMiniDTO = Pick<ParticipantRow, "id" | "nickname">;
 
 export type ExpenseDTO = Pick<
-  ExpenseRow,
-  | "id"
-  | "payer_participant_id"
-  | "amount_cents"
-  | "expense_date"
-  | "description"
-  | "share_count"
-  | "created_at"
-  | "updated_at"
-  | "last_edited_by"
+ExpenseRow,
+| "id"
+| "payer_participant_id"
+| "amount_cents"
+| "expense_date"
+| "description"
+| "share_count"
+| "created_at"
+| "updated_at"
+| "last_edited_by"
+
 > & {
-  participants: ExpenseParticipantMiniDTO[];
-};
+> participants: ExpenseParticipantMiniDTO[];
+> };
 
 export type ExpenseDetailsDTO = ExpenseDTO;
 
@@ -1228,45 +1240,46 @@ export type ExpenseDetailsDTO = ExpenseDTO;
 export type BalancesMap = Record<UUID, AmountCents>;
 
 export interface TransferDTO {
-  from: UUID;
-  to: UUID;
-  amount_cents: AmountCents;
+from: UUID;
+to: UUID;
+amount_cents: AmountCents;
 }
 
 // The snapshot row stores balances/transfers as JSON; in the API they are
 // exposed as strongly typed structures below.
 export type SettlementSnapshotDTO = Pick<
-  SettlementSnapshotRow,
-  "settlement_id" | "algorithm_version" | "created_at"
+SettlementSnapshotRow,
+"settlement_id" | "algorithm_version" | "created_at"
+
 > & {
-  balances: BalancesMap;
-  transfers: TransferDTO[];
-};
+> balances: BalancesMap;
+> transfers: TransferDTO[];
+> };
 
 // -----------------------------
 // Events - DTOs
 // -----------------------------
 
 export type EventType =
-  | "settlement_created"
-  | "participant_added"
-  | "expense_added"
-  | "settle_confirmed"
-  | "settled"
-  | "summary_copied"
-  | "new_settlement_started";
+| "settlement_created"
+| "participant_added"
+| "expense_added"
+| "settle_confirmed"
+| "settled"
+| "summary_copied"
+| "new_settlement_started";
 
 export type EventEnv = "dev" | "prod";
 
 export interface EventPayload {
-  env: EventEnv;
-  additional_data?: Record<string, unknown>;
-  // Allow future extensibility without breaking consumers
-  [key: string]: unknown;
+env: EventEnv;
+additional_data?: Record<string, unknown>;
+// Allow future extensibility without breaking consumers
+[key: string]: unknown;
 }
 
 export type EventDTO = Pick<EventRow, "id" | "event_type" | "settlement_id" | "created_at"> & {
-  payload: EventPayload;
+payload: EventPayload;
 };
 
 // -----------------------------
@@ -1277,57 +1290,57 @@ export type SettlementSortBy = "created_at" | "updated_at" | "title";
 
 // Settlements
 export interface GetSettlementsQuery {
-  status?: "open" | "closed";
-  page?: number;
-  limit?: number;
-  sort_by?: SettlementSortBy;
-  sort_order?: SortOrder;
+status?: "open" | "closed";
+page?: number;
+limit?: number;
+sort_by?: SettlementSortBy;
+sort_order?: SortOrder;
 }
 
 export interface CreateSettlementCommand {
-  title: string; // validated: required, max 100 chars
+title: string; // validated: required, max 100 chars
 }
 
 export interface UpdateSettlementCommand {
-  title: string; // validated: required, max 100 chars
+title: string; // validated: required, max 100 chars
 }
 
 export type CloseSettlementCommand = Record<string, never>; // empty body
 
 // Participants (scoped to a settlement via path params)
 export interface GetParticipantsQuery {
-  page?: number;
-  limit?: number;
+page?: number;
+limit?: number;
 }
 
 export interface CreateParticipantCommand {
-  nickname: string; // validated: 3-30 chars, ^[a-z0-9_-]+$, case-insensitive unique per settlement
+nickname: string; // validated: 3-30 chars, ^[a-z0-9_-]+$, case-insensitive unique per settlement
 }
 
 export interface UpdateParticipantCommand {
-  nickname: string; // same validation as create
+nickname: string; // same validation as create
 }
 
 export type ExpenseSortBy = "expense_date" | "created_at" | "amount_cents";
 
 // Expenses (scoped to a settlement via path params)
 export interface GetExpensesQuery {
-  participant_id?: UUID; // filter by payer or participant
-  date_from?: DateString; // YYYY-MM-DD
-  date_to?: DateString; // YYYY-MM-DD
-  page?: number;
-  limit?: number;
-  sort_by?: ExpenseSortBy;
-  sort_order?: SortOrder;
+participant_id?: UUID; // filter by payer or participant
+date_from?: DateString; // YYYY-MM-DD
+date_to?: DateString; // YYYY-MM-DD
+page?: number;
+limit?: number;
+sort_by?: ExpenseSortBy;
+sort_order?: SortOrder;
 }
 
 type ExpenseCreateBase = Pick<ExpenseRow, "payer_participant_id" | "amount_cents" | "expense_date"> & {
-  // Optional per API, nullable in DB
-  description?: ExpenseRow["description"];
+// Optional per API, nullable in DB
+description?: ExpenseRow["description"];
 };
 
 export type CreateExpenseCommand = ExpenseCreateBase & {
-  participant_ids: UUID[]; // required, min 1, all must exist in settlement
+participant_ids: UUID[]; // required, min 1, all must exist in settlement
 };
 
 export type UpdateExpenseCommand = CreateExpenseCommand; // same shape as POST
@@ -1337,18 +1350,18 @@ export type GetSettlementSnapshotQuery = Record<string, never>; // no query para
 
 // Events
 export interface CreateEventCommand {
-  event_type: EventType;
-  settlement_id: UUID | null;
-  payload: EventPayload;
+event_type: EventType;
+settlement_id: UUID | null;
+payload: EventPayload;
 }
 
 export interface GetEventsQuery {
-  settlement_id?: UUID;
-  event_type?: EventType;
-  date_from?: DateString;
-  date_to?: DateString;
-  page?: number;
-  limit?: number; // max 100
+settlement_id?: UUID;
+event_type?: EventType;
+date_from?: DateString;
+date_to?: DateString;
+page?: number;
+limit?: number; // max 100
 }
 
 // -----------------------------
@@ -1367,108 +1380,108 @@ export type EventsListResponse = PagedResponse<EventDTO>;
 export type SettlementsTab = "active" | "archive";
 
 export interface SettlementsQueryState {
-  status: "open" | "closed";
-  page: number;
-  limit: number;
-  sort_by: "updated_at";
-  sort_order: "desc";
+status: "open" | "closed";
+page: number;
+limit: number;
+sort_by: "updated_at";
+sort_order: "desc";
 }
 
 export interface SettlementCardVM {
-  id: string;
-  title: string;
-  status: string;
-  participantsCount: number;
-  expensesCount: number;
-  totalExpensesAmountCents: number;
-  createdAt: Date;
-  updatedAt: Date;
-  closedAt?: Date | null;
-  isDeletable: boolean; // status === "closed"
-  href: string; // /settlements/{id}
+id: string;
+title: string;
+status: string;
+participantsCount: number;
+expensesCount: number;
+totalExpensesAmountCents: number;
+createdAt: Date;
+updatedAt: Date;
+closedAt?: Date | null;
+isDeletable: boolean; // status === "closed"
+href: string; // /settlements/{id}
 }
 
 export interface AggregatedCountsVM {
-  activeCount: number;
-  archiveCount: number;
+activeCount: number;
+archiveCount: number;
 }
 
 export interface ApiError {
-  status: number;
-  code?: string;
-  message?: string;
-  details?: unknown;
+status: number;
+code?: string;
+message?: string;
+details?: unknown;
 }
 
 export interface CreateExpenseRpcResult {
-  id: string;
-  settlement_id: string;
-  payer_participant_id: string;
-  amount_cents: number;
-  expense_date: string;
-  description: string | null;
-  share_count: number;
-  created_at: string;
-  updated_at: string;
-  last_edited_by: string | null;
+id: string;
+settlement_id: string;
+payer_participant_id: string;
+amount_cents: number;
+expense_date: string;
+description: string | null;
+share_count: number;
+created_at: string;
+updated_at: string;
+last_edited_by: string | null;
 }
 
 export interface ExpenseParticipantQueryResult {
-  participants: {
-    id: string;
-    nickname: string;
-  };
+participants: {
+id: string;
+nickname: string;
+};
 }
 
 // Utility functions
 
 export function mapSettlementToVM(dto: SettlementSummaryDTO): SettlementCardVM {
-  return {
-    id: dto.id,
-    title: dto.title,
-    status: dto.status,
-    participantsCount: dto.participants_count,
-    expensesCount: dto.expenses_count,
-    totalExpensesAmountCents: dto.total_expenses_amount_cents,
-    createdAt: new Date(dto.created_at),
-    updatedAt: new Date(dto.updated_at),
-    closedAt: dto.closed_at ? new Date(dto.closed_at) : null,
-    isDeletable: dto.status === "closed",
-    href: `/settlements/${dto.id}`,
-  };
+return {
+id: dto.id,
+title: dto.title,
+status: dto.status,
+participantsCount: dto.participants_count,
+expensesCount: dto.expenses_count,
+totalExpensesAmountCents: dto.total_expenses_amount_cents,
+createdAt: new Date(dto.created_at),
+updatedAt: new Date(dto.updated_at),
+closedAt: dto.closed_at ? new Date(dto.closed_at) : null,
+isDeletable: dto.status === "closed",
+href: `/settlements/${dto.id}`,
+};
 }
 
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString("pl-PL", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+return date.toLocaleDateString("pl-PL", {
+year: "numeric",
+month: "short",
+day: "numeric",
+});
 }
 
 export function formatDateTime(date: Date): string {
-  return date.toLocaleString("pl-PL", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+return date.toLocaleString("pl-PL", {
+year: "numeric",
+month: "short",
+day: "numeric",
+hour: "2-digit",
+minute: "2-digit",
+});
 }
 
 export function formatCurrency(amountCents: number, currency = "PLN"): string {
-  const amount = amountCents / 100;
-  return new Intl.NumberFormat("pl-PL", {
-    style: "currency",
-    currency,
-  }).format(amount);
+const amount = amountCents / 100;
+return new Intl.NumberFormat("pl-PL", {
+style: "currency",
+currency,
+}).format(amount);
 }
 
 </type_definitions>
 
 7. Tech Stack:
-<tech_stack>
-Frontend - Astro z React dla komponentów interaktywnych:
+   <tech_stack>
+   Frontend - Astro z React dla komponentów interaktywnych:
 
 - Astro 5 pozwala na tworzenie szybkich, wydajnych stron i aplikacji z minimalną ilością JavaScript
 - Vue 3 zapewni interaktywność tam, gdzie jest potrzebna
@@ -1492,15 +1505,18 @@ CI/CD i Hosting:
 
 - Github Actions do tworzenia pipeline’ów CI/CD
 - CludeFlare dla hostowania JS stacku aplikacji
-</tech_stack>
+  </tech_stack>
 
 Przed utworzeniem ostatecznego planu wdrożenia przeprowadź analizę i planowanie wewnątrz tagów <implementation_breakdown> w swoim bloku myślenia. Ta sekcja może być dość długa, ponieważ ważne jest, aby być dokładnym.
 
 W swoim podziale implementacji wykonaj następujące kroki:
+
 1. Dla każdej sekcji wejściowej (PRD, User Stories, Endpoint Description, Endpoint Implementation, Type Definitions, Tech Stack):
-  - Podsumuj kluczowe punkty
- - Wymień wszelkie wymagania lub ograniczenia
- - Zwróć uwagę na wszelkie potencjalne wyzwania lub ważne kwestie
+
+- Podsumuj kluczowe punkty
+- Wymień wszelkie wymagania lub ograniczenia
+- Zwróć uwagę na wszelkie potencjalne wyzwania lub ważne kwestie
+
 2. Wyodrębnienie i wypisanie kluczowych wymagań z PRD
 3. Wypisanie wszystkich potrzebnych głównych komponentów, wraz z krótkim opisem ich opisu, potrzebnych typów, obsługiwanych zdarzeń i warunków walidacji
 4. Stworzenie wysokopoziomowego diagramu drzewa komponentów
@@ -1519,12 +1535,14 @@ Po przeprowadzeniu analizy dostarcz plan wdrożenia w formacie Markdown z nastę
 2. Routing widoku: Określenie ścieżki, na której widok powinien być dostępny.
 3. Struktura komponentów: Zarys głównych komponentów i ich hierarchii.
 4. Szczegóły komponentu: Dla każdego komponentu należy opisać:
- - Opis komponentu, jego przeznaczenie i z czego się składa
- - Główne elementy HTML i komponenty dzieci, które budują komponent
- - Obsługiwane zdarzenia
- - Warunki walidacji (szczegółowe warunki, zgodnie z API)
- - Typy (DTO i ViewModel) wymagane przez komponent
- - Propsy, które komponent przyjmuje od rodzica (interfejs komponentu)
+
+- Opis komponentu, jego przeznaczenie i z czego się składa
+- Główne elementy HTML i komponenty dzieci, które budują komponent
+- Obsługiwane zdarzenia
+- Warunki walidacji (szczegółowe warunki, zgodnie z API)
+- Typy (DTO i ViewModel) wymagane przez komponent
+- Propsy, które komponent przyjmuje od rodzica (interfejs komponentu)
+
 5. Typy: Szczegółowy opis typów wymaganych do implementacji widoku, w tym dokładny podział wszelkich nowych typów lub modeli widoku według pól i typów.
 6. Zarządzanie stanem: Szczegółowy opis sposobu zarządzania stanem w widoku, określenie, czy wymagany jest customowy hook.
 7. Integracja API: Wyjaśnienie sposobu integracji z dostarczonym punktem końcowym. Precyzyjnie wskazuje typy żądania i odpowiedzi.
@@ -1543,16 +1561,21 @@ Oto przykład tego, jak powinien wyglądać plik wyjściowy (treść jest do zas
 # Plan implementacji widoku [Nazwa widoku]
 
 ## 1. Przegląd
+
 [Krótki opis widoku i jego celu]
 
 ## 2. Routing widoku
+
 [Ścieżka, na której widok powinien być dostępny]
 
 ## 3. Struktura komponentów
+
 [Zarys głównych komponentów i ich hierarchii]
 
 ## 4. Szczegóły komponentów
+
 ### [Nazwa komponentu 1]
+
 - Opis komponentu [opis]
 - Główne elementy: [opis]
 - Obsługiwane interakcje: [lista]
@@ -1561,27 +1584,35 @@ Oto przykład tego, jak powinien wyglądać plik wyjściowy (treść jest do zas
 - Propsy: [lista]
 
 ### [Nazwa komponentu 2]
+
 [...]
 
 ## 5. Typy
+
 [Szczegółowy opis wymaganych typów]
 
 ## 6. Zarządzanie stanem
+
 [Opis zarządzania stanem w widoku]
 
 ## 7. Integracja API
+
 [Wyjaśnienie integracji z dostarczonym endpointem, wskazanie typów żądania i odpowiedzi]
 
 ## 8. Interakcje użytkownika
+
 [Szczegółowy opis interakcji użytkownika]
 
 ## 9. Warunki i walidacja
+
 [Szczegółowy opis warunków i ich walidacji]
 
 ## 10. Obsługa błędów
+
 [Opis obsługi potencjalnych błędów]
 
 ## 11. Kroki implementacji
+
 1. [Krok 1]
 2. [Krok 2]
 3. [...]

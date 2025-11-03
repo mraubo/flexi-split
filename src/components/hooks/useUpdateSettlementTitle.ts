@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import type { SettlementDetailsDTO, ApiError } from "@/types";
+import type { ApiError } from "@/types";
 
 interface UseUpdateSettlementTitleResult {
   updateTitle: (title: string) => Promise<void>;

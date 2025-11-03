@@ -14,17 +14,20 @@ Analiza struktury aplikacji FlexiSplit, identyfikacja kluczowych przepływów u�
 ## 📊 Zakres Analizy
 
 ### 1. Dokumentacja i Specyfikacja
+
 - ✅ Przeanalizowano PRD (Product Requirements Document) z `.docs/prd.md`
 - ✅ Zidentyfikowano 6 głównych historyjek użytkownika (user stories) US-001 do US-075
 - ✅ Określono kluczowe metryki sukcesu i wymagania funkcjonalne
 
 ### 2. Struktura Kodu
+
 - ✅ Przeanalizowano wszystkie strony Astro w `src/pages/`
 - ✅ Zbadano 67 komponentów React w `src/components/`
 - ✅ Zmapowano relacje i hierarchię komponentów
 - ✅ Zidentyfikowano ~250 elementów interaktywnych wymagających `data-testid`
 
 ### 3. Dokumentacja Playwright POM
+
 - ✅ Przestudiowano oficjalną dokumentację wzorca Page Object Model
 - ✅ Zdefiniowano best practices dla struktury POM
 
@@ -75,12 +78,14 @@ Zidentyfikowano **6 głównych przepływów** odpowiadających kluczowym funkcjo
 ### Komponenty Zaimplementowane (z data-testid)
 
 #### ✅ Autentykacja (4/4 - 100%)
+
 - `LoginForm.tsx` - 9 atrybutów data-testid
 - `RegisterForm.tsx` - 12 atrybutów data-testid
 - `ForgotPasswordForm.tsx` - 7 atrybutów data-testid
 - `LogoutButton.tsx` - 1 atrybut data-testid
 
 #### ✅ Rozliczenia (7/14 - 50%)
+
 - `TabsSegment.tsx` - 2 atrybuty data-testid
 - `HeaderBar.tsx` - 1 atrybut data-testid
 - `NewSettlementButton.tsx` - 1 atrybut data-testid
@@ -91,6 +96,7 @@ Zidentyfikowano **6 głównych przepływów** odpowiadających kluczowym funkcjo
 ### Komponenty Do Zaimplementowania (z data-testid)
 
 #### ⏳ Rozliczenia - pozostałe (7 komponentów)
+
 - `CardActionsMenu.tsx`
 - `ConfirmDeleteDialog.tsx`
 - `SettlementHeader.tsx`
@@ -100,11 +106,13 @@ Zidentyfikowano **6 głównych przepływów** odpowiadających kluczowym funkcjo
 - `EmptyState.tsx`
 
 #### ⏳ Uczestnicy (3 komponenty)
+
 - `ParticipantForm.tsx` - ~6 atrybutów
 - `ParticipantsList.tsx` - ~10 atrybutów
 - `DeleteParticipantConfirm.tsx` - ~5 atrybutów
 
 #### ⏳ Wydatki (10 komponentów)
+
 - `ExpenseForm.tsx` - ~12 atrybutów
 - `AmountInput.tsx` - ~5 atrybutów
 - `PayerSelect.tsx` - ~5 atrybutów
@@ -117,6 +125,7 @@ Zidentyfikowano **6 głównych przepływów** odpowiadających kluczowym funkcjo
 - `ExpensesExpenseCard.tsx` - ~8 atrybutów
 
 #### ⏳ Podsumowanie (5 komponentów)
+
 - `SummaryPage.tsx` - ~4 atrybuty
 - `BalancesSection.tsx` - ~3 atrybuty
 - `TransfersSection.tsx` - ~5 atrybutów
@@ -167,6 +176,7 @@ tests/e2e/pages/
 ```
 
 **Podsumowanie struktury POM**:
+
 - **12 głównych klas** Page Object
 - **13 klas komponentów** pomocniczych
 - **25 klas łącznie**
@@ -178,7 +188,9 @@ tests/e2e/pages/
 Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 
 ### 1. `complete-user-journey.spec.ts`
+
 **Kompleksowy scenariusz end-to-end**:
+
 - Rejestracja użytkownika
 - Utworzenie rozliczenia
 - Dodanie 3 uczestników
@@ -188,7 +200,9 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 - Wylogowanie
 
 ### 2. `participants-management.spec.ts`
+
 **Zarządzanie uczestnikami**:
+
 - Dodawanie uczestników
 - Walidacja unikalności nickname
 - Sugestie przy kolizjach
@@ -197,7 +211,9 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 - Limit 10 uczestników
 
 ### 3. `expenses-management.spec.ts`
+
 **Zarządzanie wydatkami**:
+
 - Dodawanie wydatków (wszyscy uczestnicy)
 - Dodawanie wydatków (część uczestników)
 - Wydatek jednoosobowy (edge case)
@@ -206,21 +222,27 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 - Usuwanie wydatku
 
 ### 4. `form-validation.spec.ts`
+
 **Walidacja formularzy**:
+
 - Walidacja rejestracji
 - Walidacja tytułu rozliczenia
 - Walidacja nickname
 - Walidacja wydatku
 
 ### 5. `limits-and-boundaries.spec.ts`
+
 **Limity i ograniczenia**:
+
 - Limit 3 aktywnych rozliczeń
 - Limit 10 uczestników
 - Limit 140 znaków opisu
 - Maksymalne wartości kwot
 
 ### 6. `closed-settlement-readonly.spec.ts`
+
 **Blokady po zamknięciu**:
+
 - Brak możliwości edycji tytułu
 - Brak możliwości dodania uczestnika
 - Brak możliwości dodania wydatku
@@ -232,16 +254,19 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 ## 📈 Statystyki Projektu
 
 ### Komponenty
+
 - **Całkowita liczba komponentów React**: 67
 - **Komponenty interaktywne wymagające testów**: 59
 - **Komponenty UI primitive (shadcn/ui)**: 16
 
 ### Elementy Testowe
+
 - **Całkowita liczba elementów interaktywnych**: ~250
 - **data-testid zaimplementowane**: ~50 (20%)
 - **data-testid pozostałe do implementacji**: ~200 (80%)
 
 ### Zaimplementowane Pliki
+
 - ✅ `src/components/auth/LoginForm.tsx`
 - ✅ `src/components/auth/RegisterForm.tsx`
 - ✅ `src/components/auth/ForgotPasswordForm.tsx`
@@ -258,7 +283,9 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 ## 📝 Dokumentacja Wygenerowana
 
 ### 1. Plan Implementacji E2E (`.docs/e2e-plan.md`)
+
 **Sekcje dokumentu**:
+
 1. Przegląd projektu i cele
 2. Przepływy aplikacji (6 user flows)
 3. Struktura atrybutów data-testid (szczegółowa mapa)
@@ -272,29 +299,32 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 **Rozmiar**: ~800 linii markdown
 
 ### 2. Podsumowanie Planowania (`.docs/e2e-planning-summary.md`)
+
 **Ten dokument** - Rekap całej sesji planistycznej
 
 ---
 
 ## ⏱️ Oszacowanie Czasu Implementacji
 
-| Faza | Zadanie | Komponenty | Szacowany czas |
-|------|---------|------------|----------------|
-| **Faza 1** | Dokończenie data-testid | 25 komponentów | 3-4h |
-| **Faza 2a** | POM - główne klasy | 12 klas | 4-5h |
-| **Faza 2b** | POM - komponenty | 13 klas | 3-4h |
-| **Faza 3** | Implementacja testów E2E | 6 specs | 4-6h |
-| **Faza 4** | Utilities i helpery | 4 moduły | 2-3h |
-| **TOTAL** | | **60 plików** | **16-22h** |
+| Faza        | Zadanie                  | Komponenty     | Szacowany czas |
+| ----------- | ------------------------ | -------------- | -------------- |
+| **Faza 1**  | Dokończenie data-testid  | 25 komponentów | 3-4h           |
+| **Faza 2a** | POM - główne klasy       | 12 klas        | 4-5h           |
+| **Faza 2b** | POM - komponenty         | 13 klas        | 3-4h           |
+| **Faza 3**  | Implementacja testów E2E | 6 specs        | 4-6h           |
+| **Faza 4**  | Utilities i helpery      | 4 moduły       | 2-3h           |
+| **TOTAL**   |                          | **60 plików**  | **16-22h**     |
 
 ---
 
 ## 🎯 Kolejne Kroki (Priorytety)
 
 ### Priorytet 1: WYSOKI - Dokończenie data-testid
+
 **Cel**: Umożliwienie testów E2E poprzez dostęp do elementów UI
 
 **Zadania**:
+
 1. ⏳ Dokończyć komponenty rozliczeń (7 pozostałych)
 2. ⏳ Dodać data-testid do komponentów uczestników (3)
 3. ⏳ Dodać data-testid do komponentów wydatków (10)
@@ -305,9 +335,11 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 ---
 
 ### Priorytet 2: WYSOKI - Implementacja POM
+
 **Cel**: Utworzenie warstwy abstrakcji dla testów E2E
 
 **Zadania**:
+
 1. ⏳ Stworzyć klasy POM dla auth (3 klasy)
 2. ⏳ Stworzyć klasy POM dla settlements (3 klasy + 3 komponenty)
 3. ⏳ Stworzyć klasy POM dla participants (1 klasa + 3 komponenty)
@@ -319,9 +351,11 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 ---
 
 ### Priorytet 3: ŚREDNI - Implementacja Testów
+
 **Cel**: Pokrycie zielonych ścieżek testami E2E
 
 **Zadania**:
+
 1. ⏳ Napisać `complete-user-journey.spec.ts`
 2. ⏳ Napisać `participants-management.spec.ts`
 3. ⏳ Napisać `expenses-management.spec.ts`
@@ -334,9 +368,11 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 ---
 
 ### Priorytet 4: NISKI - Utilities
+
 **Cel**: Ułatwienie pisania testów poprzez helpery
 
 **Zadania**:
+
 1. ⏳ Stworzyć `testDataGenerator.ts`
 2. ⏳ Stworzyć `authHelpers.ts`
 3. ⏳ Stworzyć `settlementHelpers.ts`
@@ -349,9 +385,11 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 ## 🔑 Kluczowe Zasady i Konwencje
 
 ### Nazewnictwo data-testid
+
 **Format**: `{type}-{element}-{context}`
 
 **Przykłady**:
+
 - `button-submit` - przycisk submit
 - `input-email` - pole email
 - `form-login` - formularz logowania
@@ -360,7 +398,9 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 - `text-participants-count` - tekst licznika uczestników
 
 ### Struktura POM
+
 **Zasady**:
+
 1. Każda strona = osobna klasa rozszerzająca `BasePage`
 2. Złożone komponenty = osobne klasy pomocnicze
 3. Locatory jako `readonly` properties w konstruktorze
@@ -368,14 +408,18 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 5. Metody pomocnicze (helpers) - pobieranie stanu do asercji
 
 ### Izolacja Testów
+
 **Zasady**:
+
 1. Każdy test tworzy własne dane (unikalne email z timestamp)
 2. Testy mogą działać równolegle (brak współdzielonych danych)
 3. Opcjonalne czyszczenie danych testowych po zakończeniu
 4. Używanie `test.beforeEach` do setup'u wspólnego stanu
 
 ### Timeouty i Retry
+
 **Konfiguracja**:
+
 - Domyślny timeout: 30s
 - Timeout dla długich operacji (zamknięcie): 60s
 - Retry w CI: 2 próby
@@ -386,12 +430,14 @@ Zaplanowano **6 suites testowych** pokrywających zielone ścieżki:
 ## 📚 Dokumenty Referencyjne
 
 ### Wewnętrzne
+
 - **PRD**: `.docs/prd.md` - wymagania produktowe
 - **CLAUDE.md**: `CLAUDE.md` - wytyczne projektu dla AI
 - **Plan E2E**: `.docs/e2e-plan.md` - szczegółowy plan implementacji
 - **To podsumowanie**: `.docs/e2e-planning-summary.md`
 
 ### Zewnętrzne
+
 - [Playwright Page Object Model](https://playwright.dev/docs/pom)
 - [Playwright Best Practices](https://playwright.dev/docs/best-practices)
 - [Playwright Configuration](https://playwright.dev/docs/test-configuration)
@@ -438,7 +484,7 @@ export class LoginPage extends BasePage {
     await this.inputEmail.fill(email);
     await this.inputPassword.fill(password);
     await this.buttonSubmit.click();
-    await this.page.waitForURL('/settlements');
+    await this.page.waitForURL("/settlements");
   }
 }
 ```
@@ -447,9 +493,9 @@ export class LoginPage extends BasePage {
 
 ```typescript
 // tests/e2e/specs/auth-flow.spec.ts
-test('should register and login user', async ({ page }) => {
+test("should register and login user", async ({ page }) => {
   const email = `test-${Date.now()}@example.com`;
-  const password = 'TestPass123!';
+  const password = "TestPass123!";
 
   // Register
   const registerPage = new RegisterPage(page);
@@ -457,7 +503,7 @@ test('should register and login user', async ({ page }) => {
   await registerPage.register(email, password);
 
   // Verify redirect to settlements
-  await expect(page).toHaveURL('/settlements');
+  await expect(page).toHaveURL("/settlements");
 
   // Verify empty state
   const settlementsPage = new SettlementsListPage(page);
@@ -470,6 +516,7 @@ test('should register and login user', async ({ page }) => {
 ## ✅ Checklist Implementacyjny
 
 ### data-testid Implementation
+
 - [x] Auth: LoginForm, RegisterForm, ForgotPasswordForm, LogoutButton (4/4)
 - [x] Settlements: TabsSegment, HeaderBar, NewSettlementButton (3/7)
 - [x] Settlements: NewSettlementDialog, SettlementsList, SettlementCard (3/7)
@@ -479,6 +526,7 @@ test('should register and login user', async ({ page }) => {
 - [ ] Summary: All components (0/5)
 
 ### Page Object Models
+
 - [ ] Auth pages (0/3)
 - [ ] Settlements pages (0/6)
 - [ ] Participants pages (0/4)
@@ -486,6 +534,7 @@ test('should register and login user', async ({ page }) => {
 - [ ] Summary pages (0/5)
 
 ### Test Specs
+
 - [ ] complete-user-journey.spec.ts (0/1)
 - [ ] participants-management.spec.ts (0/1)
 - [ ] expenses-management.spec.ts (0/1)
@@ -494,6 +543,7 @@ test('should register and login user', async ({ page }) => {
 - [ ] closed-settlement-readonly.spec.ts (0/1)
 
 ### Utilities
+
 - [ ] testDataGenerator.ts (0/1)
 - [ ] authHelpers.ts (0/1)
 - [ ] settlementHelpers.ts (0/1)
@@ -506,6 +556,7 @@ test('should register and login user', async ({ page }) => {
 ## 🚀 Gotowość do Implementacji
 
 ### Co jest gotowe:
+
 ✅ **Pełna analiza aplikacji** - zmapowano wszystkie komponenty i przepływy
 ✅ **Szczegółowy plan implementacji** - dokument `.docs/e2e-plan.md`
 ✅ **Częściowa implementacja data-testid** - 11 komponentów (20%)
@@ -513,12 +564,14 @@ test('should register and login user', async ({ page }) => {
 ✅ **Dokumentacja** - kompletna struktura i wytyczne
 
 ### Co wymaga działania:
+
 ⏳ Implementacja ~200 atrybutów data-testid (80%)
 ⏳ Utworzenie 25 klas Page Object Model
 ⏳ Napisanie 6 suites testowych E2E
 ⏳ Utworzenie 4 modułów pomocniczych
 
 ### Szacowany czas do ukończenia:
+
 **16-22 godzin** pracy programistycznej
 
 ---
@@ -526,17 +579,20 @@ test('should register and login user', async ({ page }) => {
 ## 💡 Wnioski i Rekomendacje
 
 ### Mocne Strony Projektu
+
 1. **Dobra struktura kodu** - czytelna separacja komponentów
 2. **Istniejąca konfiguracja Playwright** - gotowa do użycia
 3. **Kompletna dokumentacja PRD** - jasne wymagania
 4. **Wzorzec POM już rozpoczęty** - BasePage i HomePage istnieją
 
 ### Obszary do Poprawy
+
 1. **Brak data-testid** - 80% elementów nie ma atrybutów testowych
 2. **Brak kompleksowych testów E2E** - tylko podstawowy test HomePage
 3. **Brak utilities testowych** - każdy test musi od zera setupować dane
 
 ### Rekomendacje
+
 1. **Priorytetyzacja**: Najpierw dokończyć data-testid, potem POM, na końcu testy
 2. **Iteracyjne podejście**: Implementować flow po flow (auth → settlements → participants itd.)
 3. **Continuous integration**: Dodawać testy stopniowo do CI/CD pipeline
@@ -548,18 +604,22 @@ test('should register and login user', async ({ page }) => {
 ## 📞 Kontynuacja Pracy
 
 ### Następna Sesja
+
 **Sugerowane zadania**:
+
 1. Dokończyć data-testid dla komponentów rozliczeń (7 komponentów, ~1-2h)
 2. Dodać data-testid dla komponentów uczestników (3 komponenty, ~1h)
 3. Stworzyć pierwsze 3 klasy POM dla auth (LoginPage, RegisterPage, ForgotPasswordPage)
 4. Napisać pierwszy test E2E: `auth-flow.spec.ts`
 
 **Oczekiwany rezultat po następnej sesji**:
+
 - ✅ 21/60 komponentów z data-testid (~35%)
 - ✅ 3/25 klas POM gotowych (~12%)
 - ✅ 1/6 testów E2E zaimplementowanych (~17%)
 
 ### Długoterminowy Plan
+
 - **Tydzień 1**: Faza 1 - dokończenie data-testid (25 komponentów)
 - **Tydzień 2**: Faza 2a - główne klasy POM (12 klas)
 - **Tydzień 3**: Faza 2b - komponenty POM + testy (13 klas + 6 specs)

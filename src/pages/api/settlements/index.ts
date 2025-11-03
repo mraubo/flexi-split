@@ -172,9 +172,6 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
-    // Log error for debugging (in production, use proper logging)
-    console.error("Error in POST /api/settlements:", error);
-
     // Generic server error
     return new Response(
       JSON.stringify({

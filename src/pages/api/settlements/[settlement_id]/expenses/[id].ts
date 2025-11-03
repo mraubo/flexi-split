@@ -425,9 +425,6 @@ export const DELETE: APIRoute = async (context) => {
         );
 
       case "error":
-        // Log the error for debugging (in production, this would go to a logging service)
-        console.error("Error deleting expense:", result.message);
-
         return new Response(
           JSON.stringify({
             error: {
@@ -459,20 +456,8 @@ export const DELETE: APIRoute = async (context) => {
   } catch (error: unknown) {
     // Log unexpected errors with context for debugging and audit trail
     const errorMessage = error instanceof Error ? error.message : "unknown error";
-    const errorDetails = {
-      endpoint: "DELETE /settlements/[settlement_id]/expenses/[id]",
-      settlement_id: settlement_id,
-      expense_id: id,
-      user_id: user?.id,
-      timestamp: new Date().toISOString(),
-      error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
-    };
-
-    console.error("Unexpected error in DELETE expense endpoint:", errorDetails);
 
     // In production, this would be sent to a logging service like Sentry, CloudWatch, etc.
-    // For now, we log to console with structured format
 
     return new Response(
       JSON.stringify({

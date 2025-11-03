@@ -14,21 +14,25 @@ Wykonano analizę wymagań i przygotowano kompletny, technicznie szczegółowy p
 # .ai/view-implementation-plan.md
 
 ### Przegląd punktu końcowego
+
 - Cel: Dodanie uczestnika do istniejącego rozliczenia, wyłącznie gdy rozliczenie ma status open, z walidacją nicku i pełną kontrolą dostępu na poziomie aplikacji i bazy (RLS).
 - Metoda i ścieżka: POST /settlements/{settlement_id}/participants z obsługą 201 Created i nagłówka Location wskazującego nowo utworzony zasób lub jego opis w treści odpowiedzi, zgodnie z semantyką HTTP.
 - Kontekst platformowy: Endpoint jako Astro Server Endpoint w src/pages/api z SSR włączonym i bez prerenderingu dla tras API.
 
 ### Szczegóły żądania
+
 - Path params: settlement_id (UUID) jako element ścieżki /settlements/{settlement_id}/participants.
 - Body: application/json z polem nickname: string, długość 3–30, regex ^[a-z0-9_-]+$, walidowane Zodem po stronie serwera.
 - Autoryzacja: Wymagana sesja Supabase; endpoint musi korzystać z Supabase klienta po stronie serwera (locals) i egzekwować RLS przez identyfikację użytkownika.
 
 ### Szczegóły odpowiedzi
+
 - Sukces 201: Zwraca ParticipantDTO nowo utworzonego uczestnika (id, nickname, is_owner, created_at, updated_at, last_edited_by) i ustawia Location na URL zasobu uczestnika; 201 może zawierać reprezentację nowego zasobu lub link do niego.
 - Treść: application/json; struktura jak GET item uczestnika, spójna z ParticipantDTO ze wspólnych typów.
 - Nagłówki: Location: /settlements/{settlement_id}/participants/{participant_id} zgodnie z semantyką 201 Created.
 
 ### Przepływ danych
+
 - Wejście: Żądanie POST trafia do src/pages/api/settlements/[settlement_id]/participants.ts, gdzie parsowany jest JSON i walidowany Zodem pod kątem nickname (min 3, max 30, regex).
 - Autentykacja: Pobranie klienta Supabase z kontekstu serwera i wymuszenie obecności sesji; w razie jej braku zwrot 401.
 - Autoryzacja: Sprawdzenie, czy użytkownik ma prawo modyfikować dane rozliczenia (np. właściciel lub dopuszczony aktor), z wykorzystaniem RLS i ewentualnej kontroli aplikacyjnej, aby uniknąć BOLA.
@@ -39,6 +43,7 @@ Wykonano analizę wymagań i przygotowano kompletny, technicznie szczegółowy p
 - Wyjście: 201 Created z ParticipantDTO i Location nagłówkiem na nowy zasób, zgodnie z RFC 9110.
 
 ### Względy bezpieczeństwa
+
 - BOLA: W każdym miejscu, gdzie używany jest identifier settlement_id, wymusić kontrolę obiektową uprawnień, aby zapobiec eskalacji dostępu do cudzych rozliczeń.
 - RLS: Włączenie i egzekwowanie RLS dla participants i settlements z politykami SELECT/INSERT/UPDATE/DELETE zależnymi od powiązania użytkownika i statusu open, zapewniając defense‑in‑depth.
 - Walidacja wejścia: Twarde walidacje Zod po stronie serwera, restrykcyjne regex i długości, oraz poprawny Content-Type.
@@ -46,6 +51,7 @@ Wykonano analizę wymagań i przygotowano kompletny, technicznie szczegółowy p
 - Konfiguracja: Unikanie debugowania/stack traces w odpowiedziach produkcyjnych oraz odpowiednia konfiguracja adaptera Cloudflare dla SSR.
 
 ### Obsługa błędów
+
 - 400 Bad Request: Nieprawidłowy JSON, brak wymaganych pól, błędny regex/długości w Zod (błędy syntaktyczne/formatu żądania).
 - 401 Unauthorized: Brak lub wygaśnięta sesja użytkownika Supabase.
 - 403 Forbidden: Użytkownik zalogowany, ale bez uprawnień do modyfikacji danego rozliczenia (polityka RLS lub kontrola aplikacyjna).
@@ -55,11 +61,13 @@ Wykonano analizę wymagań i przygotowano kompletny, technicznie szczegółowy p
 - 500 Internal Server Error: Nieoczekiwany błąd serwera/transakcji; logowanie szczegółów i zwrot ogólnego komunikatu.
 
 ### Wydajność
+
 - Indeksy: Wykorzystanie istniejących BTREE po settlement_id i unikalności (settlement_id, nickname_norm) zapewnia szybkie sprawdzenia i wstawienia przy rosnącej liczbie uczestników.
 - Zminimalizowane round‑trips: Transakcja łącząca walidację stanu i insert redukuje ryzyko wyścigów oraz liczbę zapytań; unikalność w DB zapewnia ostateczną barierę spójności.
 - Edge hosting: Cloudflare Workers/Pages skraca TTFB i upraszcza wprowadzenie limitów oraz logów na krawędzi.
 
 ### Kroki implementacji
+
 - Pliki i struktura: Utwórz endpoint w ./src/pages/api/settlements/[settlement_id]/participants.ts z export async function POST oraz export const prerender = false dla tras API w Astro.
 - Walidacja: Dodaj ./src/lib/validation/participants.ts z Zod schema: nickname: z.string().min(3).max(30).regex(/^[a-z0-9_-]+$/) i użyj parse w handlerze.
 - Serwis: Dodaj ./src/lib/services/participants.service.ts z metodą addParticipant, która 1) sprawdza uprawnienia i status open, 2) liczy uczestników, 3) próbuje insert z nickname i last_edited_by, 4) aktualizuje participants_count, 5) emituje event participant_added, wszystko w jednej transakcji.
@@ -68,10 +76,10 @@ Wykonano analizę wymagań i przygotowano kompletny, technicznie szczegółowy p
 - Błędy: Mapuj naruszenie unikalności na 409, zamknięte/limit na 422, walidację Zod/Content-Type na 400, brak sesji 401, brak uprawnień 403, brak settlement 404, pozostałe 500, z ustrukturyzowanym logowaniem.
 - CI/CD i hosting: Upewnij się, że projekt ma adapter @astrojs/cloudflare i pipeline do wrangler deploy; w Cloudflare Pages/Workers skonfiguruj build i deploy zgodnie z dokumentacją.
 
-
 ### Przykładowe szkielety plików
 
 - src/pages/api/settlements/[settlement_id]/participants.ts :
+
 ```ts
 export const prerender = false; // API route [SSR] [ref]
 export async function POST(context: APIContext) {
@@ -85,14 +93,20 @@ export async function POST(context: APIContext) {
 ```
 
 - src/lib/validation/participants.ts :
+
 ```ts
 import { z } from "zod";
 export const createParticipantSchema = z.object({
-  nickname: z.string().min(3).max(30).regex(/^[a-z0-9_-]+$/),
+  nickname: z
+    .string()
+    .min(3)
+    .max(30)
+    .regex(/^[a-z0-9_-]+$/),
 });
 ```
 
 - Polityki RLS – szkic (SQL) :
+
 ```sql
 -- enable RLS
 alter table public.participants enable row level security;
@@ -121,6 +135,7 @@ with check (
 ```
 
 - Kolumna generowana i unikalność :
+
 ```sql
 alter table public.participants
   add column nickname_norm text generated always as (lower(nickname)) stored;

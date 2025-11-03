@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,9 +43,7 @@ export default function DeleteParticipantConfirm({
       await deleteParticipant(participant.id);
       onDeleted(participant.id);
       onClose(); // Close dialog on success
-    } catch (error: any) {
-      console.error("Error deleting participant:", error);
-
+    } catch (error: unknown) {
       // Use centralized error message
       setErrorMessage(getParticipantErrorMessage(error));
     } finally {
@@ -75,7 +72,8 @@ export default function DeleteParticipantConfirm({
             <div>
               <AlertDialogTitle>Usuń uczestnika</AlertDialogTitle>
               <AlertDialogDescription className="mt-2">
-                Czy na pewno chcesz usunąć uczestnika <span className="font-medium">"{participant.nickname}"</span>?
+                Czy na pewno chcesz usunąć uczestnika{" "}
+                <span className="font-medium">&quot;{participant.nickname}&quot;</span>?
                 {participant.isOwner && (
                   <span className="block mt-1 text-yellow-600 font-medium">
                     ⚠️ To jest właściciel rozliczenia. Usunięcie może wpłynąć na uprawnienia.

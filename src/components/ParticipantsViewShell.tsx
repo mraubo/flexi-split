@@ -81,20 +81,17 @@ export default function ParticipantsViewShell({
 
   const participantsListVM = createParticipantsListVM(participants, isOwner, viewModel.isLocked);
 
-  const handleParticipantCreated = (participant: { id: string; nickname: string }) => {
+  const handleParticipantCreated = () => {
     // Participant added successfully - hook will reload the list
-    console.log("Participant created:", participant);
   };
 
-  const handleParticipantUpdated = (participant: { id: string; nickname: string }) => {
+  const handleParticipantUpdated = () => {
     // Participant updated successfully - hook will reload the list
-    console.log("Participant updated:", participant);
     setEditingParticipant(null); // Close edit modal
   };
 
-  const handleParticipantDeleted = (participantId: string) => {
+  const handleParticipantDeleted = () => {
     // Participant deleted successfully - hook will reload the list
-    console.log("Participant deleted:", participantId);
     setDeletingParticipant(null); // Close delete modal
   };
 

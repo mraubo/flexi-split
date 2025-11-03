@@ -141,7 +141,11 @@ export default function RegisterForm() {
         <Alert data-testid="alert-success">
           <AlertDescription>
             {successMessage}
-            {redirectCountdown !== null && <span className="font-semibold" data-testid="text-countdown">{redirectCountdown}</span>}
+            {redirectCountdown !== null && (
+              <span className="font-semibold" data-testid="text-countdown">
+                {redirectCountdown}
+              </span>
+            )}
           </AlertDescription>
         </Alert>
       )}
@@ -149,7 +153,12 @@ export default function RegisterForm() {
       {isSuccess && redirectCountdown !== null && (
         <div className="text-center">
           <p className="text-sm text-muted-foreground mb-2">Nie chcesz czekać? Przejdź od razu do swoich rozliczeń.</p>
-          <Button onClick={() => (window.location.href = "/settlements")} variant="outline" size="sm" data-testid="button-skip-countdown">
+          <Button
+            onClick={() => (window.location.href = "/settlements")}
+            variant="outline"
+            size="sm"
+            data-testid="button-skip-countdown"
+          >
             Przejdź do rozliczeń
           </Button>
         </div>

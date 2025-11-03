@@ -97,14 +97,26 @@ export default function NewSettlementDialog({ open, onOpenChange, onCreated }: N
                 data-testid="input-settlement-title"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{error && <span className="text-destructive" data-testid="error-message">{error}</span>}</span>
+                <span>
+                  {error && (
+                    <span className="text-destructive" data-testid="error-message">
+                      {error}
+                    </span>
+                  )}
+                </span>
                 <span data-testid="text-char-count">{titleLength}/100</span>
               </div>
             </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} data-testid="button-cancel">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={isSubmitting}
+              data-testid="button-cancel"
+            >
               Anuluj
             </Button>
             <Button type="submit" disabled={!isValid || isSubmitting} data-testid="button-create">

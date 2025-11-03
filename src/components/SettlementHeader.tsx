@@ -110,11 +110,24 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
                 maxLength={100}
                 data-testid="input-settlement-title"
               />
-              <Button onClick={handleSave} size="sm" disabled={loading || !!validationError} className="shrink-0" data-testid="button-save-title">
+              <Button
+                onClick={handleSave}
+                size="sm"
+                disabled={loading || !!validationError}
+                className="shrink-0"
+                data-testid="button-save-title"
+              >
                 <Check className="h-4 w-4" />
                 <span className="sr-only">Zapisz</span>
               </Button>
-              <Button onClick={handleCancel} variant="outline" size="sm" disabled={loading} className="shrink-0" data-testid="button-cancel-edit">
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                size="sm"
+                disabled={loading}
+                className="shrink-0"
+                data-testid="button-cancel-edit"
+              >
                 <X className="h-4 w-4" />
                 <span className="sr-only">Anuluj</span>
               </Button>
@@ -132,7 +145,9 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 truncate" data-testid="heading-settlement-title">{settlement.title}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 truncate" data-testid="heading-settlement-title">
+              {settlement.title}
+            </h1>
             {!isReadOnly && (
               <Button
                 onClick={handleEdit}
@@ -159,7 +174,8 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
           {settlement.status === "open" ? "Otwarte" : "Zamknięte"}
         </span>
         <span className="text-sm text-gray-500">
-          <span data-testid="text-participants-count">{settlement.participants_count}</span> uczestników • <span data-testid="text-expenses-count">{settlement.expenses_count}</span> wydatków
+          <span data-testid="text-participants-count">{settlement.participants_count}</span> uczestników •{" "}
+          <span data-testid="text-expenses-count">{settlement.expenses_count}</span> wydatków
         </span>
       </div>
     </div>

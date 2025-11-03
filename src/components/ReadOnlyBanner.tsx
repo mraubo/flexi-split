@@ -26,9 +26,13 @@ export default function ReadOnlyBanner({ isVisible, onDismiss }: ReadOnlyBannerP
           <AlertTriangle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
         </div>
         <div className="ml-3 flex-1">
-          <h3 className="text-sm font-medium text-yellow-800" data-testid="heading-readonly-message">Rozliczenie jest zamknięte</h3>
+          <h3 className="text-sm font-medium text-yellow-800" data-testid="heading-readonly-message">
+            Rozliczenie jest zamknięte
+          </h3>
           <div className="mt-2 text-sm text-yellow-700">
-            <p data-testid="text-readonly-description">To rozliczenie zostało zamknięte i nie można już wprowadzać zmian.</p>
+            <p data-testid="text-readonly-description">
+              To rozliczenie zostało zamknięte i nie można już wprowadzać zmian.
+            </p>
           </div>
         </div>
         {onDismiss && (

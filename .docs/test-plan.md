@@ -78,7 +78,7 @@ Poza zakresem: testy przeglądarek legacy (IE), testy manualne lokalizacji (jeś
   - Każdy endpoint w `src/pages/api/**`: statusy, treści, błędy, walidacje DTO (`src/types.ts` zgodność).
   - Wymuszenie RLS: wywołania z tokenem innego użytkownika → 403/404, bez tokenu → 401/403.
 - UI/UX:
-  - Komponenty Shadcn/ui: focus states, aria-* zgodnie z wytycznymi.
+  - Komponenty Shadcn/ui: focus states, aria-\* zgodnie z wytycznymi.
   - Tailwind: dark mode, responsywność siatek/list, dostępność kontrastów.
 - Migracje i DB:
   - Aplikowanie migracji na czystej bazie (CI).

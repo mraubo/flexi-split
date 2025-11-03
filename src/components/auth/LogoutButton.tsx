@@ -20,14 +20,11 @@ export default function LogoutButton() {
         // Success - redirect to login
         window.location.href = "/auth/login";
       } else {
-        // Logout failed - show error and still redirect
-        console.error("Logout failed:", response.status, response.statusText);
-        // Still redirect to login for security
+        // Logout failed - still redirect to login for security
         window.location.href = "/auth/login";
       }
-    } catch (err) {
-      // Network error - log and still redirect to login for security
-      console.error("Logout network error:", err);
+    } catch {
+      // Network error - still redirect to login for security
       window.location.href = "/auth/login";
     }
   };

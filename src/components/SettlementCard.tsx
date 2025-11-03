@@ -28,7 +28,11 @@ export default function SettlementCard({ item, onDelete }: SettlementCardProps) 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <h3 className="font-semibold text-lg truncate">{item.title}</h3>
-              <Badge variant={item.status === "open" ? "default" : "secondary"} className="shrink-0" data-testid="badge-status">
+              <Badge
+                variant={item.status === "open" ? "default" : "secondary"}
+                className="shrink-0"
+                data-testid="badge-status"
+              >
                 {item.status === "open" ? (
                   <>
                     <CheckCircle className="w-3 h-3 mr-1" />

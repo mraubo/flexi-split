@@ -151,6 +151,7 @@ tests/
 - **`events`**: Audit trail for user actions
 
 **Key Database Functions:**
+
 - `calculate_settlement_balances(p_settlement_id)`: Calculates net balance per participant
 - `finalize_settlement_transaction(...)`: Atomic transaction to close settlement and create snapshot
 - Access control functions for ownership verification
@@ -160,9 +161,11 @@ tests/
 All endpoints follow **RFC 7807 Problem Details** for error responses.
 
 **Authentication:**
+
 - `POST /api/auth/login`, `/register`, `/logout`, `/forgot-password`, `/reset-password`
 
 **Settlements:**
+
 - `GET /api/settlements` (list, paginated)
 - `POST /api/settlements` (create)
 - `GET/PUT/DELETE /api/settlements/{id}` (details, update, soft delete)
@@ -170,14 +173,17 @@ All endpoints follow **RFC 7807 Problem Details** for error responses.
 - `GET /api/settlements/{id}/snapshot` (get finalized snapshot)
 
 **Participants:**
+
 - `GET/POST /api/settlements/{settlement_id}/participants`
 - `DELETE /api/settlements/{settlement_id}/participants/{id}`
 
 **Expenses:**
+
 - `GET/POST /api/settlements/{settlement_id}/expenses`
 - `GET/PUT/DELETE /api/settlements/{settlement_id}/expenses/{id}`
 
 **Response Format:**
+
 ```typescript
 // Success
 { data: T | T[] }
@@ -203,6 +209,7 @@ All endpoints follow **RFC 7807 Problem Details** for error responses.
 ### Service Layer Pattern
 
 Business logic is isolated in `src/lib/services/`:
+
 - **settlements.service.ts**: List, create, update, delete, access checks
 - **participants.service.ts**: Add, list, remove participants
 - **expenses.service.ts**: CRUD operations for expenses
@@ -261,6 +268,7 @@ API endpoints validate inputs, delegate to services, and return standardized res
 ### Validation Schemas (Zod)
 
 All validation schemas are in `src/lib/validation/`:
+
 - `settlements.ts`: Settlement queries and commands
 - `participants.ts`: Participant operations
 - `expenses.ts`: Expense CRUD with pagination and filtering
@@ -322,6 +330,7 @@ All validation schemas are in `src/lib/validation/`:
 ## Environment Variables
 
 Required in `.env`:
+
 ```
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your-anon-public-key

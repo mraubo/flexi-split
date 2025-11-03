@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/auth/LoginPage';
-import { SettlementsListPage } from '../pages/settlements/SettlementsListPage';
+import { test, expect } from "@playwright/test";
+import { LoginPage } from "../pages/auth/LoginPage";
+import { SettlementsListPage } from "../pages/settlements/SettlementsListPage";
 
-test.describe('Authentication - Login', () => {
+test.describe("Authentication - Login", () => {
   let loginPage: LoginPage;
 
   // Get credentials from environment variables
-  const validEmail = process.env.E2E_USERNAME || '';
-  const validPassword = process.env.E2E_PASSWORD || '';
+  const validEmail = process.env.E2E_USERNAME || "";
+  const validPassword = process.env.E2E_PASSWORD || "";
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
@@ -16,7 +16,7 @@ test.describe('Authentication - Login', () => {
     await expect(loginPage.formLogin).toBeVisible();
   });
 
-  test('should display login form with all required fields', async () => {
+  test("should display login form with all required fields", async () => {
     // Assert form is visible
     const isFormVisible = await loginPage.isFormVisible();
     expect(isFormVisible).toBe(true);
@@ -27,13 +27,13 @@ test.describe('Authentication - Login', () => {
     await expect(loginPage.buttonSubmit).toBeVisible();
   });
 
-  test('should display helper links on login page', async () => {
+  test("should display helper links on login page", async () => {
     // Assert navigation links are visible
     await expect(loginPage.linkForgotPassword).toBeVisible();
     await expect(loginPage.linkRegister).toBeVisible();
   });
 
-  test('should accept valid credentials in form fields', async () => {
+  test("should accept valid credentials in form fields", async () => {
     // Act: Fill in valid credentials
     await loginPage.fillEmail(validEmail);
     await loginPage.fillPassword(validPassword);
@@ -48,9 +48,9 @@ test.describe('Authentication - Login', () => {
     expect(isSubmitEnabled).toBe(true);
   });
 
-  test('should validate email format on form submission', async () => {
+  test("should validate email format on form submission", async () => {
     // Act: Fill empty email and valid password, then submit
-    await loginPage.fillEmail('');
+    await loginPage.fillEmail("");
     await loginPage.fillPassword(validPassword);
     await loginPage.submit();
 
@@ -70,7 +70,7 @@ test.describe('Authentication - Login', () => {
     }
   });
 
-  test('should display error message with empty password field', async () => {
+  test("should display error message with empty password field", async () => {
     // Act: Fill only email and submit
     await loginPage.fillEmail(validEmail);
     await loginPage.submit();
@@ -79,12 +79,12 @@ test.describe('Authentication - Login', () => {
     await loginPage.page.waitForTimeout(300);
     await expect(loginPage.errorPassword).toBeVisible({ timeout: 3000 });
     const errorText = await loginPage.errorPassword.textContent();
-    expect(errorText).toContain('Hasło musi mieć co najmniej 8 znaków');
+    expect(errorText).toContain("Hasło musi mieć co najmniej 8 znaków");
   });
 
-  test('should display error message with invalid credentials', async () => {
+  test("should display error message with invalid credentials", async () => {
     // Act: Fill in invalid credentials and submit
-    await loginPage.login('test@example.com', 'wrongpassword123');
+    await loginPage.login("test@example.com", "wrongpassword123");
 
     // Wait for error message to appear (wait for network response)
     try {
@@ -93,7 +93,7 @@ test.describe('Authentication - Login', () => {
       // Assert: Should display error alert
       const errorMessage = await loginPage.getErrorMessage();
       expect(errorMessage).toBeTruthy();
-      expect(errorMessage).toContain('Nieprawidłowy adres e-mail lub hasło');
+      expect(errorMessage).toContain("Nieprawidłowy adres e-mail lub hasło");
     } catch {
       // If error alert doesn't appear within timeout, user might be redirected
       // or error handling is different - this is acceptable for this test
@@ -101,10 +101,10 @@ test.describe('Authentication - Login', () => {
     }
   });
 
-  test('should show loading state on submit button', async () => {
+  test("should show loading state on submit button", async () => {
     // Arrange: Check initial button state
     const initialButtonText = await loginPage.buttonSubmit.textContent();
-    expect(initialButtonText).toContain('Zaloguj się');
+    expect(initialButtonText).toContain("Zaloguj się");
 
     // Act: Fill form with valid credentials
     await loginPage.fillEmail(validEmail);
@@ -115,7 +115,7 @@ test.describe('Authentication - Login', () => {
     expect(isEnabledBefore).toBe(true);
   });
 
-  test('should navigate to register page via link', async () => {
+  test("should navigate to register page via link", async () => {
     // Act: Click on register link
     await loginPage.linkRegister.click();
 
@@ -123,7 +123,7 @@ test.describe('Authentication - Login', () => {
     await expect(loginPage.page).toHaveURL(/.*\/auth\/register/);
   });
 
-  test('should navigate to forgot password page via link', async () => {
+  test("should navigate to forgot password page via link", async () => {
     // Act: Click on forgot password link
     await loginPage.linkForgotPassword.click();
 
@@ -131,7 +131,7 @@ test.describe('Authentication - Login', () => {
     await expect(loginPage.page).toHaveURL(/.*\/auth\/forgot-password/);
   });
 
-  test('should persist email field value after password input', async () => {
+  test("should persist email field value after password input", async () => {
     // Act: Fill email, then password
     const testEmail = validEmail;
     await loginPage.fillEmail(testEmail);
@@ -142,50 +142,50 @@ test.describe('Authentication - Login', () => {
     expect(emailValue).toBe(testEmail);
   });
 
-  test('should clear email field when backspaced', async () => {
+  test("should clear email field when backspaced", async () => {
     // Act: Fill email, then clear it
     await loginPage.fillEmail(validEmail);
     await loginPage.inputEmail.clear();
 
     // Assert: Email field should be empty
     const emailValue = await loginPage.inputEmail.inputValue();
-    expect(emailValue).toBe('');
+    expect(emailValue).toBe("");
   });
 });
 
-test.describe('Authentication - Settlements Page Access', () => {
+test.describe("Authentication - Settlements Page Access", () => {
   let loginPage: LoginPage;
   let settlementsPage: SettlementsListPage;
 
   // Get credentials from environment variables
-  const validEmail = process.env.E2E_USERNAME || '';
-  const validPassword = process.env.E2E_PASSWORD || '';
+  const validEmail = process.env.E2E_USERNAME || "";
+  const validPassword = process.env.E2E_PASSWORD || "";
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     settlementsPage = new SettlementsListPage(page);
   });
 
-  test('should redirect to login when accessing settlements without authentication', async ({ page }) => {
+  test("should redirect to login when accessing settlements without authentication", async ({ page }) => {
     // Act: Try to access settlements page directly without authentication
-    await page.goto('/settlements');
+    await page.goto("/settlements");
 
     // Assert: Should be redirected to login page
     await page.waitForURL(/.*\/auth\/login/, { timeout: 5000 }).catch(() => {
       // If navigation doesn't happen, check current URL
       const currentUrl = page.url();
-      expect(currentUrl).toContain('/auth/login');
+      expect(currentUrl).toContain("/auth/login");
     });
 
     // Verify we're on the login page
     const currentUrl = page.url();
-    expect(currentUrl).toContain('/auth/login');
+    expect(currentUrl).toContain("/auth/login");
   });
 
-  test('should login and display settlements list', async ({ page }) => {
+  test("should login and display settlements list", async ({ page }) => {
     // Arrange: Verify credentials are available
     if (!validEmail || !validPassword) {
-      throw new Error('E2E_USERNAME and E2E_PASSWORD environment variables are required');
+      throw new Error("E2E_USERNAME and E2E_PASSWORD environment variables are required");
     }
 
     // Login
@@ -197,14 +197,17 @@ test.describe('Authentication - Settlements Page Access', () => {
 
     // Assert: URL should be on settlements page
     const currentUrl = page.url();
-    expect(currentUrl).toContain('/settlements');
+    expect(currentUrl).toContain("/settlements");
 
-    const hasHeader = await page.locator('[data-testid="header-bar"]').isVisible().catch(() => false);
+    const hasHeader = await page
+      .locator('[data-testid="header-bar"]')
+      .isVisible()
+      .catch(() => false);
 
     expect(hasHeader).toBe(true);
   });
 
-  test('should have settlements list page with proper data-testid attributes', async () => {
+  test("should have settlements list page with proper data-testid attributes", async () => {
     // This test verifies that the SettlementsListPage can find the correct elements
     // when navigation happens to settlements page
 
@@ -216,6 +219,6 @@ test.describe('Authentication - Settlements Page Access', () => {
     const listExists = await settlementsPage.listSettlements.count().catch(() => 0);
 
     // Either the list exists or we got redirected (both are valid outcomes)
-    expect(typeof listExists === 'number').toBe(true);
+    expect(typeof listExists === "number").toBe(true);
   });
 });
