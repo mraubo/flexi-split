@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -12,12 +16,12 @@ export default defineConfig({
 
   reporter: [
     ['html', { outputFolder: './tests/reports' }],
-    ['json', { outputFile: './tests/results.json' }],
+    ['json', { outputFile: './tests/results/results.json' }],
     ['line'],
   ],
 
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -31,10 +35,9 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:4321',
+    command: 'bun run dev',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
 });
-

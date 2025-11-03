@@ -2,4 +2,149 @@
 import Layout from "@/layouts/Layout.astro";
 ---
 
-<Layout> Hello world! </Layout>
+<Layout title="FlexiSplit - Rozlicz koszty ze znajomymi">
+  <div class="container mx-auto px-4 py-12" data-testid="home-page">
+    <!-- Welcome Section -->
+    <section
+      class="flex flex-col items-center justify-center min-h-[60vh] text-center"
+      data-testid="welcome-section"
+    >
+      <h1 class="text-4xl md:text-5xl font-bold mb-4" data-testid="welcome-title">
+        Rozlicz koszty ze znajomymi
+      </h1>
+
+      <p
+        class="text-lg text-muted-foreground mb-8 max-w-2xl"
+        data-testid="welcome-message"
+      >
+        FlexiSplit ułatwia dzielenie się kosztami podczas wyjazdów i imprez.
+        Stwórz rozliczenie, dodaj uczestników i wydatki, a my obliczymy
+        optymalną strukturę przelewów.
+      </p>
+
+      <!-- Features List -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl">
+        <div class="p-6 rounded-lg border" data-testid="feature-easy">
+          <h3 class="font-semibold mb-2">Łatwe w użyciu</h3>
+          <p class="text-sm text-muted-foreground">
+            Intuicyjny interfejs, dostępny na wszystkich urządzeniach
+          </p>
+        </div>
+
+        <div class="p-6 rounded-lg border" data-testid="feature-optimize">
+          <h3 class="font-semibold mb-2">Optymalne rozliczenie</h3>
+          <p class="text-sm text-muted-foreground">
+            Algorytm minimalizuje liczbę przelewów
+          </p>
+        </div>
+
+        <div class="p-6 rounded-lg border" data-testid="feature-track">
+          <h3 class="font-semibold mb-2">Śledź wszystko</h3>
+          <p class="text-sm text-muted-foreground">
+            Przejrzysta historia wszystkich wydatków
+          </p>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4" data-testid="cta-buttons">
+        <a
+          href="/auth/register"
+          class="px-8 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+          data-testid="button-register"
+        >
+          Zarejestruj się
+        </a>
+
+        <a
+          href="/auth/login"
+          class="px-8 py-3 rounded-lg border border-primary text-primary font-medium hover:bg-primary/10 transition-colors"
+          data-testid="button-login"
+        >
+          Zaloguj się
+        </a>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section
+      class="py-12 mt-8 border-t"
+      data-testid="how-it-works-section"
+    >
+      <h2 class="text-2xl font-bold mb-8 text-center" data-testid="how-title">
+        Jak to działa?
+      </h2>
+
+      <div class="max-w-3xl mx-auto space-y-6" data-testid="steps-list">
+        <div class="flex gap-4" data-testid="step-1">
+          <div
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
+            data-testid="step-1-number"
+          >
+            1
+          </div>
+          <div>
+            <h3 class="font-semibold mb-1" data-testid="step-1-title">
+              Utwórz rozliczenie
+            </h3>
+            <p class="text-sm text-muted-foreground" data-testid="step-1-desc">
+              Podaj nazwę rozliczenia, np. "Wyjazd do Grecji" lub "Wynajem
+              mieszkania"
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-4" data-testid="step-2">
+          <div
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
+            data-testid="step-2-number"
+          >
+            2
+          </div>
+          <div>
+            <h3 class="font-semibold mb-1" data-testid="step-2-title">
+              Dodaj uczestników
+            </h3>
+            <p class="text-sm text-muted-foreground" data-testid="step-2-desc">
+              Zaproś znajomych i przypisz im pseudonimy (max 10 osób)
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-4" data-testid="step-3">
+          <div
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
+            data-testid="step-3-number"
+          >
+            3
+          </div>
+          <div>
+            <h3 class="font-semibold mb-1" data-testid="step-3-title">
+              Rejestruj wydatki
+            </h3>
+            <p class="text-sm text-muted-foreground" data-testid="step-3-desc">
+              Dodawaj wydatki: kto zapłacił i jak podzielić koszt
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-4" data-testid="step-4">
+          <div
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
+            data-testid="step-4-number"
+          >
+            4
+          </div>
+          <div>
+            <h3 class="font-semibold mb-1" data-testid="step-4-title">
+              Wyświetl podsumowanie
+            </h3>
+            <p class="text-sm text-muted-foreground" data-testid="step-4-desc">
+              Sprawdź salda i przelewy. Możesz skopiować podsumowanie!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
