@@ -15,7 +15,7 @@ export default function SettlementsList({ items, pagination, loading, onLoadMore
 
   return (
     <div className="space-y-4">
-      <div role="list" className="space-y-3">
+      <div role="list" className="space-y-3" data-testid="list-settlements">
         {items.map((item) => (
           <div key={item.id} role="listitem">
             <SettlementCard item={item} onDelete={onDelete} />
@@ -25,7 +25,7 @@ export default function SettlementsList({ items, pagination, loading, onLoadMore
 
       {hasMore && (
         <div className="flex justify-center pt-4">
-          <Button onClick={onLoadMore} disabled={loading} variant="outline">
+          <Button onClick={onLoadMore} disabled={loading} variant="outline" data-testid="button-load-more">
             {loading ? "Ładowanie..." : "Załaduj więcej"}
           </Button>
         </div>

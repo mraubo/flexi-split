@@ -95,9 +95,9 @@ export default function LoginForm() {
         <p className="text-muted-foreground">Wprowadź swoje dane, aby uzyskać dostęp do rozliczeń</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" data-testid="form-login">
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" data-testid="alert-error">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -112,9 +112,10 @@ export default function LoginForm() {
             placeholder="twoj@email.com"
             disabled={isSubmitting}
             aria-describedby={fieldErrors.email ? "email-error" : undefined}
+            data-testid="input-email"
           />
           {fieldErrors.email && (
-            <p id="email-error" className="text-sm text-destructive">
+            <p id="email-error" className="text-sm text-destructive" data-testid="error-email">
               {fieldErrors.email}
             </p>
           )}
@@ -130,26 +131,27 @@ export default function LoginForm() {
             placeholder="Wprowadź hasło"
             disabled={isSubmitting}
             aria-describedby={fieldErrors.password ? "password-error" : undefined}
+            data-testid="input-password"
           />
           {fieldErrors.password && (
-            <p id="password-error" className="text-sm text-destructive">
+            <p id="password-error" className="text-sm text-destructive" data-testid="error-password">
               {fieldErrors.password}
             </p>
           )}
         </div>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button type="submit" className="w-full" disabled={isSubmitting} data-testid="button-submit">
           {isSubmitting ? "Logowanie..." : "Zaloguj się"}
         </Button>
       </form>
 
       <div className="text-center space-y-2">
-        <a href="/auth/forgot-password" className="text-sm text-primary hover:underline">
+        <a href="/auth/forgot-password" className="text-sm text-primary hover:underline" data-testid="link-forgot-password">
           Zapomniałeś hasła?
         </a>
         <p className="text-sm text-muted-foreground">
           Nie masz konta?{" "}
-          <a href="/auth/register" className="text-primary hover:underline">
+          <a href="/auth/register" className="text-primary hover:underline" data-testid="link-register">
             Zarejestruj się
           </a>
         </p>

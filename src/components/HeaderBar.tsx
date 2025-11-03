@@ -18,7 +18,7 @@ export default function HeaderBar({ activeCount, onNewSettlementClick, limitActi
         <NewSettlementButton disabled={isLimitReached} onClick={onNewSettlementClick} />
       </div>
       {activeCount !== undefined && (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground" data-testid="text-active-count">
           {activeCount}/{limitActive} aktywnych
         </span>
       )}

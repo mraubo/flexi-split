@@ -39,6 +39,7 @@ export default function LogoutButton() {
       onClick={handleLogout}
       disabled={isLoggingOut}
       className="text-muted-foreground hover:text-foreground"
+      data-testid="button-logout"
     >
       {isLoggingOut ? "Wylogowywanie..." : "Wyloguj się"}
     </Button>
