@@ -101,17 +101,17 @@ export default function ForgotPasswordForm() {
       {successMessage ? (
         // Success state - show only success message and navigation links
         <>
-          <Alert>
+          <Alert data-testid="alert-success">
             <AlertDescription>{successMessage}</AlertDescription>
           </Alert>
 
           <div className="text-center space-y-2">
-            <a href="/auth/login" className="text-sm text-primary hover:underline">
+            <a href="/auth/login" className="text-sm text-primary hover:underline" data-testid="link-login">
               Powrót do logowania
             </a>
             <p className="text-sm text-muted-foreground">
               Nie masz konta?{" "}
-              <a href="/auth/register" className="text-sm text-primary hover:underline">
+              <a href="/auth/register" className="text-sm text-primary hover:underline" data-testid="link-register">
                 Zarejestruj się
               </a>
             </p>
@@ -120,9 +120,9 @@ export default function ForgotPasswordForm() {
       ) : (
         // Form state - show the form
         <>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" data-testid="form-forgot-password">
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" data-testid="alert-error">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -137,26 +137,27 @@ export default function ForgotPasswordForm() {
                 placeholder="twoj@email.com"
                 disabled={isSubmitting}
                 aria-describedby={fieldErrors.email ? "email-error" : undefined}
+                data-testid="input-email"
               />
               {fieldErrors.email && (
-                <p id="email-error" className="text-sm text-destructive">
+                <p id="email-error" className="text-sm text-destructive" data-testid="error-email">
                   {fieldErrors.email}
                 </p>
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button type="submit" className="w-full" disabled={isSubmitting} data-testid="button-submit">
               {isSubmitting ? "Wysyłanie..." : "Wyślij link resetowania"}
             </Button>
           </form>
 
           <div className="text-center space-y-2">
-            <a href="/auth/login" className="text-sm text-primary hover:underline">
+            <a href="/auth/login" className="text-sm text-primary hover:underline" data-testid="link-login">
               Powrót do logowania
             </a>
             <p className="text-sm text-muted-foreground">
               Nie masz konta?{" "}
-              <a href="/auth/register" className="text-sm text-primary hover:underline">
+              <a href="/auth/register" className="text-sm text-primary hover:underline" data-testid="link-register">
                 Zarejestruj się
               </a>
             </p>

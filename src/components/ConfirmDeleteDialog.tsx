@@ -76,26 +76,26 @@ export default function ConfirmDeleteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" data-testid="dialog-confirm-delete">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-6 w-6 text-destructive" />
             <div>
               <DialogTitle>Usuń rozliczenie</DialogTitle>
-              <DialogDescription>
+              <DialogDescription data-testid="text-settlement-title">
                 Czy na pewno chcesz usunąć rozliczenie &quot;{settlementTitle}&quot;? Ta akcja jest nieodwracalna.
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}
+        {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md" data-testid="error-message">{error}</div>}
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={handleClose} disabled={isDeleting}>
+          <Button type="button" variant="outline" onClick={handleClose} disabled={isDeleting} data-testid="button-cancel">
             Anuluj
           </Button>
-          <Button type="button" variant="destructive" onClick={handleConfirm} disabled={isDeleting}>
+          <Button type="button" variant="destructive" onClick={handleConfirm} disabled={isDeleting} data-testid="button-delete">
             {isDeleting ? "Usuwanie..." : "Usuń"}
           </Button>
         </DialogFooter>

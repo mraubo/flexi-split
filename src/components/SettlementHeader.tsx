@@ -108,36 +108,38 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
                 placeholder="Wprowadź tytuł rozliczenia"
                 disabled={loading}
                 maxLength={100}
+                data-testid="input-settlement-title"
               />
-              <Button onClick={handleSave} size="sm" disabled={loading || !!validationError} className="shrink-0">
+              <Button onClick={handleSave} size="sm" disabled={loading || !!validationError} className="shrink-0" data-testid="button-save-title">
                 <Check className="h-4 w-4" />
                 <span className="sr-only">Zapisz</span>
               </Button>
-              <Button onClick={handleCancel} variant="outline" size="sm" disabled={loading} className="shrink-0">
+              <Button onClick={handleCancel} variant="outline" size="sm" disabled={loading} className="shrink-0" data-testid="button-cancel-edit">
                 <X className="h-4 w-4" />
                 <span className="sr-only">Anuluj</span>
               </Button>
             </div>
             {validationError && (
-              <p className="text-sm text-red-600" role="alert">
+              <p className="text-sm text-red-600" role="alert" data-testid="error-validation">
                 {validationError}
               </p>
             )}
             {error && (
-              <p className="text-sm text-red-600" role="alert">
+              <p className="text-sm text-red-600" role="alert" data-testid="error-api">
                 {error.message || "Wystąpił błąd podczas zapisywania"}
               </p>
             )}
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 truncate">{settlement.title}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 truncate" data-testid="heading-settlement-title">{settlement.title}</h1>
             {!isReadOnly && (
               <Button
                 onClick={handleEdit}
                 variant="ghost"
                 size="sm"
                 className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                data-testid="button-edit-title"
               >
                 <Edit2 className="h-4 w-4" />
                 <span className="sr-only">Edytuj tytuł</span>
@@ -152,11 +154,12 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             settlement.status === "open" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
           }`}
+          data-testid="badge-status"
         >
           {settlement.status === "open" ? "Otwarte" : "Zamknięte"}
         </span>
         <span className="text-sm text-gray-500">
-          {settlement.participants_count} uczestników • {settlement.expenses_count} wydatków
+          <span data-testid="text-participants-count">{settlement.participants_count}</span> uczestników • <span data-testid="text-expenses-count">{settlement.expenses_count}</span> wydatków
         </span>
       </div>
     </div>

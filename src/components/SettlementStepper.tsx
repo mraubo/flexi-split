@@ -27,7 +27,7 @@ export default function SettlementStepper({ activeStep, onStepChange, isReadOnly
   };
 
   return (
-    <nav aria-label="Kroki rozliczenia" className="mb-6">
+    <nav aria-label="Kroki rozliczenia" className="mb-6" data-testid="nav-stepper">
       <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
         {steps.map((step) => (
           <button
@@ -35,6 +35,7 @@ export default function SettlementStepper({ activeStep, onStepChange, isReadOnly
             onClick={() => handleStepClick(step.key)}
             onKeyDown={(e) => handleKeyDown(e, step.key)}
             disabled={isReadOnly}
+            data-testid={`button-step-${step.key}`}
             className={`
               flex-1 py-3 px-4 text-sm font-medium rounded-md transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2

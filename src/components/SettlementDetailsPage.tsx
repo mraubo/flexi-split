@@ -82,7 +82,7 @@ export default function SettlementDetailsPage({ settlementId, user }: Settlement
   const isOwner = !!(user && settlement.owner_id === user.id);
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl">
+    <div className="container mx-auto px-4 py-6 max-w-4xl" data-testid="page-settlement-details">
       {/* Settlement Header */}
       <div className="mb-6 group">
         <SettlementHeader
@@ -105,7 +105,7 @@ export default function SettlementDetailsPage({ settlementId, user }: Settlement
       <ReadOnlyBanner isVisible={isReadOnly} />
 
       {/* Step Content - TODO: Implement step components */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6" data-testid="section-step-content">
         {activeStep === "participants" && (
           <ParticipantsViewShell
             settlementId={settlementId}

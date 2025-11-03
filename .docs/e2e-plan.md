@@ -161,9 +161,10 @@ data-testid="button-logout"              - przycisk wylogowania
 
 ### 3.2 Komponenty Rozliczeń
 
-#### ✅ `src/components/SettlementsPage.tsx` (CZĘŚCIOWO ZROBIONE)
+#### ✅ `src/components/SettlementsPage.tsx` (ZROBIONE)
 ```
 # Główny kontener już ma strukturę, dzieci poniżej
+data-testid="page-settlements"              - strona rozliczeń (kontener główny)
 ```
 
 #### ✅ `src/components/TabsSegment.tsx` (ZROBIONE)
@@ -210,13 +211,13 @@ data-testid="text-closed-date"           - data zamknięcia
 data-testid="button-view"                - przycisk "Zobacz"
 ```
 
-#### ⏳ `src/components/CardActionsMenu.tsx` (TODO)
+#### ✅ `src/components/CardActionsMenu.tsx` (ZROBIONE)
 ```
 data-testid="button-menu-actions"        - przycisk menu akcji
 data-testid="menu-item-delete"           - opcja "Usuń"
 ```
 
-#### ⏳ `src/components/ConfirmDeleteDialog.tsx` (TODO)
+#### ✅ `src/components/ConfirmDeleteDialog.tsx` (ZROBIONE)
 ```
 data-testid="dialog-confirm-delete"      - dialog potwierdzenia usunięcia
 data-testid="text-settlement-title"      - tytuł rozliczenia
@@ -225,7 +226,7 @@ data-testid="button-delete"              - przycisk usuń
 data-testid="error-message"              - komunikat błędu
 ```
 
-#### ⏳ `src/components/SettlementHeader.tsx` (TODO)
+#### ✅ `src/components/SettlementHeader.tsx` (ZROBIONE)
 ```
 data-testid="heading-settlement-title"   - nagłówek tytułu (tryb odczytu)
 data-testid="input-settlement-title"     - pole edycji tytułu
@@ -239,12 +240,36 @@ data-testid="error-validation"           - błąd walidacji
 data-testid="error-api"                  - błąd API
 ```
 
-#### ⏳ `src/components/SettlementStepper.tsx` (TODO)
+#### ✅ `src/components/SettlementStepper.tsx` (ZROBIONE)
 ```
 data-testid="nav-stepper"                - nawigacja kroków
 data-testid="button-step-participants"   - przycisk kroku "Uczestnicy"
 data-testid="button-step-expenses"       - przycisk kroku "Koszty"
 data-testid="button-step-summary"        - przycisk kroku "Podsumowanie"
+```
+
+#### ✅ `src/components/SettlementDetailsPage.tsx` (ZROBIONE)
+```
+data-testid="page-settlement-details"    - strona szczegółów rozliczenia
+data-testid="section-step-content"       - sekcja zawartości kroku
+```
+
+#### ✅ `src/components/ReadOnlyBanner.tsx` (ZROBIONE)
+```
+data-testid="banner-readonly"            - banner "Tylko do odczytu"
+data-testid="heading-readonly-message"   - nagłówek komunikatu
+data-testid="text-readonly-description"  - opis blokady
+data-testid="button-dismiss-readonly"    - przycisk zamknięcia bannera
+```
+
+#### ✅ `src/components/EmptyState.tsx` (ZROBIONE)
+```
+data-testid="empty-state-container"      - kontener pustego stanu
+data-testid="icon-empty-active"          - ikona dla aktywnych
+data-testid="icon-empty-archive"         - ikona dla archiwum
+data-testid="heading-empty-state"        - nagłówek pustego stanu
+data-testid="text-empty-description"     - opis pustego stanu
+data-testid="button-create-first-settlement"  - przycisk tworzenia pierwszego rozliczenia
 ```
 
 ---
@@ -1167,8 +1192,22 @@ export async function expectExpensesCount(
 ### 7.1 Status Obecny
 
 ✅ **Ukończone**:
-- Dodano `data-testid` do komponentów autentykacji (4 komponenty)
-- Dodano `data-testid` do kluczowych komponentów rozliczeń (7 komponentów)
+- Dodano `data-testid` do komponentów autentykacji (4 komponenty - 100%)
+- Dodano `data-testid` do WSZYSTKICH komponentów rozliczeń (14/14 - 100%)
+  - ✅ SettlementsPage.tsx
+  - ✅ TabsSegment.tsx
+  - ✅ HeaderBar.tsx
+  - ✅ NewSettlementButton.tsx
+  - ✅ NewSettlementDialog.tsx
+  - ✅ SettlementsList.tsx
+  - ✅ SettlementCard.tsx
+  - ✅ CardActionsMenu.tsx
+  - ✅ ConfirmDeleteDialog.tsx
+  - ✅ SettlementHeader.tsx
+  - ✅ SettlementStepper.tsx
+  - ✅ SettlementDetailsPage.tsx
+  - ✅ ReadOnlyBanner.tsx
+  - ✅ EmptyState.tsx
 - Istniejąca struktura bazowa POM (`BasePage.ts`, `HomePage.ts`)
 - Konfiguracja Playwright gotowa
 
@@ -1184,11 +1223,11 @@ export async function expectExpensesCount(
 ### 7.2 Kolejność Implementacji
 
 **Faza 1: Dokończenie data-testid** (priorytet: WYSOKI)
-1. ✅ Auth components (4/4) - DONE
-2. ✅ Settlements components (7/14) - PARTIAL
-3. ⏳ Participants components (0/3)
-4. ⏳ Expenses components (0/10)
-5. ⏳ Summary components (0/5)
+1. ✅ Auth components (4/4) - DONE (100%)
+2. ✅ Settlements components (14/14) - DONE (100%)
+3. ⏳ Participants components (0/3) - TODO
+4. ⏳ Expenses components (0/10) - TODO
+5. ⏳ Summary components (0/5) - TODO
 
 **Faza 2: Implementacja POM** (priorytet: WYSOKI)
 1. Auth pages (3 klasy)

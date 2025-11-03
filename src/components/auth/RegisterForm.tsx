@@ -132,16 +132,16 @@ export default function RegisterForm() {
       </div>
 
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" data-testid="alert-error">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {successMessage && (
-        <Alert>
+        <Alert data-testid="alert-success">
           <AlertDescription>
             {successMessage}
-            {redirectCountdown !== null && <span className="font-semibold">{redirectCountdown}</span>}
+            {redirectCountdown !== null && <span className="font-semibold" data-testid="text-countdown">{redirectCountdown}</span>}
           </AlertDescription>
         </Alert>
       )}
@@ -149,14 +149,14 @@ export default function RegisterForm() {
       {isSuccess && redirectCountdown !== null && (
         <div className="text-center">
           <p className="text-sm text-muted-foreground mb-2">Nie chcesz czekać? Przejdź od razu do swoich rozliczeń.</p>
-          <Button onClick={() => (window.location.href = "/settlements")} variant="outline" size="sm">
+          <Button onClick={() => (window.location.href = "/settlements")} variant="outline" size="sm" data-testid="button-skip-countdown">
             Przejdź do rozliczeń
           </Button>
         </div>
       )}
 
       {!isSuccess && (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" data-testid="form-register">
           <div className="space-y-2">
             <Label htmlFor="email">Adres e-mail</Label>
             <Input
@@ -167,9 +167,10 @@ export default function RegisterForm() {
               placeholder="twoj@email.com"
               disabled={isSubmitting}
               aria-describedby={fieldErrors.email ? "email-error" : undefined}
+              data-testid="input-email"
             />
             {fieldErrors.email && (
-              <p id="email-error" className="text-sm text-destructive">
+              <p id="email-error" className="text-sm text-destructive" data-testid="error-email">
                 {fieldErrors.email}
               </p>
             )}
@@ -185,9 +186,10 @@ export default function RegisterForm() {
               placeholder="Minimum 8 znaków z literami i cyframi"
               disabled={isSubmitting}
               aria-describedby={fieldErrors.password ? "password-error" : undefined}
+              data-testid="input-password"
             />
             {fieldErrors.password && (
-              <p id="password-error" className="text-sm text-destructive">
+              <p id="password-error" className="text-sm text-destructive" data-testid="error-password">
                 {fieldErrors.password}
               </p>
             )}
@@ -203,15 +205,16 @@ export default function RegisterForm() {
               placeholder="Powtórz hasło"
               disabled={isSubmitting}
               aria-describedby={fieldErrors.confirmPassword ? "confirmPassword-error" : undefined}
+              data-testid="input-confirm-password"
             />
             {fieldErrors.confirmPassword && (
-              <p id="confirmPassword-error" className="text-sm text-destructive">
+              <p id="confirmPassword-error" className="text-sm text-destructive" data-testid="error-confirm-password">
                 {fieldErrors.confirmPassword}
               </p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full" disabled={isSubmitting} data-testid="button-submit">
             {isSubmitting ? "Rejestrowanie..." : "Zarejestruj się"}
           </Button>
         </form>
@@ -221,7 +224,7 @@ export default function RegisterForm() {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             Masz już konto?{" "}
-            <a href="/auth/login" className="text-primary hover:underline">
+            <a href="/auth/login" className="text-primary hover:underline" data-testid="link-login">
               Zaloguj się
             </a>
           </p>

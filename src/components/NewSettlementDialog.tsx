@@ -77,7 +77,7 @@ export default function NewSettlementDialog({ open, onOpenChange, onCreated }: N
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" data-testid="dialog-new-settlement">
         <DialogHeader>
           <DialogTitle>Nowe rozliczenie</DialogTitle>
           <DialogDescription>Utwórz nowe rozliczenie, aby śledzić wydatki z innymi osobami.</DialogDescription>
@@ -94,19 +94,20 @@ export default function NewSettlementDialog({ open, onOpenChange, onCreated }: N
                 placeholder="np. Wycieczka do Warszawy"
                 maxLength={100}
                 disabled={isSubmitting}
+                data-testid="input-settlement-title"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{error && <span className="text-destructive">{error}</span>}</span>
-                <span>{titleLength}/100</span>
+                <span>{error && <span className="text-destructive" data-testid="error-message">{error}</span>}</span>
+                <span data-testid="text-char-count">{titleLength}/100</span>
               </div>
             </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting} data-testid="button-cancel">
               Anuluj
             </Button>
-            <Button type="submit" disabled={!isValid || isSubmitting}>
+            <Button type="submit" disabled={!isValid || isSubmitting} data-testid="button-create">
               {isSubmitting ? "Tworzenie..." : "Utwórz"}
             </Button>
           </DialogFooter>
