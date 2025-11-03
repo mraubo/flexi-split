@@ -206,6 +206,48 @@
  - US‑006: Próba edycji przez niewłaściciela → 403; widok pozostaje read‑only; komunikat PL.
  - US‑070: Próba edycji zamkniętego rozliczenia → 409; akcje edycji ukryte/zablokowane w UI; widoki prezentują bilans.
 
+### 6.1) Testy E2E (Playwright)
+
+#### Testy formularza logowania (US‑002)
+- **Ścieżka**: `tests/e2e/specs/auth.login.spec.ts` → sekcja: `Authentication - Login`
+- **Zaimplementowane testy** (11 testów):
+  1. `should display login form with all required fields` – weryfikacja widoczności wszystkich elementów formularza.
+  2. `should display helper links on login page` – sprawdzenie linków do resetowania hasła i rejestracji.
+  3. `should accept valid credentials in form fields` – test akceptacji poprawnych danych bez submisji.
+  4. `should validate email format on form submission` – walidacja emaila (puste pole).
+  5. `should display error message with empty password field` – walidacja hasła (puste pole).
+  6. `should display error message with invalid credentials` – obsługa błędów logowania (401).
+  7. `should show loading state on submit button` – sprawdzenie stanu buttona przed submisją.
+  8. `should navigate to register page via link` – nawigacja do strony rejestracji.
+  9. `should navigate to forgot password page via link` – nawigacja do resetowania hasła.
+  10. `should persist email field value after password input` – trwałość wartości pola email.
+  11. `should clear email field when backspaced` – czyszczenie pola email.
+
+- **Warunki wstępne**: 
+  - Formularz logowania dostępny na `/auth/login`.
+  - Dane testowe: `E2E_USERNAME` i `E2E_PASSWORD` pobierane z `.env.test`.
+  - LoginPage POM w `tests/e2e/pages/auth/LoginPage.ts`.
+
+- **Wykonanie**: `bun run test:e2e -- auth.login.spec.ts`
+
+#### Testy dostępu do strony settlements (US‑002/US‑003)
+- **Ścieżka**: `tests/e2e/specs/auth.login.spec.ts` → sekcja: `Authentication - Settlements Page Access`
+- **Zaimplementowane testy** (3 testy):
+  1. `should redirect to login when accessing settlements without authentication` – weryfikacja przekierowania na login dla niezalogowanego użytkownika.
+  2. `should show settlements list page structure` – sprawdzenie struktury strony settlements.
+  3. `should have settlements list page with proper data-testid attributes` – weryfikacja obecności elementów do testowania.
+
+- **Warunki wstępne**:
+  - Strona settlements na `/settlements` (wymaga autentykacji).
+  - SettlementsListPage POM w `tests/e2e/pages/settlements/SettlementsListPage.ts`.
+
+- **Oczekiwane rezultaty**:
+  - Niezalogowany użytkownik jest przekierowany na `/auth/login`.
+  - Zalogowany użytkownik widzi stronę settlements z listą rozliczeń lub komunikatem o braku.
+  - Strona zawiera elementy z `data-testid` dla automatyzacji testów.
+
+- **Notatka**: Testy weryfikują zarówno security (auth guards) jak i strukturę UI. Pełna integracja logowania z rzeczywistą bazą wymagałaby aktywnego użytkownika testowego w Supabase.
+
 ---
 
 ## 7) Konfiguracja i bezpieczeństwo
