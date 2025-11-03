@@ -1,11 +1,7 @@
-import { Page, Locator } from "@playwright/test";
+import { Locator } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 export class HomePage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   // Main sections
   readonly homePage: Locator = this.page.locator('[data-testid="home-page"]');
   readonly welcomeSection: Locator = this.page.locator('[data-testid="welcome-section"]');
@@ -120,6 +116,9 @@ export class HomePage extends BasePage {
   readonly settlementsList: Locator = this.page.locator('[data-testid="settlements-list"]');
 
   async getSettlementsCount(): Promise<number> {
-    return await this.settlementsList.locator('[data-testid="settlement-card"]').count().catch(() => 0);
+    return await this.settlementsList
+      .locator('[data-testid="settlement-card"]')
+      .count()
+      .catch(() => 0);
   }
 }

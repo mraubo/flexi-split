@@ -21,17 +21,12 @@ const { title = "FlexiSplit" } = Astro.props;
         {
           Astro.locals.user ? (
             <>
-              <span class="text-sm text-muted-foreground mr-4">
-                {Astro.locals.user.email}
-              </span>
+              <span class="text-sm text-muted-foreground mr-4">{Astro.locals.user.email}</span>
               <LogoutButton client:load />
             </>
           ) : (
             <>
-              <a
-                href="/auth/login"
-                class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <a href="/auth/login" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Zaloguj się
               </a>
               <a

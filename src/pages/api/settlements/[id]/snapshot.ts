@@ -75,7 +75,6 @@ export const GET: APIRoute = async (context) => {
     // Validate response against schema before sending
     const responseValidation = SettlementSnapshotResponseSchema.safeParse(result);
     if (!responseValidation.success) {
-      console.error("[ERROR] Response validation failed:", responseValidation.error);
       return new Response(
         JSON.stringify({
           error: {

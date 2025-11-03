@@ -201,6 +201,7 @@ bun run test:e2e:codegen
 #### Test Coverage
 
 Current test scenarios cover:
+
 - Authentication (login, register, logout)
 - Settlement creation and management
 - Participant management

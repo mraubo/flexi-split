@@ -1,14 +1,17 @@
 # Plan implementacji widoku Lista rozliczeń
 
 ## 1. Przegląd
+
 Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne rozliczenia, tworzyć nowe (z limitem 3 aktywnych), usuwać zamknięte oraz przechodzić do szczegółów. Widok wspiera mobile-first, stabilne sortowanie, dostępność zgodną z WCAG AA oraz jasne stany puste i komunikaty.
 
 ## 2. Routing widoku
+
 - Ścieżka: /settlements?tab=active|archive
 - Domyślny tab: active
 - Zmiana zakładki aktualizuje query param tab i refetchuje listę z odpowiednim statusem.
 
 ## 3. Struktura komponentów
+
 - SettlementsPage (wyspa React w Astro)
   - TabsSegment
   - HeaderBar
@@ -26,7 +29,9 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - ToastsProvider
 
 ## 4. Szczegóły komponentów
+
 ### SettlementsPage
+
 - Opis komponentu: Główny kontener zarządzający stanem zakładek, zapytaniami, tworzeniem i usuwaniem.
 - Główne elementy: kontener, TabsSegment, przycisk nowego rozliczenia, lista, dialogi, toasty.
 - Obsługiwane interakcje:
@@ -40,6 +45,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
 - Propsy: brak (komponent strony).
 
 ### TabsSegment
+
 - Opis komponentu: Przełączanie między Aktywne/Archiwum z a11y Tabs.
 - Główne elementy: role="tablist", dwa przyciski tabów, aria-selected, underline/indicator.
 - Obsługiwane interakcje: klik/Enter/Space zmienia aktywny tab, aktualizuje query param.
@@ -50,6 +56,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onChange: (tab: SettlementsTab) => void
 
 ### HeaderBar
+
 - Opis komponentu: Pasek nagłówka z tytułem i akcjami.
 - Główne elementy: tytuł „Rozliczenia”, licznik aktywnych (opcjonalny), NewSettlementButton.
 - Obsługiwane interakcje: klik „Nowe rozliczenie”.
@@ -61,6 +68,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - limitActive: number (domyślnie 3)
 
 ### NewSettlementButton
+
 - Opis komponentu: Przycisk wywołujący dialog tworzenia.
 - Główne elementy: Button z ikoną „+”.
 - Obsługiwane interakcje: klik otwiera dialog.
@@ -71,6 +79,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onClick: () => void
 
 ### NewSettlementDialog
+
 - Opis komponentu: Formularz utworzenia rozliczenia z polem tytułu (max 100, wymagane).
 - Główne elementy: Dialog + Form (Input, licznik znaków, Submit/Cancel).
 - Obsługiwane interakcje:
@@ -86,6 +95,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onCreated: (created: SettlementSummaryDTO) => void
 
 ### SettlementsList
+
 - Opis komponentu: Lista kart rozliczeń z paginacją „Załaduj więcej”.
 - Główne elementy: <ul role="list">, SettlementCard jako <li>.
 - Obsługiwane interakcje: klik karty przechodzi do /settlements/:id.
@@ -98,6 +108,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onLoadMore: () => void
 
 ### SettlementCard
+
 - Opis komponentu: Karta pojedynczego rozliczenia z metadanymi i akcjami.
 - Główne elementy: Card, tytuł, badge statusu, liczniki, daty (created/updated/closed), CTA „Zobacz” lub klik całej karty, CardActionsMenu dla closed.
 - Obsługiwane interakcje:
@@ -111,6 +122,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onDelete: (id: string) => void
 
 ### CardActionsMenu
+
 - Opis komponentu: Menu kontekstowe karty; dla closed zawiera „Usuń”.
 - Główne elementy: DropdownMenu, pozycja „Usuń”.
 - Obsługiwane interakcje: klik „Usuń” → emit event.
@@ -121,6 +133,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onRequestDelete: () => void
 
 ### ConfirmDeleteDialog
+
 - Opis komponentu: Potwierdzenie usunięcia archiwalnego rozliczenia (akcja nieodwracalna).
 - Główne elementy: AlertDialog z tytułem, opisem, przyciskami.
 - Obsługiwane interakcje: Potwierdzenie → DELETE /api/settlements/{id}.
@@ -136,6 +149,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onDeleted: (id: string) => void
 
 ### EmptyState
+
 - Opis komponentu: Pusty stan z CTA „Utwórz rozliczenie” (dla aktywnych) lub informacją o braku archiwum.
 - Główne elementy: Ikona, copy, CTA.
 - Obsługiwane interakcje: klik CTA → otwarcie NewSettlementDialog.
@@ -147,6 +161,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onCreateClick: () => void
 
 ### PaginationControls
+
 - Opis komponentu: Sterowanie „Załaduj więcej” dla listy stronicowanej.
 - Główne elementy: Button „Załaduj więcej”.
 - Obsługiwane interakcje: klik → onLoadMore.
@@ -158,6 +173,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onLoadMore: () => void
 
 ### LoadingSkeleton
+
 - Opis komponentu: Szkielet ładowania listy i kart.
 - Główne elementy: Skeletony shadcn/ui.
 - Obsługiwane interakcje: brak.
@@ -167,6 +183,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - rows?: number
 
 ### ErrorState
+
 - Opis komponentu: Widok błędu z możliwością ponownego załadowania.
 - Główne elementy: alert, przycisk „Spróbuj ponownie”.
 - Obsługiwane interakcje: retry → refetch.
@@ -177,6 +194,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - onRetry: () => void
 
 ## 5. Typy
+
 - Importowane DTO z type_definitions:
   - SettlementSummaryDTO, SettlementsListResponse, PaginationMeta, CreateSettlementCommand.
 - Nowe ViewModel:
@@ -209,6 +227,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
     - details?: unknown
 
 ## 6. Zarządzanie stanem
+
 - Źródło prawdy: hook useSettlementsList.
 - Local state:
   - tab: SettlementsTab (sync z URL query param).
@@ -233,10 +252,11 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - Po DELETE — invalidacja cache dla archive.
 
 ## 7. Integracja API
+
 - GET /api/settlements
   - Query: status=open|closed, page, limit, sort_by=updated_at, sort_order=desc
   - Response: SettlementsListResponse
-  - Mapowanie na VM: pola *_at parsowane do Date, isDeletable = status === "closed", href = `/settlements/${id}`
+  - Mapowanie na VM: pola \*\_at parsowane do Date, isDeletable = status === "closed", href = `/settlements/${id}`
 - POST /api/settlements
   - Body: CreateSettlementCommand { title: string }
   - Sukces: 201 + SettlementSummaryDTO
@@ -256,6 +276,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - W przypadku 401 — przejście do /login i zachowanie returnTo.
 
 ## 8. Interakcje użytkownika
+
 - Przełączanie zakładek:
   - Oczekiwany wynik: lista filtrowana odpowiednio; URL aktualizowany (tab=...).
 - Tworzenie rozliczenia:
@@ -272,6 +293,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - Retry na błędzie → powtórne GET.
 
 ## 9. Warunki i walidacja
+
 - Limit aktywnych:
   - UI: disable „Nowe rozliczenie” + tooltip/komunikat „Limit 3 aktywne”.
   - API: obsługa 422 MAX_OPEN_SETTLEMENTS.
@@ -289,6 +311,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
   - Dotykowe cele 44px, czytelny kontrast, responsywność.
 
 ## 10. Obsługa błędów
+
 - 401: przekierowanie do /login, zapisz bieżącą lokalizację do returnTo.
 - 403: toast „Brak uprawnień do tej operacji”.
 - 404: toast „Nie znaleziono rozliczenia”.
@@ -299,6 +322,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
 - Retry strategia: przy błędach sieci — pojedynczy automatyczny retry z krótkim backoffem; manualny przycisk „Spróbuj ponownie”.
 
 ## 11. Kroki implementacji
+
 1. Routing i strona:
    - Utwórz stronę Astro pod /settlements z wyspą React SettlementsPage.
    - Implementuj synchronizację query param tab (domyślnie active).
@@ -327,7 +351,7 @@ Widok Lista rozliczeń pozwala właścicielowi przeglądać aktywne i archiwalne
    - POST /api/settlements (po sukcesie: invalidacja cache „active”, ewentualna nawigacja do szczegółów).
    - DELETE /api/settlements/{id} (po sukcesie: invalidacja cache „archive”).
 9. A11y i mobile:
-   - Dodaj aria-* dla tabs/list, focus ringi, rozmiary dotykowe.
+   - Dodaj aria-\* dla tabs/list, focus ringi, rozmiary dotykowe.
    - Testy na iOS/Android w przeglądarkach mobilnych.
 10. Obsługa błędów i toasty:
     - Mapowanie statusów na przyjazne komunikaty.

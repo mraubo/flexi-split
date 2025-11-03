@@ -194,7 +194,6 @@ export const POST: APIRoute = async (context) => {
     // Validate response against schema before sending
     const responseValidation = CloseSettlementResponseSchema.safeParse(result);
     if (!responseValidation.success) {
-      console.error("[ERROR] Response validation failed:", responseValidation.error);
       return new Response(
         JSON.stringify({
           error: {

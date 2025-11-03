@@ -12,18 +12,33 @@ Poniżej znajduje się analiza oraz kompletny, techniczny plan wdrożenia punktu
 </analysis>
 
 ### Przegląd punktu końcowego
+
 Endpoint PUT /settlements/{id} aktualizuje wyłącznie pole title rozliczenia, dopuszczając zmianę wyłącznie, gdy status rozliczenia wynosi open, a na sukces zwraca 200 i strukturę identyczną jak GET item dla settlements.Warstwa serwerowa powinna zostać zaimplementowana jako Astro Server Endpoint w src/pages/api/settlements/[id].ts z eksportem funkcji PUT, przy aktywnym SSR i ustawionym export const prerender = false dla tras wykonywanych on-demand.
+
 ### Szczegóły żądania
+
 - Metoda i ścieżka: PUT /settlements/{id}, gdzie id to UUID rozliczenia, przekazany jako route param w pliku [id].ts.- Nagłówki: Authorization: Bearer <token> wymagany do identyfikacji użytkownika sesyjnego przez klienta Supabase powiązanego z Astro.locals lub @supabase/ssr, z odmową 401 przy braku poświadczeń.- Body JSON: { "title": "string" }, wymagane i ograniczone do maksymalnie 100 znaków, walidowane schematem na wejściu i odrzucane 400 przy niezgodności kontraktu.
+
 ### Szczegóły odpowiedzi
+
 - Sukces 200: JSON zgodny z „Same as GET /settlements item”, tj. obiekt SettlementSummaryDTO z polami tożsamości, statusu, waluty, liczników i metadanych audytu, reprezentujący stan po aktualizacji.- Nagłówki odpowiedzi: Content-Type: application/json z ewentualnym ustawieniem Cache-Control: no-store dla odpowiedzi modyfikujących stan, realizowane standardowym Response API w handlerze Astro.
+
 ### Przepływ danych
+
 - Uwierzytelnienie: odczyt sesji użytkownika z Astro SSR i inicjalizacja Supabase klienta skojarzonego z kontekstem żądania, co zapewnia egzekwowanie RLS/ACL na poziomie bazy w zależności od użytego klienta.- Walidacja: parser JSON i walidacja schematem dla body, wczesne zakończenie 400 przy błędach wymaganych pól lub limitów długości, a następnie walidacja semantyczna statusu=open.- Autoryzacja i selekcja: pobranie rozliczenia powiązanego z ownerem równym zalogowanemu użytkownikowi, z mapowaniem „brak zasobu w kontekście” na 404 oraz „dostęp bez uprawnień” na 403 tam, gdzie polityka umożliwia odczyt, ale nie pozwala na modyfikację.- Aktualizacja: pojedyncze UPDATE title i ustawienie last_edited_by na user.id, a następnie SELECT zwrotny do zmapowania na SettlementSummaryDTO i odesłanie 200.
+
 ### Względy bezpieczeństwa
+
 - Autentykacja: wymaganie ważnego tokena i zwracanie 401 przy jego braku lub nieważności, zgodnie z semantyką MDN dla 401 Unauthorized i zaleceniami co do WWW-Authenticate.- Autoryzacja: weryfikacja właściciela rozliczenia lub poleganie na RLS z klientem serwerowym związanym z sesją (@supabase/ssr) oraz defensywne różnicowanie 403/404 bez ujawniania szczegółów poza minimum wymagane przez kontrakt.- Minimalizacja danych: aktualizacja wyłącznie pola title i brak modyfikacji innych pól, bez przyjmowania zbędnych danych wejściowych, zgodnie z zasadą najmniejszych uprawnień i powierzchni ataku.
+
 ### Obsługa błędów
+
 - 400 Bad Request: nieprawidłowe JSON lub naruszenie walidacji kontraktu żądania, np. brak title lub długość > 100 znaków, zwracane z czytelnym komunikatem i listą problemów walidacyjnych.- 401 Unauthorized: brak poświadczeń użytkownika lub nieprawidłowa sesja, zakończone komunikatem o konieczności uwierzytelnienia.- 403 Forbidden: użytkownik zalogowany bez uprawnień edycji dla danego rozliczenia, zgodnie z semantyką MDN.- 404 Not Found: brak rozliczenia o wskazanym id w kontekście użytkownika lub niedostępne przez RLS, bez ujawniania różnicowania przyczyn.- 422 Unprocessable Entity: rozliczenie istnieje, ale status=closed, więc żądanie semantycznie nie może być przetworzone mimo poprawnej składni.- 500 Internal Server Error: nieoczekiwane błędy serwera, z generowaniem unikalnego identyfikatora zdarzenia i skróconą diagnostyką w odpowiedzi.
+
 ### Wydajność
+
 - Jedno zapytanie UPDATE poprzedzone selectem autoryzacyjnym lub update z klauzulą WHERE uwzględniającą id i owner, ograniczające liczbę round-tripów do bazy i redukujące ryzyko warunków wyścigu.- Zwracanie tylko jednego rekordu w odpowiedzi bez dodatkowych joinaów i agregacji, co minimalizuje czas wykonania i zużycie zasobów, zgodne z profilem prostej aktualizacji tytułu.- Wykorzystanie istniejących indeksów po id i owner oraz bieżącej struktury SSR w Astro, bez dodatkowych alokacji pamięci w warstwie serwera poza walidacją i mapowaniem DTO.
+
 ### Kroki implementacji
+
 - Utwórz plik src/pages/api/settlements/[id].ts i eksportuj const prerender = false oraz funkcję PUT(ctx) opartą o SSR endpoints z Astro.- Zainicjalizuj klienta Supabase powiązanego z sesją w Astro.locals/@supabase/ssr, pobierz user.id lub zwróć 401, zgodnie z zaleceniami dla pracy po stronie serwera.- Zaimplementuj walidację body: odczytaj JSON, sprawdź obecność title i limit 100 znaków, odrzuć 400 przy błędzie i przygotuj sformatowane komunikaty.- Zaimplementuj SettlementService z metodami authorizeAndGetById, ensureOpen, updateTitle, mapToSummaryDTO i w handlerze PUT wywołuj te metody we właściwej kolejności, zarządzając 403/404/422 zgodnie z regułami.- Zakończ 200: Response(JSON.stringify(dto), { status: 200, headers: { "Content-Type": "application/json" } }) i pokryj testami jednostkowymi serwisu oraz testami integracyjnymi endpointu pod kątem statusów 200/400/401/403/404/422.

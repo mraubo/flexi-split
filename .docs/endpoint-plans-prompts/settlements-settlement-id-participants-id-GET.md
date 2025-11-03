@@ -3,17 +3,19 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
+
 #### GET /settlements/{settlement_id}/participants/{id}
 
 - **Description**: Retrieve single participant
 - **Response Structure**: Same as GET list item
 - **Success Codes**: 200 OK
 - **Error Codes**: 401 Unauthorized, 403 Forbidden, 404 Not Found
-</route_api_specification>
+  </route_api_specification>
 
 2. Related database resources:
-<related_db_resources>
+   <related_db_resources>
+
 ### 1. Lista tabel z kolumnami, typami i ograniczeniami
 
 #### 1.0 `auth.users` (zarządzana przez Supabase Auth)
@@ -190,11 +192,12 @@ Constraints and behaviors:
   - UNIQUE (`settlement_id`) — jeśli wymuszamy pojedynczy snapshot.
 
 ---
+
 </related_db_resources>
 
 3. Definicje typów:
-<type_definitions>
-import type { Tables } from "@/db/database.types";
+   <type_definitions>
+   import type { Tables } from "@/db/database.types";
 
 // Shared foundational scalar aliases. These align with DB column types but
 // provide semantic meaning across DTOs and command models.
@@ -206,15 +209,15 @@ export type AmountCents = number;
 export type SortOrder = "asc" | "desc";
 
 export interface PaginationMeta {
-  page: number;
-  limit: number;
-  total: number;
-  total_pages: number;
+page: number;
+limit: number;
+total: number;
+total_pages: number;
 }
 
 export interface PagedResponse<T> {
-  data: T[];
-  pagination: PaginationMeta;
+data: T[];
+pagination: PaginationMeta;
 }
 
 // Base DB row bindings for derivation. These keep DTOs connected to entities.
@@ -230,18 +233,19 @@ type EventRow = Tables<"events">;
 
 // Summary DTO returned by list/detail endpoints
 export type SettlementSummaryDTO = Pick<
-  SettlementRow,
-  | "id"
-  | "title"
-  | "status"
-  | "currency"
-  | "participants_count"
-  | "expenses_count"
-  | "created_at"
-  | "updated_at"
-  | "closed_at"
-  | "last_edited_by"
->;
+SettlementRow,
+| "id"
+| "title"
+| "status"
+| "currency"
+| "participants_count"
+| "expenses_count"
+| "created_at"
+| "updated_at"
+| "closed_at"
+| "last_edited_by"
+
+> ;
 
 // Detail is the same structure per API plan
 export type SettlementDetailsDTO = SettlementSummaryDTO;
@@ -251,9 +255,10 @@ export type SettlementDetailsDTO = SettlementSummaryDTO;
 // -----------------------------
 
 export type ParticipantDTO = Pick<
-  ParticipantRow,
-  "id" | "nickname" | "is_owner" | "created_at" | "updated_at" | "last_edited_by"
->;
+ParticipantRow,
+"id" | "nickname" | "is_owner" | "created_at" | "updated_at" | "last_edited_by"
+
+> ;
 
 // -----------------------------
 // Expenses - DTOs
@@ -262,19 +267,20 @@ export type ParticipantDTO = Pick<
 export type ExpenseParticipantMiniDTO = Pick<ParticipantRow, "id" | "nickname">;
 
 export type ExpenseDTO = Pick<
-  ExpenseRow,
-  | "id"
-  | "payer_participant_id"
-  | "amount_cents"
-  | "expense_date"
-  | "description"
-  | "share_count"
-  | "created_at"
-  | "updated_at"
-  | "last_edited_by"
+ExpenseRow,
+| "id"
+| "payer_participant_id"
+| "amount_cents"
+| "expense_date"
+| "description"
+| "share_count"
+| "created_at"
+| "updated_at"
+| "last_edited_by"
+
 > & {
-  participants: ExpenseParticipantMiniDTO[];
-};
+> participants: ExpenseParticipantMiniDTO[];
+> };
 
 export type ExpenseDetailsDTO = ExpenseDTO;
 
@@ -285,45 +291,46 @@ export type ExpenseDetailsDTO = ExpenseDTO;
 export type BalancesMap = Record<UUID, AmountCents>;
 
 export interface TransferDTO {
-  from: UUID;
-  to: UUID;
-  amount_cents: AmountCents;
+from: UUID;
+to: UUID;
+amount_cents: AmountCents;
 }
 
 // The snapshot row stores balances/transfers as JSON; in the API they are
 // exposed as strongly typed structures below.
 export type SettlementSnapshotDTO = Pick<
-  SettlementSnapshotRow,
-  "settlement_id" | "algorithm_version" | "created_at"
+SettlementSnapshotRow,
+"settlement_id" | "algorithm_version" | "created_at"
+
 > & {
-  balances: BalancesMap;
-  transfers: TransferDTO[];
-};
+> balances: BalancesMap;
+> transfers: TransferDTO[];
+> };
 
 // -----------------------------
 // Events - DTOs
 // -----------------------------
 
 export type EventType =
-  | "settlement_created"
-  | "participant_added"
-  | "expense_added"
-  | "settle_confirmed"
-  | "settled"
-  | "summary_copied"
-  | "new_settlement_started";
+| "settlement_created"
+| "participant_added"
+| "expense_added"
+| "settle_confirmed"
+| "settled"
+| "summary_copied"
+| "new_settlement_started";
 
 export type EventEnv = "dev" | "prod";
 
 export interface EventPayload {
-  env: EventEnv;
-  additional_data?: Record<string, unknown>;
-  // Allow future extensibility without breaking consumers
-  [key: string]: unknown;
+env: EventEnv;
+additional_data?: Record<string, unknown>;
+// Allow future extensibility without breaking consumers
+[key: string]: unknown;
 }
 
 export type EventDTO = Pick<EventRow, "id" | "event_type" | "settlement_id" | "created_at"> & {
-  payload: EventPayload;
+payload: EventPayload;
 };
 
 // -----------------------------
@@ -334,55 +341,55 @@ export type SettlementSortBy = "created_at" | "updated_at" | "title";
 
 // Settlements
 export interface GetSettlementsQuery {
-  status?: "open" | "closed";
-  page?: number;
-  limit?: number;
-  sort_by?: SettlementSortBy;
-  sort_order?: SortOrder;
+status?: "open" | "closed";
+page?: number;
+limit?: number;
+sort_by?: SettlementSortBy;
+sort_order?: SortOrder;
 }
 
 export interface CreateSettlementCommand {
-  title: string; // validated: required, max 100 chars
+title: string; // validated: required, max 100 chars
 }
 
 export interface UpdateSettlementCommand {
-  title: string; // validated: required, max 100 chars
+title: string; // validated: required, max 100 chars
 }
 
 export type CloseSettlementCommand = Record<string, never>; // empty body
 
 // Participants (scoped to a settlement via path params)
 export interface GetParticipantsQuery {
-  page?: number;
-  limit?: number;
+page?: number;
+limit?: number;
 }
 
 export interface CreateParticipantCommand {
-  nickname: string; // validated: 3-30 chars, ^[a-z0-9_-]+$, case-insensitive unique per settlement
+nickname: string; // validated: 3-30 chars, ^[a-z0-9_-]+$, case-insensitive unique per settlement
 }
 
 export interface UpdateParticipantCommand {
-  nickname: string; // same validation as create
+nickname: string; // same validation as create
 }
 
 // Expenses (scoped to a settlement via path params)
 export interface GetExpensesQuery {
-  participant_id?: UUID; // filter by payer or participant
-  date_from?: DateString; // YYYY-MM-DD
-  date_to?: DateString; // YYYY-MM-DD
-  page?: number;
-  limit?: number;
-  sort_by?: ExpenseSortBy;
-  sort_order?: SortOrder;
+participant_id?: UUID; // filter by payer or participant
+date_from?: DateString; // YYYY-MM-DD
+date_to?: DateString; // YYYY-MM-DD
+page?: number;
+limit?: number;
+sort_by?: ExpenseSortBy;
+sort_order?: SortOrder;
 }
 
 type ExpenseCreateBase = Pick<ExpenseRow, "payer_participant_id" | "amount_cents" | "expense_date"> & {
-  // Optional per API, nullable in DB
-  description?: ExpenseRow["description"];
+// Optional per API, nullable in DB
+description?: ExpenseRow["description"];
 };
 
 export type CreateExpenseCommand = ExpenseCreateBase & {
-  participant_ids: UUID[]; // required, min 1, all must exist in settlement
+participant_ids: UUID[]; // required, min 1, all must exist in settlement
 };
 
 export type UpdateExpenseCommand = CreateExpenseCommand; // same shape as POST
@@ -392,18 +399,18 @@ export type GetSettlementSnapshotQuery = Record<string, never>; // no query para
 
 // Events
 export interface CreateEventCommand {
-  event_type: EventType;
-  settlement_id: UUID | null;
-  payload: EventPayload;
+event_type: EventType;
+settlement_id: UUID | null;
+payload: EventPayload;
 }
 
 export interface GetEventsQuery {
-  settlement_id?: UUID;
-  event_type?: EventType;
-  date_from?: DateString;
-  date_to?: DateString;
-  page?: number;
-  limit?: number; // max 100
+settlement_id?: UUID;
+event_type?: EventType;
+date_from?: DateString;
+date_to?: DateString;
+page?: number;
+limit?: number; // max 100
 }
 
 // -----------------------------
@@ -418,8 +425,8 @@ export type EventsListResponse = PagedResponse<EventDTO>;
 </type_definitions>
 
 3. Tech stack:
-<tech_stack>
-Frontend - Astro z React dla komponentów interaktywnych:
+   <tech_stack>
+   Frontend - Astro z React dla komponentów interaktywnych:
 
 - Astro 5 pozwala na tworzenie szybkich, wydajnych stron i aplikacji z minimalną ilością JavaScript
 - Vue 3 zapewni interaktywność tam, gdzie jest potrzebna
@@ -447,7 +454,8 @@ CI/CD i Hosting:
 </tech_stack>
 
 4. Implementation rules:
-<implementation_rules>
+   <implementation_rules>
+
 # AI Rules for {app-name}
 
 {project-description}
@@ -473,7 +481,7 @@ When introducing changes to the project, always follow the directory structure b
 - `./src/types.ts` - Shared types for backend and frontend (Entities, DTOs)
 - `./src/components` - Client-side components written in Astro (static) and React (dynamic)
 - `./src/components/ui` - Client-side components from Shadcn/ui
-- `./src/lib` - Services and helpers 
+- `./src/lib` - Services and helpers
 - `./src/assets` - static internal assets
 - `./public` - public assets
 
@@ -494,7 +502,6 @@ When modifying the directory structure, always update this section.
 - Consider using custom error types or error factories for consistent error handling.
 - Before running a node-related command in the terminal, run `nvm use` and use bun to execute the command.
 
-
 ### Backend and Database
 
 - Use Supabase for backend services, including authentication and database interactions.
@@ -508,7 +515,7 @@ When modifying the directory structure, always update this section.
 - Leverage View Transitions API for smooth page transitions (use ClientRouter)
 - Use content collections with type safety for blog posts, documentation, etc.
 - Leverage Server Endpoints for API routes
-- Use POST, GET  - uppercase format for endpoint handlers
+- Use POST, GET - uppercase format for endpoint handlers
 - Use `export const prerender = false` for API routes
 - Use zod for input validation in API routes
 - Extract logic into services in `src/lib/services`
@@ -543,6 +550,7 @@ Po przeprowadzeniu analizy utwórz szczegółowy plan wdrożenia w formacie mark
 8. Kroki implementacji
 
 W całym planie upewnij się, że
+
 - Używać prawidłowych kodów stanu API:
   - 200 dla pomyślnego odczytu
   - 201 dla pomyślnego utworzenia

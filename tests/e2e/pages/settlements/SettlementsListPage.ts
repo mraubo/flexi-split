@@ -1,11 +1,7 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import { Locator } from "@playwright/test";
+import { BasePage } from "../BasePage";
 
 export class SettlementsListPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   // Locators
   readonly pageContainer: Locator = this.page.locator('[data-testid="settlements-page"]');
   readonly listSettlements: Locator = this.page.locator('[data-testid="list-settlements"]');
@@ -13,7 +9,7 @@ export class SettlementsListPage extends BasePage {
 
   // Navigation
   async goto() {
-    await this.page.goto('/settlements');
+    await this.page.goto("/settlements");
     await this.waitForLoad();
   }
 

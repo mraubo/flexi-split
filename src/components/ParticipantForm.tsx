@@ -43,23 +43,29 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
       return value.length >= 3 && value.length <= 30;
     };
 
-    const validateLocalUniqueness = (value: string): boolean => {
-      // Case-insensitive uniqueness check
-      return !existingNicknames.some((existing) => existing.toLowerCase() === value.toLowerCase());
-    };
+    const validateLocalUniqueness = useCallback(
+      (value: string): boolean => {
+        // Case-insensitive uniqueness check
+        return !existingNicknames.some((existing) => existing.toLowerCase() === value.toLowerCase());
+      },
+      [existingNicknames]
+    );
 
-    const generateSuggestion = (value: string): string => {
-      const base = value.toLowerCase();
-      let suffix = 1;
-      let suggestion = `${base}${suffix}`;
+    const generateSuggestion = useCallback(
+      (value: string): string => {
+        const base = value.toLowerCase();
+        let suffix = 1;
+        let suggestion = `${base}${suffix}`;
 
-      while (existingNicknames.some((existing) => existing.toLowerCase() === suggestion.toLowerCase())) {
-        suffix++;
-        suggestion = `${base}${suffix}`;
-      }
+        while (existingNicknames.some((existing) => existing.toLowerCase() === suggestion.toLowerCase())) {
+          suffix++;
+          suggestion = `${base}${suffix}`;
+        }
 
-      return suggestion;
-    };
+        return suggestion;
+      },
+      [existingNicknames]
+    );
 
     const updateValidation = useCallback(
       (value: string) => {
@@ -67,12 +73,14 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
         const isValidLength = validateLength(value);
         const isUniqueLocal = validateLocalUniqueness(value);
 
+        const suggestion = !isUniqueLocal ? generateSuggestion(value) : undefined;
+
         const newValidation = {
           isValidPattern,
           isValidLength,
           isUniqueLocal,
           conflictRemote: false,
-          suggestion: !isUniqueLocal ? generateSuggestion(value) : undefined,
+          suggestion,
         };
 
         setValidation(newValidation);
@@ -88,7 +96,7 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
           setLiveMessage("");
         }
       },
-      [existingNicknames]
+      [generateSuggestion, validateLocalUniqueness]
     );
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,11 +174,10 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
 
         // Focus back to input
         inputRef.current?.focus();
-      } catch (error: any) {
-        console.error("Error creating participant:", error);
-
+      } catch (error: unknown) {
         // Handle specific error codes
-        if (error.status === 409) {
+        const err = error as { status?: number };
+        if (err.status === 409) {
           // Nickname conflict - update validation with suggestion
           const suggestion = generateSuggestion(nickname);
           setValidation((prev) => ({

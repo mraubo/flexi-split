@@ -12,31 +12,37 @@
 # .ai/view-implementation-plan.md
 
 ### Przegląd punktu końcowego
+
 - Cel: Pobranie pojedynczego wydatku wraz z listą uczestników podziału z danego rozliczenia, z odpowiedzią zgodną ze strukturą elementu listy ExpensesListResponse (ExpenseDTO/ExpenseDetailsDTO) w formacie JSON zwróconym jako Response z poprawnym statusem HTTP w SSR Astro.
 - Ścieżka: GET /settlements/{settlement_id}/expenses/{id}, obsłużona przez plik src/pages/api/settlements//expenses/.json.ts z export const prerender = false, aby endpoint był wykonywany on-demand po stronie serwera.
 - Kody statusu: 200 przy sukcesie, 401 przy braku autoryzacji, 403 przy braku uprawnień, 404 gdy rekord nie istnieje lub jest niedostępny przez RLS, 500 dla błędów nienadzorowanych, przy czym Response w Astro pozwala jawnie ustawić kod i nagłówki.
 
 ### Szczegóły żądania
+
 - Parametry ścieżki: settlement_id (UUID) i id (UUID), które są walidowane po stronie API za pomocą schematów wejściowych i odrzucone kodem 400 w razie nieprawidłowości przed dotknięciem warstwy danych, co minimalizuje koszty zapytania i ułatwia spójne mapowanie błędów.
 - Nagłówki: Authorization: Bearer <JWT> wymagany do sesji Supabase Auth, ponieważ auth.uid() zwraca null bez uwierzytelnienia, co implikuje 401 przy braku użytkownika oraz wpływa na polityki RLS wywoływane dla roli anon vs authenticated.
 - Body: Brak ciała w GET, jedynie odczyt danych i ich serializacja do JSON poprzez Response, zgodnie z modelem SSR endpointów Astro.
 
 ### Szczegóły odpowiedzi
+
 - Format: JSON z polami ExpenseDetailsDTO obejmującymi id, payer_participant_id, amount_cents, expense_date, description, share_count, created_at, updated_at, last_edited_by oraz participants: ExpenseParticipantMiniDTO z id i nickname, zwracany przez Response z odpowiednim Content-Type.
 - Idempotencja: GET jest bezskutkowe na stan i może być buforowane na kliencie/pośrednikach, jednak RLS i uprawnienia muszą być honorowane, a ewentualne nagłówki kontrolujące cache mogą być ustawione w Response, jeśli przewidujemy kontrolę cache.
 - Spójność: Wynik powinien być spójny z listą GET /settlements/{id}/expenses, ponieważ wskazano, że struktura pojedynczego zasobu jest tożsama ze strukturą elementu listy, co upraszcza konsumpcję po stronie frontendu.
 
 ### Przepływ danych
+
 - Wejście do endpointu: Żądanie HTTP trafia do SSR Astro API route, gdzie obsługa metody GET realizuje walidację parametrów, ekstrakcję sesji i wywołanie serwisu domenowego, po czym tworzy Response ze statusem i JSON, zgodnie z przewodnikiem Astro Endpoints.
 - Warstwa serwisu: Serwis expenses.service.ts otrzymuje supabase z locals, settlementId oraz expenseId i wykonuje dwa zapytania: odczyt wydatku ograniczonego settlement_id oraz dołączenie uczestników przez tabelę łączącą, z przefiltrowaniem przez RLS, która działa jak implicitne WHERE w politykach.
 - Baza i RLS: Polityki RLS na expenses, expense_participants i participants ograniczają widoczność wierszy do użytkowników należących do rozliczenia lub właściciela, a brak dopasowania skutkuje brakiem wyników i finalnie 404 w API, przy czym należy używać to authenticated oraz korzystać z auth.uid() w USING/with check.
 
 ### Względy bezpieczeństwa
+
 - RLS must-have: Włączone RLS na publicznych tabelach i precyzyjne polityki SELECT dla expenses, expense_participants i participants, z użyciem TO authenticated, USING z auth.uid() i unikaniem polegania na metadanych JWT modyfikowalnych przez użytkownika, co zapewnia obronę w głąb.
 - Klucze serwisowe: Bezwzględny zakaz używania service key w kontekście żądań użytkowników, gdyż bypass RLS omija wszystkie polityki, a serwisowe role służą wyłącznie do zadań administracyjnych poza ścieżką użytkownika.
 - SSR i nagłówki: W API routes należy ustawiać właściwe nagłówki i statusy w Response, unikać ujawniania szczegółów polic, a w przypadku błędów zwracać neutralne komunikaty, pamiętając że SSR daje pełny dostęp do Request i umożliwia kontrolę odpowiedzi.
 
 ### Obsługa błędów
+
 - 400 Bad Request: Zwracany przy niepoprawnym UUID w settlement_id lub id po walidacji wejścia w warstwie endpointu, zanim wykonane zostanie zapytanie do bazy, co ogranicza koszty i ryzyko informacji zwrotnej o schemacie.
 - 401 Unauthorized: Zwracany, jeśli brak ważnego JWT, gdyż auth.uid() będzie null i polityki RLS nie dopuszczą dostępu, zatem brak sesji skutkuje odrzuceniem bez analizy zasobu.
 - 403 Forbidden: Zwracany, gdy użytkownik jest uwierzytelniony, ale polityki RLS nie pozwalają na odczyt danego settlementu/expense, co zapewnia domknięcie zasadu najmniejszych uprawnień.
@@ -44,11 +50,13 @@
 - 500 Internal Server Error: Zwracany dla nieoczekiwanych wyjątków, po zalogowaniu błędu do systemu logowania i ewentualnie tabeli błędów, bez ujawniania detali, z kontrolą statusu via Response.
 
 ### Wydajność
+
 - Minimalizacja round-trip: Pojedynczy read z dołączeniem uczestników może być zrealizowany poprzez dwa lekkie zapytania zamiast wielu per uczestnik, przy czym filtry po kluczach (id, settlement_id) są wspierane przez indeksy i przyspieszają plany zapytań pod RLS.
 - Indeksy pod RLS: Zaleca się indeksowanie kolumn używanych w USING/with check (np. owner_id lub relacyjnych odniesień), gdyż Supabase rekomenduje indeksy na kolumnach wykorzystywanych przez polityki dla znaczących zysków wydajności.
 - SSR operacje: SSR pozwala kontrolować nagłówki i ewentualne cache-control, ale należy pamiętać, że każde wywołanie przechodzi przez polityki RLS, co eliminuje konieczność dodatkowego filtrowania po stronie aplikacji.
 
 ### Kroki implementacji
+
 - Pliki i struktura: Utworzyć endpoint w src/pages/api/settlements//expenses/.json.ts z export const prerender = false oraz typowanym handlerem GET zwracającym Response, zgodnie z dokumentacją Astro Endpoints.
 - Walidacja i typy: Zaimplementować walidację parametrów ścieżki jako UUID oraz mapowanie do DTO, a następnie serializację JSON w Response z Content-Type, przy czym walidacja odbywa się zanim wywołamy serwis i bazę.
 - Warstwa serwisu: Dodać src/lib/services/expenses.service.ts z funkcją readExpenseWithParticipants(supabase, settlementId, expenseId), która wykona bezpieczne odczyty z uwzględnieniem RLS i przekształci dane do ExpenseDetailsDTO, trzymając logikę poza endpointem.
@@ -59,28 +67,28 @@
 
 ### Implementacja – szkic techniczny
 
-- Lokalizacja pliku endpointu:  
+- Lokalizacja pliku endpointu:
   - src/pages/api/settlements//expenses/.json.ts z export const prerender = false oraz export async function GET(ctx) zwracającym Response(JSON.stringify(dto), { status: 200, headers: { 'Content-Type': 'application/json' }}) zgodnie z SSR endpoints w Astro.
 
-- Walidacja parametrów:  
+- Walidacja parametrów:
   - Walidować ctx.params.settlement_id i ctx.params.id jako UUID, w przypadku błędu zwrócić Response z 400 i komunikatem JSON oraz Content-Type ustawionym explicite, przed jakimkolwiek dostępem do supabase.
 
-- Pozyskanie klienta Supabase:  
+- Pozyskanie klienta Supabase:
   - Używać klienta dostępnego w locals kontekstu serwera Astro i przekazać go do serwisu, zachowując podejście SSR i separację concerns, bez użycia klucza serwisowego.
 
-- Serwis readExpenseWithParticipants:  
-  - Zapytanie 1: SELECT * FROM expenses WHERE id = :id AND settlement_id = :settlement_id LIMIT 1, co zostanie dodatkowo ograniczone przez polityki RLS i role authenticated/anon.
+- Serwis readExpenseWithParticipants:
+  - Zapytanie 1: SELECT \* FROM expenses WHERE id = :id AND settlement_id = :settlement_id LIMIT 1, co zostanie dodatkowo ograniczone przez polityki RLS i role authenticated/anon.
   - Zapytanie 2: SELECT p.id, p.nickname FROM expense_participants ep JOIN participants p ON p.id = ep.participant_id AND p.settlement_id = ep.settlement_id WHERE ep.expense_id = :id AND ep.settlement_id = :settlement_id, z RLS ograniczającym widoczność i koniecznością indeksów dla kolumn w politykach.
   - Mapowanie: Złożyć wynik do ExpenseDetailsDTO i zwrócić do warstwy API, aby sformatować Response.
 
-- Mapowanie błędów:  
+- Mapowanie błędów:
   - 401 gdy brak sesji lub kontekstu użytkownika i auth.uid() jest null, 403 gdy zapytanie jest zablokowane przez politykę, 404 gdy rekord nie istnieje lub nie jest dostępny po filtrach i RLS, 500 dla wyjątków serwisowych, z czystymi komunikatami i bez detali technicznych.
 
-- Usprawnienia DB i RLS:  
+- Usprawnienia DB i RLS:
   - Zweryfikować, że RLS jest enable row level security na każdej tabeli i polityki SELECT używają TO authenticated i (select auth.uid()) idiomu dla optymalizacji planu, a kolumny użyte w politykach są zindeksowane dla lepszych czasów odpowiedzi.
 
-- Deferrable constraints i triggery:  
+- Deferrable constraints i triggery:
   - Utrzymanie spójności share_count oraz minimalnej liczby uczestników jest zapewnione triggerami i constraintami w bazie, a rozumienie DEFERRABLE/INITIALLY DEFERRED ma znaczenie przy operacjach modyfikujących, choć GET ich nie wyzwala, co warto uwzględnić przy debugowaniu consistencji.
 
-- Finalizacja:  
+- Finalizacja:
   - Dodać testy integracyjne z realnym RLS, sprawdzić odpowiedzi i kody HTTP, oraz wdrożyć w środowisku z SSR, gdzie endpointy działają on-demand z prawidłowym Response i nagłówkami.

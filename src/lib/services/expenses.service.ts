@@ -384,13 +384,6 @@ export async function createExpense(
   });
 
   if (expenseInsertError) {
-    console.error(`[ERROR] Failed to create expense: ${expenseInsertError.message}`, {
-      settlementId,
-      userId,
-      command,
-      error: expenseInsertError,
-    });
-
     // Map specific database error codes to business logic errors
     let errorMessage = `Failed to create expense: ${expenseInsertError.message}`;
 
@@ -430,11 +423,6 @@ export async function createExpense(
     .eq("expense_id", rpcResult.id);
 
   if (fetchedParticipantsError) {
-    console.error(`[ERROR] Failed to fetch expense participants: ${fetchedParticipantsError.message}`, {
-      expenseId: rpcResult.id,
-      settlementId,
-      userId,
-    });
     throw new Error("Failed to retrieve expense participants");
   }
 
@@ -513,14 +501,6 @@ export async function updateExpense(
   });
 
   if (expenseUpdateError) {
-    console.error(`[ERROR] Failed to update expense: ${expenseUpdateError.message}`, {
-      settlementId,
-      expenseId,
-      userId,
-      command,
-      error: expenseUpdateError,
-    });
-
     // Map specific database error codes to business logic errors
     let errorMessage = `Failed to update expense: ${expenseUpdateError.message}`;
 
@@ -561,11 +541,6 @@ export async function updateExpense(
     .eq("expense_id", expenseId);
 
   if (fetchedParticipantsError) {
-    console.error(`[ERROR] Failed to fetch expense participants: ${fetchedParticipantsError.message}`, {
-      expenseId,
-      settlementId,
-      userId,
-    });
     throw new Error("Failed to retrieve updated expense participants");
   }
 

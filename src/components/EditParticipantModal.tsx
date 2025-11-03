@@ -16,10 +16,10 @@ import type { UpdateParticipantCommand, ParticipantItemVM } from "@/types";
 interface EditParticipantModalProps {
   participant: ParticipantItemVM | null;
   existingNicknames: string[];
-  onSaved: (updatedParticipant: any) => void;
+  onSaved: (updatedParticipant: ParticipantItemVM) => void;
   onClose: () => void;
   disabled: boolean;
-  updateParticipant: (participantId: string, command: UpdateParticipantCommand) => Promise<any>;
+  updateParticipant: (participantId: string, command: UpdateParticipantCommand) => Promise<ParticipantItemVM>;
 }
 
 interface EditParticipantValidationState {
@@ -78,26 +78,33 @@ export default function EditParticipantModal({
     return value.length >= 3 && value.length <= 30;
   };
 
-  const validateLocalUniqueness = (value: string): boolean => {
-    // Case-insensitive uniqueness check, excluding current participant
-    return !existingNicknames.some(
-      (existing) =>
-        existing.toLowerCase() === value.toLowerCase() && existing.toLowerCase() !== participant?.nickname.toLowerCase()
-    );
-  };
+  const validateLocalUniqueness = useCallback(
+    (value: string): boolean => {
+      // Case-insensitive uniqueness check, excluding current participant
+      return !existingNicknames.some(
+        (existing) =>
+          existing.toLowerCase() === value.toLowerCase() &&
+          existing.toLowerCase() !== participant?.nickname.toLowerCase()
+      );
+    },
+    [existingNicknames, participant]
+  );
 
-  const generateSuggestion = (value: string): string => {
-    const base = value.toLowerCase();
-    let suffix = 1;
-    let suggestion = `${base}${suffix}`;
+  const generateSuggestion = useCallback(
+    (value: string): string => {
+      const base = value.toLowerCase();
+      let suffix = 1;
+      let suggestion = `${base}${suffix}`;
 
-    while (existingNicknames.some((existing) => existing.toLowerCase() === suggestion.toLowerCase())) {
-      suffix++;
-      suggestion = `${base}${suffix}`;
-    }
+      while (existingNicknames.some((existing) => existing.toLowerCase() === suggestion.toLowerCase())) {
+        suffix++;
+        suggestion = `${base}${suffix}`;
+      }
 
-    return suggestion;
-  };
+      return suggestion;
+    },
+    [existingNicknames]
+  );
 
   const updateValidation = useCallback(
     (value: string) => {
@@ -105,15 +112,17 @@ export default function EditParticipantModal({
       const isValidLength = validateLength(value);
       const isUniqueLocal = validateLocalUniqueness(value);
 
+      const suggestion = !isUniqueLocal ? generateSuggestion(value) : undefined;
+
       setValidation({
         isValidPattern,
         isValidLength,
         isUniqueLocal,
         conflictRemote: false,
-        suggestion: !isUniqueLocal ? generateSuggestion(value) : undefined,
+        suggestion,
       });
     },
-    [existingNicknames, participant]
+    [generateSuggestion, validateLocalUniqueness]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,11 +190,10 @@ export default function EditParticipantModal({
       const updatedParticipant = await updateParticipant(participant.id, command);
       onSaved(updatedParticipant);
       onClose(); // Close modal on success
-    } catch (error: any) {
-      console.error("Error updating participant:", error);
-
+    } catch (error: unknown) {
       // Handle specific error codes
-      if (error.status === 409) {
+      const err = error as { status?: number };
+      if (err.status === 409) {
         // Nickname conflict - update validation with suggestion
         const suggestion = generateSuggestion(nickname);
         setValidation((prev) => ({

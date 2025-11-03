@@ -1,11 +1,7 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import { Locator } from "@playwright/test";
+import { BasePage } from "../BasePage";
 
 export class LoginPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
-
   // Locators
   readonly formLogin: Locator = this.page.locator('[data-testid="form-login"]');
   readonly inputEmail: Locator = this.page.locator('[data-testid="input-email"]');
@@ -19,7 +15,7 @@ export class LoginPage extends BasePage {
 
   // Navigation
   async goto() {
-    await this.page.goto('/auth/login');
+    await this.page.goto("/auth/login");
     await this.waitForLoad();
   }
 

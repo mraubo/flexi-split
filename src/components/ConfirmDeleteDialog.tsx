@@ -89,13 +89,29 @@ export default function ConfirmDeleteDialog({
           </div>
         </DialogHeader>
 
-        {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md" data-testid="error-message">{error}</div>}
+        {error && (
+          <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md" data-testid="error-message">
+            {error}
+          </div>
+        )}
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={handleClose} disabled={isDeleting} data-testid="button-cancel">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClose}
+            disabled={isDeleting}
+            data-testid="button-cancel"
+          >
             Anuluj
           </Button>
-          <Button type="button" variant="destructive" onClick={handleConfirm} disabled={isDeleting} data-testid="button-delete">
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleConfirm}
+            disabled={isDeleting}
+            data-testid="button-delete"
+          >
             {isDeleting ? "Usuwanie..." : "Usuń"}
           </Button>
         </DialogFooter>

@@ -1,6 +1,7 @@
 ## Specyfikacja architektury modułu autentykacji (US‑001 – US‑005)
 
 ### Założenia
+
 - Tech stack: Astro 5 (SSR, output: server), React 19 dla komponentów klienckich, TypeScript 5, Tailwind 4, shadcn/ui, Supabase Auth.
 - Zgodność z istniejącą architekturą: middleware `src/middleware/index.ts` tworzy klienta Supabase SSR i umieszcza `supabase` i `user` w `context.locals`. Frontend i API muszą używać tego klienta (nie globalnego).
 - Sesja: 14 dni (httpOnly cookies zarządzane przez `@supabase/ssr`).
@@ -12,6 +13,7 @@
 ## 1) Architektura interfejsu użytkownika
 
 ### 1.1 Strony i layouty
+
 - Layouty (Astro):
   - `src/layouts/Layout.astro`
     - Rozszerzenie: dodać tryb auth/non‑auth przez dostęp do `Astro.locals.user`.
@@ -30,10 +32,11 @@
   - Dostępna tylko dla non‑auth (gdy `Astro.locals.user` istnieje → redirect 302 do `/settlements`).
 
 - Strony aplikacji (już istniejące):
-  - `src/pages/index.astro`, `src/pages/settlements.astro`, `src/pages/settlements/[id].astro`, itd. 
+  - `src/pages/index.astro`, `src/pages/settlements.astro`, `src/pages/settlements/[id].astro`, itd.
   - Dla nieautoryzowanych użytkowników: middleware i/lub guard strony powinien przekierowywać do `/auth/login` (US‑002/US‑003). Widoki błędów `401.astro` i `403.astro` zostają bez zmian, ale flow defaultowo redirectuje na login.
 
 ### 1.2 Komponenty React (client‑side)
+
 - Formulary (w `src/components/auth/`):
   - `LoginForm.tsx` (email, password)
   - `RegisterForm.tsx` (email, password, confirmPassword, optional: acceptTerms)
@@ -52,6 +55,7 @@
     - bezpośredni dostęp do `locals.supabase` tylko po stronie serwera (np. akcje API/server actions).
 
 ### 1.3 Integracja nawigacji i akcji
+
 - Po sukcesie:
   - Register → automatyczne zalogowanie (Supabase może zwrócić sesję jeśli `email_confirm` nie jest wymagane) lub komunikat „Sprawdź e‑mail” jeśli włączona weryfikacja; redirect do `/settlements`.
   - Login → redirect do `/settlements`.
@@ -67,6 +71,7 @@
   - Próba edycji zamkniętego rozliczenia → komunikat o blokadzie edycji (409, read‑only).
 
 ### 1.4 Walidacja formularzy i komunikaty
+
 - Schematy Zod (wspólne): `src/lib/validation/auth.ts`
   - `loginSchema`: { email: email, password: min 8, max 128 }
   - `registerSchema`: { email: email, password: polityka hasła, confirmPassword: equals password }
@@ -76,6 +81,7 @@
 - Komunikaty PL zgodne z `getValidationErrorMessage` oraz spójny styling shadcn/ui.
 
 ### 1.5 Najważniejsze scenariusze (happy path + edge cases)
+
 - Happy paths: rejestracja, logowanie, wylogowanie, reset hasła z linku.
 - Edge cases:
   - Niepoprawny link resetu (wygaśnięty/zużyty) → czytelny komunikat i link do „Wyślij ponownie”.
@@ -89,6 +95,7 @@
 ## 2) Logika backendowa
 
 ### 2.1 Endpointy API (Astro server routes)
+
 - Katalog: `src/pages/api/auth/`
   - `login.ts` (POST): body `LoginDto`; działanie: walidacja Zod → `locals.supabase.auth.signInWithPassword({ email, password })` → set cookies przez `@supabase/ssr` (obsłuży middleware) → zwraca 200 + minimalny profil sesji; błędy: 400/401/429/5xx.
   - `register.ts` (POST): body `RegisterDto`; działanie: walidacja → `locals.supabase.auth.signUp({ email, password, options })`; jeśli środowisko wymaga potwierdzenia e‑mail, zwróć 202 (Accepted) z komunikatem „Sprawdź e‑mail”; w przeciwnym razie 201 + sesja.
@@ -105,6 +112,7 @@
 - Zasada: w Astro routes zawsze używać `locals.supabase` (z middleware) i zwracać JSON z odpowiednimi kodami HTTP, bez wycieków wrażliwych treści (np. czy email istnieje).
 
 ### 2.2 Mechanizm walidacji
+
 - Na wejściu: Zod parse → w przypadku błędu 400 z listą pól (do UI inline).
 - Na wyjściu: standaryzowane błędy z `src/lib/errorMessages.ts` (mapowane po stronie frontu).
 - Dodatkowe zabezpieczenia:
@@ -112,6 +120,7 @@
   - Minimalne logowanie zdarzeń (bez PII) do tabeli `events` gdy to zasadne: `event_type`: `user_registered`, `user_login_failed`, `password_reset_requested` (opcjonalnie w MVP, zgodnie z PRD sekcją analityki po stronie rozliczeń – nie naruszać obecnej logiki zdarzeń, traktować jako rozszerzalne w przyszłości).
 
 ### 2.3 Obsługa wyjątków
+
 - Mapowanie kategorii błędów Supabase/Auth:
   - invalid_credentials → 401 z neutralnym komunikatem,
   - email_already_registered → 409,
@@ -121,6 +130,7 @@
 - Zwracać spójny `ApiError` shape: `{ status, code?, message?, details? }`.
 
 ### 2.4 SSR i renderowanie stron
+
 - `astro.config.mjs` pozostaje spójny: `output: "server"`, adapter node standalone; nie wymaga zmian.
 - Middleware już inicjuje `@supabase/ssr` i cookie jar — wykorzystujemy to bez modyfikacji.
 - Guardy stron (Astro):
@@ -128,6 +138,7 @@
   - W stronach auth odwrotnie: redirect 302 do `/settlements` gdy sesja istnieje.
 
 ### 2.5 Autoryzacja właścicielska i stan zamknięty
+
 - W API dotyczących rozliczeń/uczestników/wydatków należy egzekwować uprawnienia zgodnie z PRD (US‑006, US‑070):
   - Wymagaj zalogowanego użytkownika (`Astro.locals.user`). Żądania bez sesji → 401/302 do `/auth/login` na poziomie guardów.
   - Weryfikuj dostęp właścicielski do rozliczenia po stronie bazy (np. funkcje `check_settlement_access`, `check_settlement_participation` oraz odpowiednie RLS/polityki, jeśli dostępne w migracjach).
@@ -140,25 +151,30 @@
 ## 3) System autentykacji (Supabase Auth + Astro)
 
 ### 3.1 Rejestracja (US‑001)
+
 - Front: `RegisterForm.tsx` → POST `/api/auth/register`.
 - Back: `signUp` z Supabase SSR klienta (`locals.supabase`). Opcje:
   - `emailRedirectTo`: URL do `/auth/login` (jeśli e‑mail confirm jest aktywny) lub bezpośrednie zalogowanie zależnie od polityki projektu/środowiska.
 - Sesja: zarządzana cookie przez `@supabase/ssr` (httpOnly). Czas życia 14 dni (konfiguracja po stronie Supabase – refresh token policy; frontend nie wymusza własnego timera).
 
 ### 3.2 Logowanie (US‑002)
+
 - Front: `LoginForm.tsx` → POST `/api/auth/login`.
 - Back: `signInWithPassword`. Po sukcesie middleware wyciąga usera i ustawia `locals.user` w kolejnych requestach.
 
 ### 3.3 Utrzymanie sesji 14 dni (US‑003)
+
 - Supabase SSR i refresh tokeny w httpOnly cookies.
 - Middleware wywołuje `supabase.auth.getUser()` na każde żądanie i w razie ważnej sesji ustawia `locals.user`.
 - Strony korzystają z `locals.user` do ochrony tras i kondycji UI.
 
 ### 3.4 Wylogowanie (US‑004)
+
 - Front: `LogoutButton.tsx` → POST `/api/auth/logout` → redirect do `/auth/login`.
 - Back: `locals.supabase.auth.signOut()` i czyszczenie cookies przez mechanizm SSR.
 
 ### 3.5 Reset hasła (US‑005)
+
 - Front: `ForgotPasswordForm.tsx` → POST `/api/auth/forgot-password`.
 - Back: `resetPasswordForEmail(email, { redirectTo })` gdzie `redirectTo` wskazuje na `/auth/reset-password`.
 - Widok `reset-password.astro` montuje `ResetPasswordForm.tsx`:
@@ -170,6 +186,7 @@
 ## 4) Moduły, serwisy, kontrakty
 
 ### 4.1 Struktura plików (dodatkowa)
+
 - `src/components/auth/`
   - `LoginForm.tsx`, `RegisterForm.tsx`, `ForgotPasswordForm.tsx`, `ResetPasswordForm.tsx`, `LogoutButton.tsx`
 - `src/pages/auth/`
@@ -180,9 +197,11 @@
   - Zod schematy i helpery formatowania błędów.
 
 ### 4.2 Kontrakty (DTO)
+
 - `LoginDto`, `RegisterDto`, `ForgotPasswordDto`, `ResetPasswordDto` w `src/types.ts` (lub wydzielone `src/types.auth.ts` jeśli preferowane; wówczas zaktualizować `always_applied_workspace_rules`).
 
 ### 4.3 UI/UX wytyczne
+
 - shadcn/ui: `Input`, `Label`, `Button`, `Form`, `FormField`, `FormMessage`, `Alert`.
 - Tailwind 4: spójne odstępy, stany disabled/loading, focus states pod WCAG AA.
 - Komunikaty błędów po polsku, neutralne dla bezpieczeństwa.
@@ -190,6 +209,7 @@
 ---
 
 ## 5) Zgodność z resztą aplikacji
+
 - Nie zmieniamy istniejących endpointów rozliczeń ani schematu bazy.
 - Używamy `locals.supabase` w API routes oraz guardów stron.
 - Middleware pozostaje źródłem prawdy o sesji; `PUBLIC_DEFAULT_USER_ID` nadal wspiera dev tryb.
@@ -198,17 +218,19 @@
 ---
 
 ## 6) Scenariusze testowe (akceptacyjne)
+
 - US‑001: Rejestracja poprawna → (zależnie od polityki) zalogowanie lub komunikat o potwierdzeniu; próba rejestracji istniejącego e‑maila → 409; walidacja haseł.
 - US‑002: Logowanie poprawne → redirect do `/settlements`; błędne dane → neutralny błąd.
 - US‑003: Sesja utrzymana 14 dni → powrót po czasie krótszym niż TTL nie wymaga loginu.
 - US‑004: Logout → usunięte cookies, redirect do loginu; idempotencja.
 - US‑005: Forgot password → zawsze 202; Reset password z niepoprawnym linkiem → komunikat; poprawny reset → możliwość logowania nowym hasłem.
- - US‑006: Próba edycji przez niewłaściciela → 403; widok pozostaje read‑only; komunikat PL.
- - US‑070: Próba edycji zamkniętego rozliczenia → 409; akcje edycji ukryte/zablokowane w UI; widoki prezentują bilans.
+- US‑006: Próba edycji przez niewłaściciela → 403; widok pozostaje read‑only; komunikat PL.
+- US‑070: Próba edycji zamkniętego rozliczenia → 409; akcje edycji ukryte/zablokowane w UI; widoki prezentują bilans.
 
 ### 6.1) Testy E2E (Playwright)
 
 #### Testy formularza logowania (US‑002)
+
 - **Ścieżka**: `tests/e2e/specs/auth.login.spec.ts` → sekcja: `Authentication - Login`
 - **Zaimplementowane testy** (11 testów):
   1. `should display login form with all required fields` – weryfikacja widoczności wszystkich elementów formularza.
@@ -223,7 +245,7 @@
   10. `should persist email field value after password input` – trwałość wartości pola email.
   11. `should clear email field when backspaced` – czyszczenie pola email.
 
-- **Warunki wstępne**: 
+- **Warunki wstępne**:
   - Formularz logowania dostępny na `/auth/login`.
   - Dane testowe: `E2E_USERNAME` i `E2E_PASSWORD` pobierane z `.env.test`.
   - LoginPage POM w `tests/e2e/pages/auth/LoginPage.ts`.
@@ -231,6 +253,7 @@
 - **Wykonanie**: `bun run test:e2e -- auth.login.spec.ts`
 
 #### Testy dostępu do strony settlements (US‑002/US‑003)
+
 - **Ścieżka**: `tests/e2e/specs/auth.login.spec.ts` → sekcja: `Authentication - Settlements Page Access`
 - **Zaimplementowane testy** (3 testy):
   1. `should redirect to login when accessing settlements without authentication` – weryfikacja przekierowania na login dla niezalogowanego użytkownika.
@@ -251,6 +274,7 @@
 ---
 
 ## 7) Konfiguracja i bezpieczeństwo
+
 - Zmienne środowiskowe: `SUPABASE_URL`, `SUPABASE_KEY` (już używane), `PUBLIC_DEFAULT_USER_ID` tylko w dev.
 - `redirectTo` dla resetu musi wskazywać pełny origin (produkcyjny i dev) – pobierany z nagłówków/requestu lub `PUBLIC_SITE_URL`.
 - Cookies httpOnly, Secure (prod), SameSite=Lax/Strict w zależności od domeny.
@@ -259,6 +283,7 @@
 ---
 
 ## 8) Wpływ na nawigację i middleware
+
 - Layout i strony auth korzystają z `locals.user` do warunkowania UI i redirectów.
 - `astro.config.mjs` bez zmian; SSR i adapter node zostają.
 - Wybrane strony (np. `src/pages/index.astro`) mogą pozostać publiczne, ale linki do aplikacji prowadzą do loginu jeśli brak sesji.
