@@ -111,6 +111,103 @@ All scripts can be run with `bun run <script>`:
 - `lint` — Lint the project with ESLint
 - `lint:fix` — Lint and attempt autofixes
 - `format` — Format with Prettier
+- `test:unit` — Run unit tests (Vitest)
+- `test:unit:watch` — Run unit tests in watch mode
+- `test:unit:coverage` — Run unit tests with coverage report
+- `test:e2e` — Run E2E tests (Playwright)
+- `test:e2e:ui` — Run E2E tests with UI mode
+- `test:e2e:debug` — Run E2E tests in debug mode
+- `test:e2e:codegen` — Generate E2E test code
+- `test:all` — Run all tests
+
+## Testing
+
+### Unit Tests
+
+Run unit tests with Vitest:
+
+```bash
+bun run test:unit
+```
+
+Watch mode (re-run on file changes):
+
+```bash
+bun run test:unit:watch
+```
+
+Generate coverage report:
+
+```bash
+bun run test:unit:coverage
+```
+
+### End-to-End (E2E) Tests
+
+E2E tests are written with **Playwright** and cover complete user flows (login, create settlements, add participants, manage expenses, finalize). Tests use the **Page Object Model** pattern for maintainability.
+
+See [E2E Testing Plan](/.docs/e2e-plan.md) for detailed documentation about test structure, page objects, and test scenarios.
+
+#### Setup
+
+Create a `.env.test` file in the project root with test environment variables. This file is required by `playwright.config.ts`:
+
+```bash
+cp .env.example .env.test
+```
+
+Edit `.env.test` and ensure it contains valid Supabase credentials (can use the same as development):
+
+```
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-anon-public-key
+```
+
+#### Running E2E Tests
+
+Run all E2E tests:
+
+```bash
+bun run test:e2e
+```
+
+Run tests in UI mode (interactive, visual debugging):
+
+```bash
+bun run test:e2e:ui
+```
+
+Run tests in debug mode (step through with debugging tools):
+
+```bash
+bun run test:e2e:debug
+```
+
+Generate test code from user interactions:
+
+```bash
+bun run test:e2e:codegen
+```
+
+#### Test Structure
+
+- **Test files**: `tests/e2e/*.spec.ts`
+- **Page objects**: `tests/e2e/pages/**/*.ts`
+- **Test utilities**: `src/test/` (shared helpers, MSW mocks)
+- **Config**: `playwright.config.ts` (browser, baseURL, timeout, reporters)
+- **Reports**: Generated in `tests/reports/` (HTML, JSON)
+- **Artifacts**: Screenshots on failure (`tests/results/`), video on failure
+
+#### Test Coverage
+
+Current test scenarios cover:
+- Authentication (login, register, logout)
+- Settlement creation and management
+- Participant management
+- Expense tracking and splitting
+- Settlement finalization and summary view
+
+See [E2E Testing Plan](/.docs/e2e-plan.md) for the complete list of user flows and test scenarios.
 
 ## Project scope
 
