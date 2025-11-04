@@ -21,7 +21,7 @@ export function DescriptionField({ value, onChange, error, maxLength = 140 }: De
   const remainingChars = maxLength - currentLength;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-testid="field-description">
       <Label htmlFor="description-input">Opis (opcjonalny)</Label>
       <Textarea
         id="description-input"
@@ -32,18 +32,22 @@ export function DescriptionField({ value, onChange, error, maxLength = 140 }: De
         aria-invalid={!!error}
         aria-describedby={error ? "description-error" : "description-help"}
         className={error ? "border-red-500" : ""}
+        data-testid="textarea-description"
       />
       <div className="flex justify-between items-center">
         {error && (
-          <p id="description-error" className="text-sm text-red-600" role="alert">
+          <p id="description-error" className="text-sm text-red-600" role="alert" data-testid="error-description">
             {error}
           </p>
         )}
-        <div className={`text-xs ml-auto ${remainingChars < 20 ? "text-orange-600" : "text-gray-500"}`}>
+        <div
+          className={`text-xs ml-auto ${remainingChars < 20 ? "text-orange-600" : "text-gray-500"}`}
+          data-testid="text-char-count"
+        >
           {currentLength}/{maxLength} znaków
         </div>
       </div>
-      <p id="description-help" className="text-xs text-gray-500">
+      <p id="description-help" className="text-xs text-gray-500" data-testid="text-helper">
         Opcjonalny opis wydatku (maksymalnie {maxLength} znaków)
       </p>
     </div>

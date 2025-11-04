@@ -72,7 +72,7 @@ export default function SummaryPage({ settlement, isOwner, onSettlementClosed }:
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="page-summary">
       {/* Header */}
       <SummaryHeader
         settlement={settlement}

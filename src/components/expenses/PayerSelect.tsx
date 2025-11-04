@@ -20,7 +20,7 @@ export function PayerSelect({ participants, value, onChange, error }: PayerSelec
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-testid="field-payer">
       <Label htmlFor="payer-select">
         Płacący <span className="text-red-500">*</span>
       </Label>
@@ -30,23 +30,26 @@ export function PayerSelect({ participants, value, onChange, error }: PayerSelec
           aria-invalid={!!error}
           aria-describedby={error ? "payer-error" : undefined}
           className={error ? "border-red-500" : ""}
+          data-testid="select-payer"
         >
           <SelectValue placeholder="Wybierz kto zapłacił" />
         </SelectTrigger>
         <SelectContent>
           {participants.map((participant) => (
-            <SelectItem key={participant.id} value={participant.id}>
+            <SelectItem key={participant.id} value={participant.id} data-testid={`select-item-${participant.id}`}>
               {participant.nickname}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
       {error && (
-        <p id="payer-error" className="text-sm text-red-600" role="alert">
+        <p id="payer-error" className="text-sm text-red-600" role="alert" data-testid="error-payer">
           {error}
         </p>
       )}
-      <p className="text-xs text-gray-500">Wybierz osobę, która pokryła koszt wydatku</p>
+      <p className="text-xs text-gray-500" data-testid="text-helper">
+        Wybierz osobę, która pokryła koszt wydatku
+      </p>
     </div>
   );
 }

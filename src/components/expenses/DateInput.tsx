@@ -15,7 +15,7 @@ export function DateInput({ value, onChange, error }: DateInputProps) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-testid="field-date">
       <Label htmlFor="date-input">
         Data wydatku <span className="text-red-500">*</span>
       </Label>
@@ -27,13 +27,16 @@ export function DateInput({ value, onChange, error }: DateInputProps) {
         aria-invalid={!!error}
         aria-describedby={error ? "date-error" : undefined}
         className={error ? "border-red-500" : ""}
+        data-testid="input-date"
       />
       {error && (
-        <p id="date-error" className="text-sm text-red-600" role="alert">
+        <p id="date-error" className="text-sm text-red-600" role="alert" data-testid="error-date">
           {error}
         </p>
       )}
-      <p className="text-xs text-gray-500">Wybierz datę, kiedy został poniesiony wydatek</p>
+      <p className="text-xs text-gray-500" data-testid="text-helper">
+        Wybierz datę, kiedy został poniesiony wydatek
+      </p>
     </div>
   );
 }

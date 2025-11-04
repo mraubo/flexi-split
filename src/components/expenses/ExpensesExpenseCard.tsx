@@ -80,7 +80,7 @@ export default function ExpensesExpenseCard({
 
   return (
     <>
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="hover:shadow-md transition-shadow" data-testid={`card-expense-${expense.id}`}>
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
