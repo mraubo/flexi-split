@@ -129,12 +129,12 @@ export function ExpenseForm({ mode, settlementId, expenseId, initialData, onSave
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <Card>
+      <Card data-testid="card-expense-form">
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle data-testid="heading-title">{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} aria-describedby="form-errors">
+          <form onSubmit={handleSubmit} aria-describedby="form-errors" data-testid="form-expense">
             <div className="space-y-6">
               {/* Amount Input */}
               <AmountInput
@@ -181,7 +181,12 @@ export function ExpenseForm({ mode, settlementId, expenseId, initialData, onSave
 
               {/* Form Actions */}
               <div className="flex gap-4 pt-4">
-                <Button type="submit" disabled={!formState.isValid || formState.isSubmitting} className="flex-1">
+                <Button
+                  type="submit"
+                  disabled={!formState.isValid || formState.isSubmitting}
+                  className="flex-1"
+                  data-testid="button-save"
+                >
                   {formState.isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -198,6 +203,7 @@ export function ExpenseForm({ mode, settlementId, expenseId, initialData, onSave
                   onClick={handleCancel}
                   disabled={formState.isSubmitting}
                   className="flex-1"
+                  data-testid="button-cancel"
                 >
                   Anuluj
                 </Button>

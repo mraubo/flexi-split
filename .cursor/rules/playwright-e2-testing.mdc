@@ -19,3 +19,36 @@ alwaysApply: false
 - Use expect assertions with specific matchers
 - Leverage parallel execution for faster test runs
 
+#### HANDLING ASTRO + REACT HYDRATION
+
+**CRITICAL**: When testing forms rendered by Astro with React components using `client:load` directive:
+
+1. **Wait for hydration in beforeEach**:
+   ```typescript
+   test.beforeEach(async ({ page }) => {
+     await page.goto('/auth/login');
+     await expect(page.locator('[data-testid="form-login"]')).toBeVisible();
+     // Wait for React hydration to complete
+     await page.waitForTimeout(1000);
+   });
+   ```
+
+2. **Fill forms slowly with explicit clicks**:
+   ```typescript
+   // Click field before filling to ensure React captures changes
+   await page.locator('[data-testid="input-email"]').click();
+   await page.locator('[data-testid="input-email"]').fill('test@example.com');
+   await page.waitForTimeout(300);
+   
+   await page.locator('[data-testid="input-password"]').click();
+   await page.locator('[data-testid="input-password"]').fill('password123');
+   await page.waitForTimeout(300);
+   ```
+
+3. **Wait between field interactions**:
+   - 300ms between filling different fields
+   - 500ms before form submission
+   - 1000-2000ms for API responses
+
+**Why this matters**: React hydration can reset form state if tests fill fields too quickly. The `client:load` directive means React takes over after initial HTML render, potentially clearing values set before hydration completes.
+

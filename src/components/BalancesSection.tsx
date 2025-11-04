@@ -11,7 +11,7 @@ export default function BalancesSection({ balances }: BalancesSectionProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="section-balances">
       <div className="flex items-center gap-2">
         <h3 className="text-lg font-semibold text-gray-900">Saldo per osoba</h3>
       </div>
@@ -38,6 +38,7 @@ export default function BalancesSection({ balances }: BalancesSectionProps) {
           <div
             key={balance.participantId}
             className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            data-testid={`balance-item-${balance.participantId}`}
           >
             <div className="flex items-center gap-3">
               <div className="flex-shrink-0">
@@ -53,6 +54,7 @@ export default function BalancesSection({ balances }: BalancesSectionProps) {
                 className={`font-semibold text-lg ${
                   balance.sign === "+" ? "text-green-600" : balance.sign === "-" ? "text-red-600" : "text-gray-500"
                 }`}
+                data-testid={`text-balance-${balance.participantId}`}
               >
                 {balance.sign === "-" ? "-" : balance.sign === "+" ? "+" : ""}
                 {balance.formattedAmount}

@@ -77,7 +77,12 @@ export default function SummaryHeader({
         )}
 
         {canClose && (
-          <Button onClick={onCloseClick} size="sm" className="flex items-center gap-2">
+          <Button
+            onClick={onCloseClick}
+            size="sm"
+            className="flex items-center gap-2"
+            data-testid="button-close-settlement"
+          >
             <Lock className="h-4 w-4" />
             <span>Zamknij rozliczenie</span>
           </Button>

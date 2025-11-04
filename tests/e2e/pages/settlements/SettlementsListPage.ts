@@ -6,6 +6,7 @@ export class SettlementsListPage extends BasePage {
   readonly pageContainer: Locator = this.page.locator('[data-testid="settlements-page"]');
   readonly listSettlements: Locator = this.page.locator('[data-testid="list-settlements"]');
   readonly buttonLoadMore: Locator = this.page.locator('[data-testid="button-load-more"]');
+  readonly buttonNewSettlement: Locator = this.page.locator('[data-testid="button-new-settlement"]');
 
   // Navigation
   async goto() {

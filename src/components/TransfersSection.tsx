@@ -24,7 +24,7 @@ export default function TransfersSection({ transfers }: TransfersSectionProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="section-transfers">
       <div className="flex items-center gap-2">
         <h3 className="text-lg font-semibold text-gray-900">Minimalne przelewy</h3>
       </div>
@@ -35,9 +35,10 @@ export default function TransfersSection({ transfers }: TransfersSectionProps) {
           <div
             key={`${transfer.fromId}-${transfer.toId}-${index}`}
             className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            data-testid={`transfer-item-${index}`}
           >
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-sm" data-testid="text-transfer-info">
                 <span className="font-medium text-gray-900 truncate">{transfer.fromNickname}</span>
                 <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                 <span className="font-medium text-gray-900 truncate">{transfer.toNickname}</span>
@@ -52,6 +53,7 @@ export default function TransfersSection({ transfers }: TransfersSectionProps) {
               size="sm"
               className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
               title="Kopiuj przelew"
+              data-testid={`button-copy-transfer-${index}`}
             >
               <Copy className="h-4 w-4" />
               <span className="sr-only">Kopiuj przelew</span>

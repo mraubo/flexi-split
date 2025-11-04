@@ -207,7 +207,7 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
           <span className="text-xs text-gray-500">Maksymalnie 10 uczestników</span>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex gap-3">
+        <form onSubmit={handleSubmit} className="flex gap-3" data-testid="form-participant">
           <div className="flex-1">
             <Input
               ref={ref || inputRef}
@@ -224,6 +224,7 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck="false"
+              data-testid="input-nickname"
             />
           </div>
 
@@ -231,6 +232,7 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
             type="submit"
             disabled={disabled || !isValid() || isSubmitting}
             className="px-6 h-12 min-w-[120px] text-base"
+            data-testid="button-add-participant"
           >
             {isSubmitting ? "Dodawanie..." : "Dodaj"}
           </Button>
@@ -243,7 +245,13 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
 
         {/* Validation/Error Messages */}
         {hasError && (
-          <div id="nickname-error" className="text-sm text-red-600" role="alert" aria-live="polite">
+          <div
+            id="nickname-error"
+            className="text-sm text-red-600"
+            role="alert"
+            aria-live="polite"
+            data-testid="text-validation-error"
+          >
             {errorMessage || validationMessage}
           </div>
         )}

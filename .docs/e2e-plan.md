@@ -1334,6 +1334,51 @@ export async function expectExpensesCount(page: Page, expectedCount: number): Pr
 4. **Timeout**: Ustawić sensowne timeouty dla długich operacji (np. zamykanie rozliczenia)
 5. **Retry**: Wykorzystać `test.retry()` dla niestabilnych testów
 6. **Parallel**: Testy mogą działać równolegle (izolacja danych)
+7. **Hydratacja React**: **KRYTYCZNE** - Obsługa hydratacji komponentów React renderowanych przez Astro z `client:load`
+
+### 7.5 Obsługa Hydratacji React w Astro (KRYTYCZNE)
+
+**Problem**: Komponenty React z dyrektywą `client:load` są hydratowane po początkowym renderze HTML. Jeśli testy wypełniają formularze za szybko, React może zresetować stan podczas hydratacji.
+
+**Rozwiązanie**:
+
+1. **Czekaj na hydratację w `beforeEach`**:
+
+```typescript
+test.beforeEach(async ({ page }) => {
+  await page.goto("/auth/login");
+  await expect(page.locator('[data-testid="form-login"]')).toBeVisible();
+  // KRYTYCZNE: Czekaj na zakończenie hydratacji React
+  await page.waitForTimeout(1000);
+});
+```
+
+2. **Wypełniaj formularze powoli z wyraźnymi kliknięciami**:
+
+```typescript
+// Kliknij pole PRZED wypełnieniem
+await page.locator('[data-testid="input-email"]').click();
+await page.locator('[data-testid="input-email"]').fill("test@example.com");
+await page.waitForTimeout(300); // Daj Reactowi czas na update stanu
+
+await page.locator('[data-testid="input-password"]').click();
+await page.locator('[data-testid="input-password"]').fill("password123");
+await page.waitForTimeout(300);
+
+await page.locator('[data-testid="button-submit"]').click();
+```
+
+3. **Zalecane opóźnienia**:
+   - **1000ms** po nawigacji (czekanie na hydratację)
+   - **300ms** między wypełnianiem różnych pól
+   - **500ms** przed wysłaniem formularza
+   - **1000-2000ms** na odpowiedź z API
+
+4. **Dlaczego to ważne**:
+   - `client:load` oznacza że React przejmuje kontrolę PO początkowym renderze HTML
+   - Wartości ustawione przed zakończeniem hydratacji mogą zostać wyczyszczone
+   - Formularz może wyglądać na gotowy, ale React jeszcze się nie zhydratował
+   - Objawy: formularze czyszczone po wypełnieniu, brakujące błędy walidacji
 
 ---
 

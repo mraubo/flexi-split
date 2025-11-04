@@ -42,7 +42,7 @@ export function AmountInput({ value, onChange, error }: AmountInputProps) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-testid="field-amount">
       <Label htmlFor="amount-input">
         Kwota <span className="text-red-500">*</span>
       </Label>
@@ -58,17 +58,22 @@ export function AmountInput({ value, onChange, error }: AmountInputProps) {
           aria-invalid={!!error}
           aria-describedby={error ? "amount-error" : undefined}
           className={`pr-12 ${error ? "border-red-500" : ""}`}
+          data-testid="input-amount"
         />
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <span className="text-gray-500 text-sm">PLN</span>
+          <span className="text-gray-500 text-sm" data-testid="text-currency">
+            PLN
+          </span>
         </div>
       </div>
       {error && (
-        <p id="amount-error" className="text-sm text-red-600" role="alert">
+        <p id="amount-error" className="text-sm text-red-600" role="alert" data-testid="error-amount">
           {error}
         </p>
       )}
-      <p className="text-xs text-gray-500">Wprowadź kwotę w złotych z separatorem dziesiętnym (np. 123,45)</p>
+      <p className="text-xs text-gray-500" data-testid="text-helper">
+        Wprowadź kwotę w złotych z separatorem dziesiętnym (np. 123,45)
+      </p>
     </div>
   );
 }
