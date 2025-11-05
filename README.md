@@ -245,6 +245,60 @@ Notes:
 
 Version `0.0.1` — work in progress. Expect frequent changes.
 
+### Recent Refactoring Initiative
+
+The codebase recently underwent a **comprehensive 7-phase refactoring** focused on improving code quality, reducing complexity, and establishing maintainable patterns. Key achievements:
+
+#### 📊 Metrics
+
+- **Code Reduction**: TOP 5 components reduced from 1,561→1,053 LOC (-36.4%, -508 LOC)
+- **Infrastructure**: +1,682 LOC of reusable utilities, validators, formatters, and API hooks
+- **Code Duplication**: 100% eliminated across all refactored components
+- **Test Coverage**: Maintained 43/43 E2E tests (100% pass rate, zero regressions)
+- **Documentation**: >3,300 lines of comprehensive technical documentation
+
+#### 🎯 Key Improvements
+
+- **Authentication Flow**: Reduced from 252→180 LOC (-29%)
+  - Centralized validation with Zod schemas
+  - TanStack Query hooks for authentication state
+  - Error handling with RFC 7807 format
+
+- **Participant Management**: Reduced from 276→192 LOC (-30%)
+  - Reusable API hooks with query key factory pattern
+  - Optimistic updates and cache invalidation
+  - Consistent error handling
+
+- **Expense Forms**: Reduced from 348→303 LOC (-13%)
+  - Shared validators and formatters
+  - Manual fetch() for SSR compatibility
+  - Enhanced type safety
+
+- **Settlement Summary**: Reduced from 241→180 LOC (-25%)
+  - Extracted formatting logic to shared utilities
+  - Balance and transfer calculations centralized
+  - Improved maintainability
+
+#### 🏗️ Architecture Enhancements
+
+- **Query Key Factory Pattern**: Consistent cache management across all features
+- **Service Layer**: Clear separation between API endpoints and business logic
+- **Shared Utilities**: Validators and formatters reusable across the entire codebase
+- **Type Safety**: Zod schemas and TypeScript types throughout
+- **SSR Compatibility**: Established patterns for Astro's island architecture
+
+#### 📚 Documentation
+
+Comprehensive documentation created in `.docs/refactoring/`:
+
+- **Phase Reports**: Detailed metrics and changes for all 7 phases (01-07)
+- **Final Summary**: Complete project metrics, ROI analysis, and achievements
+- **Architecture Overview**: System design, layers, patterns, and data flow
+- **Developer Guide**: Practical examples for forms, validators, API hooks, and TanStack Query
+- **Refactoring Plan**: Initial vision and phase-by-phase tracking
+
+For detailed information, see [Refactoring Documentation](.docs/refactoring/).
+
 ## License
 
 No license file detected. Until a license is added, all rights are reserved.
