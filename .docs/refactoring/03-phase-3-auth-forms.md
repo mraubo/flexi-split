@@ -81,12 +81,13 @@ interface CountdownTimerProps {
 ```tsx
 <CountdownTimer
   initialSeconds={5}
-  onComplete={() => window.location.href = '/settlements'}
+  onComplete={() => (window.location.href = "/settlements")}
   onCountdownChange={(seconds) => setCountdown(seconds)}
 />
 ```
 
 **Benefits:**
+
 - Isolated countdown logic
 - Reusable in other contexts (password reset, email confirmation, etc.)
 - No side effects from parent component
@@ -153,10 +154,14 @@ const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   const result = LoginSchema.safeParse(formData);
-  if (!result.success) { /* ... */ }
-  
+  if (!result.success) {
+    /* ... */
+  }
+
   try {
-    const response = await fetch("/api/auth/login", { /* ... */ });
+    const response = await fetch("/api/auth/login", {
+      /* ... */
+    });
     // Manual error handling...
   } catch {
     setError("Wystąpił błąd połączenia...");
@@ -169,7 +174,12 @@ const handleSubmit = async (e: React.FormEvent) => {
 React Hook Form with Zod resolver + useLogin mutation hook.
 
 ```typescript
-const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<LoginInput>({
+const {
+  register,
+  handleSubmit,
+  formState: { errors, isSubmitting },
+  setError,
+} = useForm<LoginInput>({
   resolver: zodResolver(LoginSchema),
   mode: "onBlur",
 });
@@ -204,7 +214,9 @@ const onSubmit = async (data: LoginInput) => {
 Manual state, countdown effect, fetch, conditional rendering.
 
 ```typescript
-const [formData, setFormData] = useState<RegisterInput>({ /* 3 fields */ });
+const [formData, setFormData] = useState<RegisterInput>({
+  /* 3 fields */
+});
 const [isSubmitting, setIsSubmitting] = useState(false);
 const [error, setError] = useState<string | null>(null);
 const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -245,7 +257,7 @@ const onSubmit = async (data: RegisterInput) => {
   try {
     const response = await registerMutation.mutateAsync(data);
     const statusCode = response?._status || 201;
-    
+
     if (statusCode === 202) {
       setSuccessMessage("Rejestracja zakończona...");
       setRequiresEmailConfirmation(true);
@@ -292,23 +304,23 @@ return (
 
 ### Login Error Scenarios
 
-| Status | Error | Handler |
-|--------|-------|---------|
-| 401 | Invalid credentials | Set root error: "Nieprawidłowy adres e-mail lub hasło" |
-| 429 | Rate limited | Set root error: "Zbyt wiele prób logowania..." |
-| 400/422 | Validation error | Extract field-level errors via `extractFieldErrors()` |
-| Other | Generic error | Set root error: API error message |
+| Status  | Error               | Handler                                                |
+| ------- | ------------------- | ------------------------------------------------------ |
+| 401     | Invalid credentials | Set root error: "Nieprawidłowy adres e-mail lub hasło" |
+| 429     | Rate limited        | Set root error: "Zbyt wiele prób logowania..."         |
+| 400/422 | Validation error    | Extract field-level errors via `extractFieldErrors()`  |
+| Other   | Generic error       | Set root error: API error message                      |
 
 ### Register Error Scenarios
 
-| Status | Error | Handler |
-|--------|-------|---------|
-| 409 | Email conflict | Set email field error: "Konto z tym adresem e-mail już istnieje" |
-| 429 | Rate limited | Set root error: "Zbyt wiele prób rejestracji..." |
-| 400/422 | Validation error | Extract field-level errors |
-| 202 | Email confirmation | Show RegistrationSuccess with confirmation message |
-| 201 | Auto-login | Show RegistrationSuccess with countdown timer |
-| Other | Generic error | Set root error |
+| Status  | Error              | Handler                                                          |
+| ------- | ------------------ | ---------------------------------------------------------------- |
+| 409     | Email conflict     | Set email field error: "Konto z tym adresem e-mail już istnieje" |
+| 429     | Rate limited       | Set root error: "Zbyt wiele prób rejestracji..."                 |
+| 400/422 | Validation error   | Extract field-level errors                                       |
+| 202     | Email confirmation | Show RegistrationSuccess with confirmation message               |
+| 201     | Auto-login         | Show RegistrationSuccess with countdown timer                    |
+| Other   | Generic error      | Set root error                                                   |
 
 ## Integration with PHASE 1 & 2
 
@@ -371,7 +383,7 @@ Forms maintain all `data-testid` attributes for E2E testing:
 ❌ Fetch calls in component (hard to test)  
 ❌ Duplicate error handling logic  
 ❌ Countdown logic mixed with form logic  
-❌ Success UI coupled with form UI  
+❌ Success UI coupled with form UI
 
 ### After PHASE 3
 
@@ -381,7 +393,7 @@ Forms maintain all `data-testid` attributes for E2E testing:
 ✅ Countdown extracted to reusable component  
 ✅ Success UI in separate `RegistrationSuccess` component  
 ✅ Consistent FormField pattern for all inputs  
-✅ Type-safe error handling with ApiError type  
+✅ Type-safe error handling with ApiError type
 
 ## Usage Examples
 
@@ -391,7 +403,7 @@ Forms maintain all `data-testid` attributes for E2E testing:
 import LoginForm from "@/components/auth/LoginForm";
 
 // Inside auth page
-<LoginForm />
+<LoginForm />;
 ```
 
 ### Register Form
@@ -400,7 +412,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
 
 // Inside auth page
-<RegisterForm />
+<RegisterForm />;
 ```
 
 ### Using Auth Hooks Directly
@@ -422,11 +434,7 @@ function MyAuthComponent() {
     }
   };
 
-  return (
-    <button onClick={() => handleLogin("user@example.com", "Password123")}>
-      Login
-    </button>
-  );
+  return <button onClick={() => handleLogin("user@example.com", "Password123")}>Login</button>;
 }
 ```
 
@@ -439,7 +447,7 @@ import { CountdownTimer } from "@/components/auth/CountdownTimer";
   initialSeconds={5}
   onComplete={() => redirectToSettlements()}
   onCountdownChange={(seconds) => console.log(`${seconds}s remaining`)}
-/>
+/>;
 ```
 
 ## Migration Notes
@@ -514,6 +522,7 @@ import { CountdownTimer } from "@/components/auth/CountdownTimer";
 - ✅ -36% LOC reduction in auth forms
 
 **Combined with PHASES 1-2:**
+
 - Total foundation infrastructure created (API client, QueryClient, validators, formatters, form components)
 - Ready for component refactoring in PHASES 4-6
 - Consistent patterns across entire codebase

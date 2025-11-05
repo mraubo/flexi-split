@@ -40,11 +40,11 @@ Custom hook for managing participant nickname validation with full state managem
 
 ```typescript
 interface NicknameValidationState {
-  isValidPattern: boolean;      // Matches /^[a-z0-9_-]+$/
-  isValidLength: boolean;       // 3-30 characters
-  isUniqueLocal: boolean;       // Case-insensitive uniqueness
-  conflictRemote?: boolean;     // API conflict (409)
-  suggestion?: string;          // Generated alternative nickname
+  isValidPattern: boolean; // Matches /^[a-z0-9_-]+$/
+  isValidLength: boolean; // 3-30 characters
+  isUniqueLocal: boolean; // Case-insensitive uniqueness
+  conflictRemote?: boolean; // API conflict (409)
+  suggestion?: string; // Generated alternative nickname
 }
 
 interface UseParticipantNicknameResult {
@@ -68,8 +68,8 @@ interface UseParticipantNicknameResult {
 ```typescript
 function useParticipantNickname(
   existingNicknames: string[],
-  currentNickname?: string  // For edit mode: excludes current from uniqueness check
-): UseParticipantNicknameResult
+  currentNickname?: string // For edit mode: excludes current from uniqueness check
+): UseParticipantNicknameResult;
 ```
 
 **Key Features:**
@@ -87,7 +87,7 @@ function useParticipantNickname(
 **Usage Example (Create Mode):**
 
 ```typescript
-const { nickname, setNickname, validation, isValid, ... } = 
+const { nickname, setNickname, validation, isValid, ... } =
   useParticipantNickname(['alice', 'bob']);
 
 // nickname can be any new value
@@ -97,7 +97,7 @@ const { nickname, setNickname, validation, isValid, ... } =
 **Usage Example (Edit Mode):**
 
 ```typescript
-const { nickname, setNickname, validation, isValid, ... } = 
+const { nickname, setNickname, validation, isValid, ... } =
   useParticipantNickname(['alice', 'bob'], 'alice');
 
 // Editing alice → can change to 'bob' would fail (exists)
@@ -178,9 +178,18 @@ interface NicknameInputProps {
 
 ```typescript
 const {
-  nickname, setNickname, validation, errorMessage, setErrorMessage,
-  isSubmitting, setIsSubmitting, updateValidation, getValidationMessage,
-  isValid, reset, handleRemoteConflict,
+  nickname,
+  setNickname,
+  validation,
+  errorMessage,
+  setErrorMessage,
+  isSubmitting,
+  setIsSubmitting,
+  updateValidation,
+  getValidationMessage,
+  isValid,
+  reset,
+  handleRemoteConflict,
 } = useParticipantNickname(existingNicknames);
 
 // handleInputChange now delegates to hook
@@ -213,9 +222,18 @@ const handleInputChange = (value: string) => {
 
 ```typescript
 const {
-  nickname, setNickname, validation, errorMessage, setErrorMessage,
-  isSubmitting, setIsSubmitting, updateValidation, getValidationMessage,
-  isValid, reset, handleRemoteConflict,
+  nickname,
+  setNickname,
+  validation,
+  errorMessage,
+  setErrorMessage,
+  isSubmitting,
+  setIsSubmitting,
+  updateValidation,
+  getValidationMessage,
+  isValid,
+  reset,
+  handleRemoteConflict,
 } = useParticipantNickname(existingNicknames, participant?.nickname);
 
 // useEffect now just updates nickname and calls reset()
@@ -233,14 +251,14 @@ useEffect(() => {
 
 ### Before vs After
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| ParticipantForm LOC | 272 | 130 | -52% |
-| EditParticipantModal LOC | 291 | 120 | -60% |
-| Duplicated Validation Logic | 160+ | 0 | -100% |
-| Custom Hooks | 0 | 1 | +1 |
-| Reusable Components | 0 | 1 | +1 |
-| Test Coverage | 37/37 | 37/37 | ✅ Maintained |
+| Metric                      | Before | After | Change        |
+| --------------------------- | ------ | ----- | ------------- |
+| ParticipantForm LOC         | 272    | 130   | -52%          |
+| EditParticipantModal LOC    | 291    | 120   | -60%          |
+| Duplicated Validation Logic | 160+   | 0     | -100%         |
+| Custom Hooks                | 0      | 1     | +1            |
+| Reusable Components         | 0      | 1     | +1            |
+| Test Coverage               | 37/37  | 37/37 | ✅ Maintained |
 
 ### Lines of Code Removed
 
@@ -273,29 +291,34 @@ useEffect(() => {
 ## Architecture Benefits
 
 ### 1. **Code Reusability**
-   - Nickname validation logic centralized in single hook
-   - Input component handles all UI concerns
-   - Both create and edit flows share implementation
+
+- Nickname validation logic centralized in single hook
+- Input component handles all UI concerns
+- Both create and edit flows share implementation
 
 ### 2. **Maintainability**
-   - Single source of truth for validation rules
-   - Changes to validation logic only need updating hook
-   - Component logic simplified to form handling
+
+- Single source of truth for validation rules
+- Changes to validation logic only need updating hook
+- Component logic simplified to form handling
 
 ### 3. **Testability**
-   - Hook can be unit tested independently
-   - Component receives fully validated props
-   - Error scenarios covered by hook's validation state
+
+- Hook can be unit tested independently
+- Component receives fully validated props
+- Error scenarios covered by hook's validation state
 
 ### 4. **Accessibility**
-   - Consistent ARIA labels and roles across forms
-   - Screen reader announcements via validation messages
-   - Auto-select feature in edit mode for better UX
+
+- Consistent ARIA labels and roles across forms
+- Screen reader announcements via validation messages
+- Auto-select feature in edit mode for better UX
 
 ### 5. **Scalability**
-   - Pattern ready for similar form refactorings
-   - Hook can extend to other form fields
-   - Component architecture supports future UI variations
+
+- Pattern ready for similar form refactorings
+- Hook can extend to other form fields
+- Component architecture supports future UI variations
 
 ## Migration Guide
 
@@ -307,7 +330,7 @@ import { useParticipantNickname } from '@/components/hooks/useParticipantNicknam
 import { NicknameInput } from '@/components/form/NicknameInput';
 
 // 2. Initialize hook with existing nicknames
-const { nickname, setNickname, validation, ... } = 
+const { nickname, setNickname, validation, ... } =
   useParticipantNickname(existingNicknames, optionalCurrentNickname);
 
 // 3. Use NicknameInput in form
@@ -325,10 +348,12 @@ const { nickname, setNickname, validation, ... } =
 ## Files Changed Summary
 
 **New Files**: 2
+
 - `src/components/hooks/useParticipantNickname.ts`
 - `src/components/form/NicknameInput.tsx`
 
 **Modified Files**: 2
+
 - `src/components/ParticipantForm.tsx` (-142 LOC)
 - `src/components/EditParticipantModal.tsx` (-171 LOC)
 
@@ -337,6 +362,7 @@ const { nickname, setNickname, validation, ... } =
 ## Next Steps
 
 This refactoring pattern can be applied to:
+
 1. Expense form refactoring (settlement title, description extraction)
 2. Settlement settings forms
 3. Other participant-related operations (bulk add, import)

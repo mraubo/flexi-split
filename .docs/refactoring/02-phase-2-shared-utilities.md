@@ -9,6 +9,7 @@ Czas realizacji: ~2 godziny
 ### 1. Shared Validators - `src/lib/utils/validators.ts`
 
 **Zawartość:**
+
 - `validateNickname()` - walidacja nickname'u (3-30 znaków, pattern)
 - `validateNicknameUniqueness()` - walidacja unikalności (case-insensitive)
 - `generateNicknameSuggestion()` - generowanie sugestii
@@ -41,6 +42,7 @@ if (amountResult.valid) {
 ### 2. Shared Formatters - `src/lib/utils/formatters.ts`
 
 **Zawartość:**
+
 - `formatCentsToAmount()` - cents → "25,00" (bez waluty)
 - `parseAmountToCents()` - "25,50" → 2550 (cents)
 - `formatCurrency()` - cents → "25,00 zł" (z walutą)
@@ -70,21 +72,24 @@ const parsed = parseAmountToCents(userInput); // handles both comma and dot
 ### 3. Shared Form Components - `src/components/form/`
 
 #### FormError.tsx
+
 ```typescript
-<FormError 
-  id="nickname-error" 
+<FormError
+  id="nickname-error"
   message="Nazwa jest już używana"
 />
 ```
 
 **Cechy:**
+
 - Obsługa ARIA live regions
 - Zmienialny role attribute
 - Conditional rendering (nie wyświetla się jeśli brak message)
 
 #### FormLabel.tsx
+
 ```typescript
-<FormLabel 
+<FormLabel
   id="nickname"
   label="Nazwa użytkownika"
   required={true}
@@ -93,11 +98,13 @@ const parsed = parseAmountToCents(userInput); // handles both comma and dot
 ```
 
 **Cechy:**
-- Wskaźnik wymaganych pól (*)
+
+- Wskaźnik wymaganych pól (\*)
 - Help text dla dodatkowych informacji
 - Spójny styling z shadcn/ui
 
 #### FormField.tsx
+
 ```typescript
 <FormField
   id="nickname"
@@ -106,7 +113,7 @@ const parsed = parseAmountToCents(userInput); // handles both comma and dot
   required={true}
   helpText="3-30 znaków"
 >
-  <Input 
+  <Input
     type="text"
     placeholder="np. john_doe"
   />
@@ -114,6 +121,7 @@ const parsed = parseAmountToCents(userInput); // handles both comma and dot
 ```
 
 **Cechy:**
+
 - Kombinuje label + input + error message
 - Automatyczne ARIA atrybuty
 - Flexibilny - działa z dowolnym input elementem
@@ -122,6 +130,7 @@ const parsed = parseAmountToCents(userInput); // handles both comma and dot
 ### 4. Reusable Hook - `useNicknameValidation.ts`
 
 **Funkcjonalność:**
+
 - Walidacja pattern'u i długości
 - Walidacja unikalności (local + remote)
 - Generowanie sugestii
@@ -131,21 +140,20 @@ const parsed = parseAmountToCents(userInput); // handles both comma and dot
 
 ```typescript
 const {
-  validation,           // Validation state
-  updateValidation,     // Update based on input
+  validation, // Validation state
+  updateValidation, // Update based on input
   getValidationMessage, // Get human-readable message
-  isValid,              // Check if nickname is valid
+  isValid, // Check if nickname is valid
   handleRemoteConflict, // Handle 409 error
-  clearRemoteConflict,  // Clear conflict flag
-  reset,                // Reset validation
+  clearRemoteConflict, // Clear conflict flag
+  reset, // Reset validation
 } = useNicknameValidation(existingNicknames, currentNickname);
 ```
 
 **Użycie:**
 
 ```typescript
-const { validation, updateValidation, isValid, getValidationMessage } = 
-  useNicknameValidation(existingNicknames);
+const { validation, updateValidation, isValid, getValidationMessage } = useNicknameValidation(existingNicknames);
 
 const handleChange = (value: string) => {
   updateValidation(value);
@@ -153,7 +161,7 @@ const handleChange = (value: string) => {
 
 const handleSubmit = async () => {
   if (!isValid(nickname)) return;
-  
+
   try {
     await updateParticipant(nickname);
   } catch (error) {
@@ -186,10 +194,12 @@ src/components/
 ### 1. Walidacja w dwóch warstwach
 
 **Local validation:**
+
 - Pattern, length, uniqueness check
 - Błędy wyświetlane od razu
 
 **Remote validation:**
+
 - Sprawdzenie na serwerze (409 Conflict)
 - Sugestia alternatywna w error handler'ze
 
@@ -206,14 +216,16 @@ try {
 ### 2. Formatowanie - Input vs Display
 
 **Input field:**
+
 ```typescript
-<Input 
+<Input
   value={formatCentsToAmount(amount)}
   onChange={(e) => setAmount(parseAmountToCents(e.target.value))}
 />
 ```
 
 **Display:**
+
 ```typescript
 <span>{formatCurrency(amountCents)}</span>
 ```
@@ -221,16 +233,18 @@ try {
 ### 3. Custom Hook Composition
 
 **Zamiast:**
+
 ```typescript
 // Duży hook z wszystkim
 useExpenseForm({ ... }) // 348 LOC
 ```
 
 **Teraz:**
+
 ```typescript
 // Małe, focused hooki
-useNicknameValidation(existingNicknames)
-useAmountInput(initialValue)
+useNicknameValidation(existingNicknames);
+useAmountInput(initialValue);
 ```
 
 ## Integracja z FAZĄ 1
@@ -244,15 +258,16 @@ const nicknameError = validateNickname(input);
 
 // Użycie formatters + query hooks
 const { data: settlements } = useSettlements();
-return settlements.map(s => ({
+return settlements.map((s) => ({
   title: s.title,
-  amount: formatCurrency(s.total_expenses_amount_cents)
+  amount: formatCurrency(s.total_expenses_amount_cents),
 }));
 ```
 
 ## Następne kroki
 
 FAZA 3: Refaktoryzacja Auth Forms
+
 - Użycie react-hook-form
 - Integracja z validators
 - Zastosowanie nowych form components
@@ -260,12 +275,15 @@ FAZA 3: Refaktoryzacja Auth Forms
 ## Potencjalne problemy
 
 ### Problem: Validator nie obsługuje mojego use case
+
 **Rozwiązanie:** Dodaj nowy validator do `validators.ts` i zdokumentuj go
 
 ### Problem: Formatter daje zły format
+
 **Rozwiązanie:** Sprawdź locale i currency w parametrach
 
 ### Problem: FormField nie działa z moim custom input'em
+
 **Rozwiązanie:** Upewnij się, że input element akceptuje `id`, `aria-invalid`, `aria-describedby`
 
 ## Metryki po FAZIE 2
@@ -278,6 +296,7 @@ FAZA 3: Refaktoryzacja Auth Forms
 ## Reusability
 
 Te utilities mogą być reużywane:
+
 - W nowych formach (FAZA 3, 4, 5)
 - W custom componentach
 - W API endpoints (server-side validation)
