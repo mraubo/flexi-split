@@ -1,9 +1,5 @@
 import { useState, useCallback } from "react";
-import {
-  validateNickname,
-  validateNicknameUniqueness,
-  generateNicknameSuggestion,
-} from "@/lib/utils/validators";
+import { validateNickname, validateNicknameUniqueness, generateNicknameSuggestion } from "@/lib/utils/validators";
 
 /**
  * Validation state for nickname input
@@ -26,10 +22,7 @@ interface NicknameValidationState {
  *   currentNickname
  * );
  */
-export function useNicknameValidation(
-  existingNicknames: string[],
-  currentNickname?: string
-) {
+export function useNicknameValidation(existingNicknames: string[], currentNickname?: string) {
   const [validation, setValidation] = useState<NicknameValidationState>({
     isValidPattern: true,
     isValidLength: true,
@@ -64,25 +57,28 @@ export function useNicknameValidation(
   /**
    * Get human-readable validation message
    */
-  const getValidationMessage = useCallback((value: string): string => {
-    if (!value) return "";
+  const getValidationMessage = useCallback(
+    (value: string): string => {
+      if (!value) return "";
 
-    const patternValidation = validateNickname(value);
-    if (!patternValidation.valid) {
-      return patternValidation.error || "";
-    }
+      const patternValidation = validateNickname(value);
+      if (!patternValidation.valid) {
+        return patternValidation.error || "";
+      }
 
-    const uniquenessValidation = validateNicknameUniqueness(value, existingNicknames, currentNickname);
-    if (!uniquenessValidation.unique) {
-      return `Nazwa "${value}" jest już używana. Spróbuj "${uniquenessValidation.suggestion}".`;
-    }
+      const uniquenessValidation = validateNicknameUniqueness(value, existingNicknames, currentNickname);
+      if (!uniquenessValidation.unique) {
+        return `Nazwa "${value}" jest już używana. Spróbuj "${uniquenessValidation.suggestion}".`;
+      }
 
-    if (validation.conflictRemote && validation.suggestion) {
-      return `Nazwa "${value}" jest już używana. Spróbuj "${validation.suggestion}".`;
-    }
+      if (validation.conflictRemote && validation.suggestion) {
+        return `Nazwa "${value}" jest już używana. Spróbuj "${validation.suggestion}".`;
+      }
 
-    return "";
-  }, [existingNicknames, currentNickname, validation.conflictRemote, validation.suggestion]);
+      return "";
+    },
+    [existingNicknames, currentNickname, validation.conflictRemote, validation.suggestion]
+  );
 
   /**
    * Check if value is valid

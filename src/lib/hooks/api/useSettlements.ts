@@ -7,7 +7,6 @@ import type {
   UpdateSettlementCommand,
   GetSettlementsQuery,
   PagedResponse,
-  ApiError,
 } from "@/types";
 
 /**
@@ -44,9 +43,7 @@ export function useSettlements(query: GetSettlementsQuery = {}) {
         params.append("sortOrder", query.sortOrder);
       }
 
-      const endpoint = params.toString()
-        ? `/api/settlements?${params.toString()}`
-        : "/api/settlements";
+      const endpoint = params.toString() ? `/api/settlements?${params.toString()}` : "/api/settlements";
 
       return apiClient.get<PagedResponse<SettlementSummaryDTO>>(endpoint);
     },
@@ -71,8 +68,7 @@ export function useCreateSettlement() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (command: CreateSettlementCommand) =>
-      apiClient.post<SettlementSummaryDTO>("/api/settlements", command),
+    mutationFn: (command: CreateSettlementCommand) => apiClient.post<SettlementSummaryDTO>("/api/settlements", command),
     onSuccess: (data) => {
       // Invalidate settlements list to refetch
       queryClient.invalidateQueries({
@@ -113,7 +109,7 @@ export function useDeleteSettlement(id: UUID) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => apiClient.delete<void>(`/api/settlements/${id}`),
+    mutationFn: () => apiClient.delete(`/api/settlements/${id}`),
     onSuccess: () => {
       // Remove from cache
       queryClient.removeQueries({
@@ -141,11 +137,7 @@ export function useCloseSettlement(id: UUID) {
         headers["Idempotency-Key"] = idempotencyKey;
       }
 
-      return apiClient.post<SettlementSummaryDTO>(
-        `/api/settlements/${id}/close`,
-        {},
-        { headers }
-      );
+      return apiClient.post<SettlementSummaryDTO>(`/api/settlements/${id}/close`, {}, { headers });
     },
     onSuccess: (data) => {
       // Update the settlement in cache with new status

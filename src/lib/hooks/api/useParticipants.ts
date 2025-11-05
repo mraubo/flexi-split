@@ -1,12 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api/client";
-import type {
-  UUID,
-  ParticipantDTO,
-  CreateParticipantCommand,
-  UpdateParticipantCommand,
-  ApiError,
-} from "@/types";
+import type { UUID, ParticipantDTO, CreateParticipantCommand, UpdateParticipantCommand } from "@/types";
 
 /**
  * Query key factory for participants
@@ -24,10 +18,7 @@ export const participantsQueryKeys = {
 export function useParticipants(settlementId: UUID) {
   return useQuery({
     queryKey: participantsQueryKeys.list(settlementId),
-    queryFn: () =>
-      apiClient.get<{ data: ParticipantDTO[] }>(
-        `/api/settlements/${settlementId}/participants`
-      ),
+    queryFn: () => apiClient.get<{ data: ParticipantDTO[] }>(`/api/settlements/${settlementId}/participants`),
     enabled: !!settlementId,
   });
 }
@@ -40,10 +31,7 @@ export function useCreateParticipant(settlementId: UUID) {
 
   return useMutation({
     mutationFn: (command: CreateParticipantCommand) =>
-      apiClient.post<{ data: ParticipantDTO }>(
-        `/api/settlements/${settlementId}/participants`,
-        command
-      ),
+      apiClient.post<{ data: ParticipantDTO }>(`/api/settlements/${settlementId}/participants`, command),
     onSuccess: () => {
       // Invalidate participants list to refetch
       queryClient.invalidateQueries({
@@ -91,10 +79,7 @@ export function useDeleteParticipant(settlementId: UUID, participantId: UUID) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
-      apiClient.delete<void>(
-        `/api/settlements/${settlementId}/participants/${participantId}`
-      ),
+    mutationFn: () => apiClient.delete(`/api/settlements/${settlementId}/participants/${participantId}`),
     onSuccess: () => {
       // Invalidate participants list to refetch
       queryClient.invalidateQueries({

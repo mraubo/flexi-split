@@ -24,9 +24,10 @@ export function createQueryClient(): QueryClient {
          * Retry failed requests 3 times with exponential backoff
          * Don't retry for 4xx errors (client errors)
          */
-        retry: (failureCount, error: any) => {
+        retry: (failureCount, error: unknown) => {
           // Don't retry 4xx errors (client errors)
-          if (error?.status >= 400 && error?.status < 500) {
+          const errorStatus = (error as Record<string, unknown>)?.status as number | undefined;
+          if (errorStatus && errorStatus >= 400 && errorStatus < 500) {
             return false;
           }
           // Retry up to 3 times for other errors
@@ -63,8 +64,9 @@ export function createQueryClient(): QueryClient {
          * Retry failed mutations 1 time
          * Don't retry 4xx errors
          */
-        retry: (failureCount, error: any) => {
-          if (error?.status >= 400 && error?.status < 500) {
+        retry: (failureCount, error: unknown) => {
+          const errorStatus = (error as Record<string, unknown>)?.status as number | undefined;
+          if (errorStatus && errorStatus >= 400 && errorStatus < 500) {
             return false;
           }
           return failureCount < 1;

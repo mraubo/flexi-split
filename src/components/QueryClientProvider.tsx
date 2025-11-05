@@ -9,7 +9,7 @@ interface QueryClientProviderProps {
 /**
  * QueryClientProvider wrapper for Astro + React integration
  * Wraps React components with TanStack Query's QueryClientProvider
- * 
+ *
  * Usage in Astro:
  * <QueryClientProvider client:load>
  *   <SomeReactComponent client:load />
@@ -18,9 +18,5 @@ interface QueryClientProviderProps {
 export default function QueryClientProvider({ children }: QueryClientProviderProps) {
   const queryClient = getQueryClient();
 
-  return (
-    <TanstackQueryClientProvider client={queryClient}>
-      {children}
-    </TanstackQueryClientProvider>
-  );
+  return <TanstackQueryClientProvider client={queryClient}>{children}</TanstackQueryClientProvider>;
 }

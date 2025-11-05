@@ -7,8 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormField } from "@/components/form/FormField";
 import { RegistrationSuccess } from "./RegistrationSuccess";
 import { RegisterSchema, type RegisterInput } from "@/lib/validation/auth";
-import { useRegister, extractFieldErrors, isEmailConflictError, isEmailConfirmationRequired, isAutoLoginRegistration } from "@/lib/hooks/api/useAuth";
-import { type ApiError } from "@/lib/api";
+import { useRegister, extractFieldErrors, isEmailConflictError } from "@/lib/hooks/api/useAuth";
 
 /**
  * RegisterForm Component
@@ -44,19 +43,19 @@ export default function RegisterForm() {
   const registerMutation = useRegister();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [requiresEmailConfirmation, setRequiresEmailConfirmation] = useState(false);
-  const [statusCode, setStatusCode] = useState<number | null>(null);
 
   const onSubmit = async (data: RegisterInput) => {
     try {
       const response = await registerMutation.mutateAsync(data);
-      
+
       // Determine success flow based on HTTP status code
-      const statusCode = (response as any)?._status || 201;
-      
+      const statusCode = ((response as Record<string, number | string | object> | undefined)?._status as number) || 201;
+
       if (statusCode === 202) {
         // Email confirmation required
         setSuccessMessage(
-          (response as any).message || "Rejestracja zakończona pomyślnie. Sprawdź swoją skrzynkę e-mail i potwierdź konto."
+          (response as Record<string, string> | undefined)?.message ||
+            "Rejestracja zakończona pomyślnie. Sprawdź swoją skrzynkę e-mail i potwierdź konto."
         );
         setRequiresEmailConfirmation(true);
       } else if (statusCode === 201) {
@@ -64,8 +63,8 @@ export default function RegisterForm() {
         setSuccessMessage("Rejestracja zakończona pomyślnie. Zostaniesz automatycznie przekierowany za ");
         setRequiresEmailConfirmation(false);
       }
-    } catch (err: any) {
-      const apiError = err as any;
+    } catch (err) {
+      const apiError = err as Record<string, unknown>;
 
       // Handle 409 Conflict - email already exists
       if (isEmailConflictError(apiError)) {
@@ -126,12 +125,7 @@ export default function RegisterForm() {
 
       {!isSuccess && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="form-register">
-          <FormField
-            id="email"
-            label="Adres e-mail"
-            error={errors.email?.message}
-            required
-          >
+          <FormField id="email" label="Adres e-mail" error={errors.email?.message} required>
             <Input
               type="email"
               placeholder="twoj@email.com"
@@ -157,12 +151,7 @@ export default function RegisterForm() {
             />
           </FormField>
 
-          <FormField
-            id="confirmPassword"
-            label="Potwierdź hasło"
-            error={errors.confirmPassword?.message}
-            required
-          >
+          <FormField id="confirmPassword" label="Potwierdź hasło" error={errors.confirmPassword?.message} required>
             <Input
               type="password"
               placeholder="Powtórz hasło"
