@@ -7,7 +7,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormField } from "@/components/form/FormField";
 import { RegistrationSuccess } from "./RegistrationSuccess";
 import { RegisterSchema, type RegisterInput } from "@/lib/validation/auth";
-import { useRegister, extractFieldErrors, isEmailConflictError } from "@/lib/hooks/api/useAuth";
 
 /**
  * RegisterForm Component
@@ -40,61 +39,74 @@ export default function RegisterForm() {
     mode: "onBlur",
   });
 
-  const registerMutation = useRegister();
+  const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [requiresEmailConfirmation, setRequiresEmailConfirmation] = useState(false);
 
   const onSubmit = async (data: RegisterInput) => {
+    setIsLoading(true);
+
     try {
-      const response = await registerMutation.mutateAsync(data);
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-      // Determine success flow based on HTTP status code
-      const statusCode = ((response as Record<string, number | string | object> | undefined)?._status as number) || 201;
+      const responseData = await response.json();
 
-      if (statusCode === 202) {
+      if (!response.ok) {
+        // Handle 409 Conflict - email already exists
+        if (response.status === 409) {
+          setError("email", {
+            message: "Konto z tym adresem e-mail już istnieje",
+          });
+          return;
+        }
+
+        // Handle 429 Rate Limit
+        if (response.status === 429) {
+          setError("root", {
+            message: "Zbyt wiele prób rejestracji. Spróbuj ponownie za chwilę.",
+          });
+          return;
+        }
+
+        // Handle field-level validation errors
+        if (responseData.details && Array.isArray(responseData.details)) {
+          responseData.details.forEach((detail: { field?: string; message?: string }) => {
+            if (detail.field && detail.message) {
+              setError(detail.field as keyof RegisterInput, { message: detail.message });
+            }
+          });
+          return;
+        }
+
+        // Handle generic error
+        setError("root", {
+          message: responseData.message || "Wystąpił błąd podczas rejestracji",
+        });
+        return;
+      }
+
+      // Success - determine flow based on HTTP status code
+      if (response.status === 202) {
         // Email confirmation required
         setSuccessMessage(
-          (response as Record<string, string> | undefined)?.message ||
-            "Rejestracja zakończona pomyślnie. Sprawdź swoją skrzynkę e-mail i potwierdź konto."
+          responseData.message || "Rejestracja zakończona pomyślnie. Sprawdź swoją skrzynkę e-mail i potwierdź konto."
         );
         setRequiresEmailConfirmation(true);
-      } else if (statusCode === 201) {
+      } else if (response.status === 201) {
         // Auto-login registration
         setSuccessMessage("Rejestracja zakończona pomyślnie. Zostaniesz automatycznie przekierowany za ");
         setRequiresEmailConfirmation(false);
       }
-    } catch (err) {
-      const apiError = err as Record<string, unknown>;
-
-      // Handle 409 Conflict - email already exists
-      if (isEmailConflictError(apiError)) {
-        setError("email", {
-          message: "Konto z tym adresem e-mail już istnieje",
-        });
-        return;
-      }
-
-      // Handle 429 Rate Limit
-      if (apiError.status === 429) {
-        setError("root", {
-          message: "Zbyt wiele prób rejestracji. Spróbuj ponownie za chwilę.",
-        });
-        return;
-      }
-
-      // Handle field-level validation errors
-      const fieldErrors = extractFieldErrors(apiError);
-      if (Object.keys(fieldErrors).length > 0) {
-        Object.entries(fieldErrors).forEach(([field, message]) => {
-          setError(field as keyof RegisterInput, { message });
-        });
-        return;
-      }
-
-      // Handle generic error
+    } catch {
       setError("root", {
-        message: apiError.message || "Wystąpił błąd podczas rejestracji",
+        message: "Wystąpił błąd połączenia. Spróbuj ponownie.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -161,13 +173,8 @@ export default function RegisterForm() {
             />
           </FormField>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting || registerMutation.isPending}
-            data-testid="button-submit"
-          >
-            {isSubmitting || registerMutation.isPending ? "Rejestrowanie..." : "Zarejestruj się"}
+          <Button type="submit" className="w-full" disabled={isSubmitting || isLoading} data-testid="button-submit">
+            {isSubmitting || isLoading ? "Rejestrowanie..." : "Zarejestruj się"}
           </Button>
         </form>
       )}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -6,8 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormField } from "@/components/form/FormField";
 import { LoginSchema, type LoginInput } from "@/lib/validation/auth";
-import { useLogin, extractFieldErrors } from "@/lib/hooks/api/useAuth";
-import { type ApiError } from "@/lib/api";
 
 /**
  * LoginForm Component
@@ -38,43 +36,62 @@ export default function LoginForm() {
     mode: "onBlur",
   });
 
-  const loginMutation = useLogin();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: LoginInput) => {
+    setIsLoading(true);
+
     try {
-      await loginMutation.mutateAsync(data);
-    } catch (err) {
-      const apiError = err as ApiError;
-
-      // Handle 401 Unauthorized specifically
-      if (apiError.status === 401) {
-        setError("root", {
-          message: "Nieprawidłowy adres e-mail lub hasło",
-        });
-        return;
-      }
-
-      // Handle 429 Rate Limit
-      if (apiError.status === 429) {
-        setError("root", {
-          message: "Zbyt wiele prób logowania. Spróbuj ponownie za chwilę.",
-        });
-        return;
-      }
-
-      // Handle field-level validation errors
-      const fieldErrors = extractFieldErrors(apiError);
-      if (Object.keys(fieldErrors).length > 0) {
-        Object.entries(fieldErrors).forEach(([field, message]) => {
-          setError(field as keyof LoginInput, { message });
-        });
-        return;
-      }
-
-      // Handle generic error
-      setError("root", {
-        message: apiError.message || "Wystąpił błąd podczas logowania",
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+
+        // Handle 401 Unauthorized
+        if (response.status === 401) {
+          setError("root", {
+            message: "Nieprawidłowy adres e-mail lub hasło",
+          });
+          return;
+        }
+
+        // Handle 429 Rate Limit
+        if (response.status === 429) {
+          setError("root", {
+            message: "Zbyt wiele prób logowania. Spróbuj ponownie za chwilę.",
+          });
+          return;
+        }
+
+        // Handle field-level validation errors
+        if (errorData.details && Array.isArray(errorData.details)) {
+          errorData.details.forEach((detail: { field?: string; message?: string }) => {
+            if (detail.field && detail.message) {
+              setError(detail.field as keyof LoginInput, { message: detail.message });
+            }
+          });
+          return;
+        }
+
+        // Handle generic error
+        setError("root", {
+          message: errorData.message || "Wystąpił błąd podczas logowania",
+        });
+        return;
+      }
+
+      // Success - redirect to settlements
+      window.location.href = "/settlements";
+    } catch {
+      setError("root", {
+        message: "Wystąpił błąd połączenia. Spróbuj ponownie.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -114,13 +131,8 @@ export default function LoginForm() {
           />
         </FormField>
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isSubmitting || loginMutation.isPending}
-          data-testid="button-submit"
-        >
-          {isSubmitting || loginMutation.isPending ? "Logowanie..." : "Zaloguj się"}
+        <Button type="submit" className="w-full" disabled={isSubmitting || isLoading} data-testid="button-submit">
+          {isSubmitting || isLoading ? "Logowanie..." : "Zaloguj się"}
         </Button>
       </form>
 
