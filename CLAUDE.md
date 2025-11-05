@@ -327,6 +327,23 @@ All validation schemas are in `src/lib/validation/`:
 - **Validation**: Zod schemas in `src/lib/validation/`
 - **Error types**: `ApiError`, `ApiErrorResponse` in `src/lib/api.ts`
 
+## Git Commit Behavior
+
+**IMPORTANT: Claude Code will NOT automatically commit changes.**
+
+When code changes are complete:
+1. Claude Code will review the changes and prepare a detailed commit message
+2. Claude Code will present the proposed commit message to you for review
+3. You must explicitly approve the commit before it is created
+4. The commit message will follow conventional commits format and include context about the "why"
+
+You can request a commit at any point by explicitly asking, e.g.:
+- "Please commit these changes"
+- "Create a commit for the updates you just made"
+- "Can you commit the work we've done so far?"
+
+This ensures you maintain full control over your git history and understand exactly what is being committed.
+
 ## Environment Variables
 
 Required in `.env`:
