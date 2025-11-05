@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import QueryClientProvider from "../components/QueryClientProvider";
 
 interface Props {
   title?: string;
@@ -27,11 +28,13 @@ const { title = "FlexiSplit" } = Astro.props;
     <title>{title}</title>
   </head>
   <body class="bg-linear-to-br from-purple-500 to-indigo-800 text-foreground min-h-screen flex flex-col">
-    <main class="flex-1 flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm">
-        <slot />
-      </div>
-    </main>
+    <QueryClientProvider client:load>
+      <main class="flex-1 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm">
+          <slot />
+        </div>
+      </main>
+    </QueryClientProvider>
   </body>
 </html>
 
