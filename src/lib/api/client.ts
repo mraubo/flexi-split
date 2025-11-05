@@ -32,10 +32,7 @@ export class ApiClient {
   /**
    * Make a typed API request
    */
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -47,7 +44,7 @@ export class ApiClient {
       headers,
     });
 
-    const body = await response.json() as ApiResponse<T>;
+    const body = (await response.json()) as ApiResponse<T>;
 
     if (!response.ok) {
       const errorBody = body as ApiErrorBody;
@@ -81,11 +78,7 @@ export class ApiClient {
   /**
    * POST request
    */
-  post<T>(
-    endpoint: string,
-    body?: unknown,
-    options: Omit<RequestInit, "method" | "body"> = {}
-  ): Promise<T> {
+  post<T>(endpoint: string, body?: unknown, options: Omit<RequestInit, "method" | "body"> = {}): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: "POST",
@@ -96,11 +89,7 @@ export class ApiClient {
   /**
    * PUT request
    */
-  put<T>(
-    endpoint: string,
-    body?: unknown,
-    options: Omit<RequestInit, "method" | "body"> = {}
-  ): Promise<T> {
+  put<T>(endpoint: string, body?: unknown, options: Omit<RequestInit, "method" | "body"> = {}): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: "PUT",
@@ -111,10 +100,7 @@ export class ApiClient {
   /**
    * DELETE request
    */
-  delete<T>(
-    endpoint: string,
-    options: Omit<RequestInit, "method"> = {}
-  ): Promise<T> {
+  delete<T>(endpoint: string, options: Omit<RequestInit, "method"> = {}): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: "DELETE",
@@ -124,11 +110,7 @@ export class ApiClient {
   /**
    * PATCH request
    */
-  patch<T>(
-    endpoint: string,
-    body?: unknown,
-    options: Omit<RequestInit, "method" | "body"> = {}
-  ): Promise<T> {
+  patch<T>(endpoint: string, body?: unknown, options: Omit<RequestInit, "method" | "body"> = {}): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: "PATCH",

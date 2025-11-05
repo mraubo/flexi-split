@@ -54,26 +54,15 @@ export function RegistrationSuccess({
         <AlertDescription>
           {message}
           {!requiresEmailConfirmation && countdown > 0 && (
-            <CountdownTimer
-              initialSeconds={countdown}
-              onComplete={() => onSkip?.()}
-              onCountdownChange={setCountdown}
-            />
+            <CountdownTimer initialSeconds={countdown} onComplete={() => onSkip?.()} onCountdownChange={setCountdown} />
           )}
         </AlertDescription>
       </Alert>
 
       {!requiresEmailConfirmation && (
         <div className="text-center">
-          <p className="text-sm text-muted-foreground mb-2">
-            Nie chcesz czekać? Przejdź od razu do swoich rozliczeń.
-          </p>
-          <Button
-            onClick={handleSkip}
-            variant="outline"
-            size="sm"
-            data-testid="button-skip-countdown"
-          >
+          <p className="text-sm text-muted-foreground mb-2">Nie chcesz czekać? Przejdź od razu do swoich rozliczeń.</p>
+          <Button onClick={handleSkip} variant="outline" size="sm" data-testid="button-skip-countdown">
             Przejdź do rozliczeń
           </Button>
         </div>

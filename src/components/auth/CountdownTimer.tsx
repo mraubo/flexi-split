@@ -19,11 +19,7 @@ export interface CountdownTimerProps {
  *   onCountdownChange={(seconds) => setCountdown(seconds)}
  * />
  */
-export function CountdownTimer({
-  initialSeconds,
-  onComplete,
-  onCountdownChange,
-}: CountdownTimerProps) {
+export function CountdownTimer({ initialSeconds, onComplete, onCountdownChange }: CountdownTimerProps) {
   const [secondsRemaining, setSecondsRemaining] = useState(initialSeconds);
 
   useEffect(() => {

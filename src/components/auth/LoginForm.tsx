@@ -94,12 +94,7 @@ export default function LoginForm() {
           </Alert>
         )}
 
-        <FormField
-          id="email"
-          label="Adres e-mail"
-          error={errors.email?.message}
-          required
-        >
+        <FormField id="email" label="Adres e-mail" error={errors.email?.message} required>
           <Input
             type="email"
             placeholder="twoj@email.com"
@@ -109,12 +104,7 @@ export default function LoginForm() {
           />
         </FormField>
 
-        <FormField
-          id="password"
-          label="Hasło"
-          error={errors.password?.message}
-          required
-        >
+        <FormField id="password" label="Hasło" error={errors.password?.message} required>
           <Input
             type="password"
             placeholder="Wprowadź hasło"

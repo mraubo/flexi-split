@@ -1,7 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api/client";
 import { LoginSchema, RegisterSchema, type LoginInput, type RegisterInput } from "@/lib/validation/auth";
-import { type ApiError } from "@/lib/api.ts";
 
 /**
  * Query key factory for auth-related queries and mutations
@@ -16,14 +15,6 @@ export const authQueryKeys = {
  * Response types from auth endpoints
  */
 interface LoginResponse {
-  message: string;
-  user?: {
-    id: string;
-    email: string;
-  };
-}
-
-interface RegisterResponse {
   message: string;
   user?: {
     id: string;
@@ -50,20 +41,17 @@ export function useLogin() {
     },
     onSuccess: () => {
       // Invalidate session/user queries on successful login
+
       queryClient.invalidateQueries({ queryKey: authQueryKeys.session() });
+
       queryClient.invalidateQueries({ queryKey: authQueryKeys.user() });
-      
+
       // Redirect after a brief delay to ensure session is established
       setTimeout(() => {
         window.location.href = "/settlements";
       }, 100);
     },
   });
-}
-
-export interface RegisterMutationContext {
-  statusCode: number;
-  requiresEmailConfirmation: boolean;
 }
 
 /**
@@ -85,7 +73,7 @@ export function useRegister() {
     mutationFn: async (data: RegisterInput) => {
       // Validate with Zod first
       const validated = RegisterSchema.parse(data);
-      
+
       // For now, make raw fetch to capture status code
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -94,16 +82,18 @@ export function useRegister() {
       });
 
       const responseData = await response.json();
-      
+
       // Store status code in response for component to access
       return {
         ...responseData,
         _status: response.status,
       };
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       // On successful registration, invalidate auth queries
+
       queryClient.invalidateQueries({ queryKey: authQueryKeys.session() });
+
       queryClient.invalidateQueries({ queryKey: authQueryKeys.user() });
     },
   });
@@ -122,7 +112,7 @@ export function useLogout() {
     onSuccess: () => {
       // Clear all queries on logout
       queryClient.clear();
-      
+
       // Redirect to login
       window.location.href = "/auth/login";
     },
@@ -135,14 +125,14 @@ export function useLogout() {
  * @param error API error response
  * @returns Object mapping field names to error messages
  */
-export function extractFieldErrors(error: ApiError): Record<string, string> {
+export function extractFieldErrors(error: Record<string, unknown> | null | undefined): Record<string, string> {
   const fieldErrors: Record<string, string> = {};
 
   // Handle RFC 7807 error response with details array
-  if (error.details && Array.isArray(error.details)) {
-    error.details.forEach((detail: any) => {
+  if (error?.details && Array.isArray(error.details)) {
+    error.details.forEach((detail: Record<string, unknown>) => {
       if (detail.field && detail.message) {
-        fieldErrors[detail.field] = detail.message;
+        fieldErrors[String(detail.field)] = String(detail.message);
       }
     });
   }
@@ -153,8 +143,8 @@ export function extractFieldErrors(error: ApiError): Record<string, string> {
 /**
  * Determine if error is a 409 Conflict (email already exists)
  */
-export function isEmailConflictError(error: any): boolean {
-  return error?.status === 409;
+export function isEmailConflictError(error: Record<string, unknown> | null | undefined): boolean {
+  return (error as Record<string, unknown> | null)?.status === 409;
 }
 
 /**

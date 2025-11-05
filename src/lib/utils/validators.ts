@@ -42,8 +42,7 @@ export const validateNicknameUniqueness = (
 ): { unique: boolean; suggestion?: string } => {
   const isUnique = !existingNicknames.some(
     (existing) =>
-      existing.toLowerCase() === value.toLowerCase() &&
-      existing.toLowerCase() !== currentNickname?.toLowerCase()
+      existing.toLowerCase() === value.toLowerCase() && existing.toLowerCase() !== currentNickname?.toLowerCase()
   );
 
   if (isUnique) {
@@ -134,9 +133,7 @@ export const validateDescription = (description?: string | null): { valid: boole
 /**
  * Validates that a participant is selected
  */
-export const validateParticipant = (
-  participantId?: string
-): { valid: boolean; error?: string } => {
+export const validateParticipant = (participantId?: string): { valid: boolean; error?: string } => {
   if (!participantId) {
     return { valid: false, error: "Wybór uczestnika jest wymagany" };
   }
@@ -147,9 +144,7 @@ export const validateParticipant = (
 /**
  * Validates that at least one participant is selected
  */
-export const validateParticipants = (
-  participantIds?: string[]
-): { valid: boolean; error?: string } => {
+export const validateParticipants = (participantIds?: string[]): { valid: boolean; error?: string } => {
   if (!participantIds || participantIds.length === 0) {
     return { valid: false, error: "Wybierz co najmniej jednego uczestnika" };
   }
@@ -161,9 +156,7 @@ export const validateParticipants = (
  * Validates settlement title
  * Required, 1-100 characters
  */
-export const validateSettlementTitle = (
-  title?: string
-): { valid: boolean; error?: string } => {
+export const validateSettlementTitle = (title?: string): { valid: boolean; error?: string } => {
   if (!title || title.trim() === "") {
     return { valid: false, error: "Nazwa rozliczenia jest wymagana" };
   }
