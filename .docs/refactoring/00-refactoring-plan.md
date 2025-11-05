@@ -1,7 +1,7 @@
 # Plan Refaktoryzacji FlexiSplit - Architektura Komponentów
 
 **Ostatnia aktualizacja:** 2025-11-05
-**Status:** FAZA 5 UKOŃCZONA ✅
+**Status:** FAZA 6 UKOŃCZONA ✅
 
 ## 🎯 Cel
 
@@ -12,7 +12,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 3. ✅ **FAZA 3:** Refaktoryzacja auth formów
 4. ✅ **FAZA 4:** Refaktoryzacja participant components
 5. ✅ **FAZA 5:** Refaktoryzacja expense hook
-6. 🔄 **FAZA 6:** Refaktoryzacja settlement summary hook
+6. ✅ **FAZA 6:** Refaktoryzacja settlement summary hook
 7. 🔄 **FAZA 7:** Dokumentacja i testy
 
 ## 📊 Metryki sukcesu
@@ -218,21 +218,35 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 
 ---
 
-### FAZA 6: Refaktoryzacja Settlement Summary 🔄
+### FAZA 6: Refaktoryzacja Settlement Summary ✅
 
-**Status:** Planned
+**Status:** UKOŃCZONA
 
-**Plan:**
+**Realizacja:**
 
-1. Zastąpić manual fetching przez useQuery hooks
-2. Wydzielić formatting logic
-3. Stworzyć useSettlementSnapshot.ts
-4. Stworzyć useCloseSettlement.ts
-5. Uprościć useSettlementSummary.ts
+1. ✅ Stworzono `settlementFormatters.ts` z formatting utilities
+2. ✅ Rozszerzono `useSettlements.ts` o `useSettlementSnapshot()` hook
+3. ✅ Zrefaktorowano `useSettlementSummary.ts` - użycie shared formatters
+4. ✅ Wszystkie testy E2E przechodzą (43/43)
 
-**Target reduction:** useSettlementSummary.ts: 241 LOC → ~80 LOC (-67%)
+**Actual reduction:** useSettlementSummary.ts: 241 LOC → 180 LOC (-25%)
 
-**Dependencies:** FAZA 1
+**Pliki stworzone:**
+
+- `src/lib/utils/settlementFormatters.ts` (136 LOC)
+
+**Pliki zmodyfikowane:**
+
+- `src/lib/hooks/api/useSettlements.ts` (+16 LOC - useSettlementSnapshot)
+- `src/components/hooks/useSettlementSummary.ts` (-61 LOC, -25%)
+
+**Pliki dokumentacji:**
+
+- `.docs/refactoring/06-phase-6-settlement-summary.md`
+
+**Uwaga:** Hook używa manual `fetch()` zamiast TanStack Query dla SSR compatibility (wzorując się na poprzednie fazy). API hooks są dostępne dla przyszłych feature'ów z pełnym query caching.
+
+**Dependencies:** FAZA 1 ✅ - COMPLETED ✅
 
 ---
 
@@ -372,9 +386,9 @@ Przy wdrażaniu kolejnych faz:
 | 2025-11-05 | 3    | ✅ DONE | Auth forms (manual fetch for SSR)                          |
 | 2025-11-05 | 4    | ✅ DONE | Participant components                                     |
 | 2025-11-05 | 5    | ✅ DONE | Expense hook (validators + API hooks)                      |
-| TBD        | 6    | 🔄 PENDING | Settlement summary                                         |
+| 2025-11-05 | 6    | ✅ DONE | Settlement summary (formatters + API hooks)                |
 | TBD        | 7    | 🔄 PENDING | Docs & tests                                               |
 
 ---
 
-**Next step:** Przejść do FAZY 6 - Settlement Summary
+**Next step:** Przejść do FAZY 7 - Dokumentacja i finalizacja

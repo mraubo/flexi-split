@@ -3,6 +3,7 @@ import { apiClient } from "@/lib/api/client";
 import type {
   UUID,
   SettlementSummaryDTO,
+  SettlementSnapshotDTO,
   CreateSettlementCommand,
   UpdateSettlementCommand,
   GetSettlementsQuery,
@@ -19,6 +20,8 @@ export const settlementsQueryKeys = {
   list: (filters: GetSettlementsQuery) => [...settlementsQueryKeys.lists(), filters],
   details: () => [...settlementsQueryKeys.all(), "detail"],
   detail: (id: UUID) => [...settlementsQueryKeys.details(), id],
+  snapshots: () => [...settlementsQueryKeys.all(), "snapshot"],
+  snapshot: (id: UUID) => [...settlementsQueryKeys.snapshots(), id],
 };
 
 /**
@@ -125,6 +128,17 @@ export function useDeleteSettlement(id: UUID) {
 }
 
 /**
+ * Hook to fetch a settlement snapshot (only for closed settlements)
+ */
+export function useSettlementSnapshot(id: UUID, enabled = true) {
+  return useQuery({
+    queryKey: settlementsQueryKeys.snapshot(id),
+    queryFn: () => apiClient.get<SettlementSnapshotDTO>(`/api/settlements/${id}/snapshot`),
+    enabled: enabled && !!id,
+  });
+}
+
+/**
  * Hook to close (finalize) a settlement
  */
 export function useCloseSettlement(id: UUID) {
@@ -148,7 +162,7 @@ export function useCloseSettlement(id: UUID) {
         queryKey: settlementsQueryKeys.lists(),
       });
       queryClient.invalidateQueries({
-        queryKey: ["settlement-snapshot", id],
+        queryKey: settlementsQueryKeys.snapshot(id),
       });
     },
   });
