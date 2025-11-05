@@ -50,13 +50,13 @@ export function createQueryClient(): QueryClient {
          * Don't automatically refetch when component mounts (already fresh)
          * unless data is stale
          */
-        refetchOnMount: "stale",
+        refetchOnMount: true,
 
         /**
          * Don't automatically refetch when reconnecting to network
          * Saves bandwidth and reduces unnecessary requests
          */
-        refetchOnReconnect: "stale",
+        refetchOnReconnect: true,
       },
 
       mutations: {

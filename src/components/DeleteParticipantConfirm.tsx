@@ -45,7 +45,8 @@ export default function DeleteParticipantConfirm({
       onClose(); // Close dialog on success
     } catch (error: unknown) {
       // Use centralized error message
-      setErrorMessage(getParticipantErrorMessage(error));
+      const apiError = error as unknown as typeof error;
+      setErrorMessage(getParticipantErrorMessage(apiError as { status?: number }));
     } finally {
       setIsDeleting(false);
     }

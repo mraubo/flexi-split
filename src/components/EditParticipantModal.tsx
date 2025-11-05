@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getParticipantErrorMessage } from "@/lib/errorMessages";
-import type { UpdateParticipantCommand, ParticipantItemVM } from "@/types";
+import type { UpdateParticipantCommand, ParticipantItemVM, ParticipantDTO } from "@/types";
 
 interface EditParticipantModalProps {
   participant: ParticipantItemVM | null;
@@ -19,7 +19,7 @@ interface EditParticipantModalProps {
   onSaved: (updatedParticipant: ParticipantItemVM) => void;
   onClose: () => void;
   disabled: boolean;
-  updateParticipant: (participantId: string, command: UpdateParticipantCommand) => Promise<ParticipantItemVM>;
+  updateParticipant: (participantId: string, command: UpdateParticipantCommand) => Promise<ParticipantDTO>;
 }
 
 export default function EditParticipantModal({
@@ -84,7 +84,17 @@ export default function EditParticipantModal({
 
     try {
       const command: UpdateParticipantCommand = { nickname };
-      const updatedParticipant = await updateParticipant(participant.id, command);
+      const updatedDTO = await updateParticipant(participant.id, command);
+
+      // Convert DTO to ItemVM for callback
+      const updatedParticipant: ParticipantItemVM = {
+        id: updatedDTO.id,
+        nickname: updatedDTO.nickname,
+        isOwner: updatedDTO.is_owner,
+        canEdit: true,
+        canDelete: !updatedDTO.is_owner,
+      };
+
       onSaved(updatedParticipant);
       onClose(); // Close modal on success
     } catch (error: unknown) {
@@ -111,7 +121,8 @@ export default function EditParticipantModal({
         handleRemoteConflict(suggestion);
       } else {
         // Use centralized error message
-        setErrorMessage(getParticipantErrorMessage(error));
+        const apiError = error as { status?: number };
+        setErrorMessage(getParticipantErrorMessage(apiError));
       }
     } finally {
       setIsSubmitting(false);
