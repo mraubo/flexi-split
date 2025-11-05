@@ -142,6 +142,24 @@ export const validateParticipant = (participantId?: string): { valid: boolean; e
 };
 
 /**
+ * Validates that a payer is selected and exists in participants list
+ */
+export const validatePayer = (
+  payerId?: string,
+  participants?: Array<{ id: string }>
+): { valid: boolean; error?: string } => {
+  if (!payerId) {
+    return { valid: false, error: "Wybór płacącego jest wymagany" };
+  }
+
+  if (participants && !participants.some((p) => p.id === payerId)) {
+    return { valid: false, error: "Wybrany płacący nie istnieje w rozliczeniu" };
+  }
+
+  return { valid: true };
+};
+
+/**
  * Validates that at least one participant is selected
  */
 export const validateParticipants = (participantIds?: string[]): { valid: boolean; error?: string } => {
