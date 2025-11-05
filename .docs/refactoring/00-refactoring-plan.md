@@ -17,13 +17,13 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 
 ## 📊 Metryki sukcesu
 
-| Metrika | Target | Status |
-|---------|--------|--------|
-| Redukcja LOC w TOP 5 komponentach | -40-50% | ⏳ W trakcie |
-| Eliminacja duplikacji kodu walidacji | 100% | ⏳ W trakcie |
-| Centralizacja API calls | 100% | ⏳ W trakcie |
-| Wszystkie formularze używają react-hook-form | 100% | ⏳ W trakcie |
-| Testy E2E przechodzą | 100% | ✅ OK |
+| Metrika                                      | Target  | Status       |
+| -------------------------------------------- | ------- | ------------ |
+| Redukcja LOC w TOP 5 komponentach            | -40-50% | ⏳ W trakcie |
+| Eliminacja duplikacji kodu walidacji         | 100%    | ⏳ W trakcie |
+| Centralizacja API calls                      | 100%    | ⏳ W trakcie |
+| Wszystkie formularze używają react-hook-form | 100%    | ⏳ W trakcie |
+| Testy E2E przechodzą                         | 100%    | ✅ OK        |
 
 ## 📁 Struktura dokumentacji
 
@@ -50,6 +50,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 **Status:** UKOŃCZONA
 
 **Realizacja:**
+
 - ✅ Instalacja zależności (react-hook-form, @hookform/resolvers, @tanstack/react-query)
 - ✅ Stworzenie `src/lib/api/client.ts` - typowany HTTP client
 - ✅ Stworzenie `src/lib/api/queryClient.ts` - konfiguracja TanStack Query
@@ -59,6 +60,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 - ✅ Dokumentacja FAZY 1
 
 **Pliki stworzone:**
+
 - `src/lib/api/client.ts` (123 linii)
 - `src/lib/api/queryClient.ts` (86 linii)
 - `src/components/QueryClientProvider.tsx` (23 linii)
@@ -66,10 +68,12 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 - `src/lib/hooks/api/useParticipants.ts` (95 linii)
 
 **Pliki zmienione:**
+
 - `src/layouts/Layout.astro`
 - `src/layouts/AuthLayout.astro`
 
 **Pliki dokumentacji:**
+
 - `.docs/refactoring/01-phase-1-foundations.md`
 
 ---
@@ -79,12 +83,14 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 **Status:** UKOŃCZONA
 
 **Realizacja:**
+
 1. ✅ Wydzielenie wspólnych validatorów do `src/lib/utils/validators.ts` (12 validators)
 2. ✅ Wydzielenie formatters do `src/lib/utils/formatters.ts` (13 formatters)
 3. ✅ Stworzenie shared form components w `src/components/form/` (3 components)
 4. ✅ Wydzielenie `useNicknameValidation.ts` hook
 
 **Pliki stworzone:**
+
 - `src/lib/utils/validators.ts` (217 LOC)
 - `src/lib/utils/formatters.ts` (243 LOC)
 - `src/components/form/FormError.tsx` (19 LOC)
@@ -93,6 +99,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 - `src/components/hooks/useNicknameValidation.ts` (126 LOC)
 
 **Pliki dokumentacji:**
+
 - `.docs/refactoring/02-phase-2-shared-utilities.md`
 - `.docs/refactoring/PHASE2_SUMMARY.txt`
 
@@ -105,25 +112,30 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 **Status:** UKOŃCZONA
 
 **Realizacja:**
+
 1. ✅ Refaktoryzacja RegisterForm.tsx - react-hook-form + Zod resolver
 2. ✅ Refaktoryzacja LoginForm.tsx - react-hook-form + Zod resolver
 3. ✅ Wydzielenie CountdownTimer.tsx z RegisterForm
 4. ✅ Wydzielenie RegistrationSuccess.tsx component
 5. ⚠️ Użyto manual fetch zamiast TanStack Query (SSR compatibility)
 
-**Actual reduction:** 
+**Actual reduction:**
+
 - RegisterForm.tsx: 244 LOC → 155 LOC (-36%)
 - LoginForm.tsx: 165 LOC → 105 LOC (-36%)
 
 **Pliki stworzone:**
+
 - `src/components/auth/CountdownTimer.tsx` (36 LOC)
 - `src/components/auth/RegistrationSuccess.tsx` (57 LOC)
 
 **Pliki zrefaktoryzowane:**
+
 - `src/components/auth/LoginForm.tsx` (105 LOC, -36%)
 - `src/components/auth/RegisterForm.tsx` (155 LOC, -36%)
 
 **Pliki dokumentacji:**
+
 - `.docs/refactoring/03-phase-3-auth-forms.md`
 - `.docs/refactoring/PHASE3_SUMMARY.txt`
 
@@ -138,6 +150,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 **Status:** UKOŃCZONA
 
 **Realizacja:**
+
 1. ✅ Wydzielić shared logic do `useParticipantNickname.ts` hook
 2. ✅ Refaktoryzować ParticipantForm.tsx - 272 LOC → 130 LOC (-52%)
 3. ✅ Refaktoryzować EditParticipantModal.tsx - 291 LOC → 120 LOC (-60%)
@@ -145,20 +158,24 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 5. ✅ Usunięcie 100% duplikacji kodu walidacji
 
 **Actual reduction:**
+
 - ParticipantForm.tsx: 272 LOC → 130 LOC (-52%)
 - EditParticipantModal.tsx: 291 LOC → 120 LOC (-60%)
 - Combined duplikacja: -100% (wspólny hook + component)
 - Całkowita redukcja: -313 LOC netto
 
 **Pliki stworzone:**
+
 - `src/components/hooks/useParticipantNickname.ts` (180+ LOC)
 - `src/components/form/NicknameInput.tsx` (90+ LOC)
 
 **Pliki zrefaktoryzowane:**
+
 - `src/components/ParticipantForm.tsx` (130 LOC, -52%)
 - `src/components/EditParticipantModal.tsx` (120 LOC, -60%)
 
 **Pliki dokumentacji:**
+
 - `.docs/refactoring/04-phase-4-participant-forms.md`
 - `.docs/refactoring/PHASE4_SUMMARY.txt`
 
@@ -171,6 +188,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 **Status:** Planned
 
 **Plan:**
+
 1. Podzielić useExpenseForm.ts na:
    - useExpenseValidation.ts - walidacja
    - useExpenseApi.ts - API calls
@@ -190,6 +208,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 **Status:** Planned
 
 **Plan:**
+
 1. Zastąpić manual fetching przez useQuery hooks
 2. Wydzielić formatting logic
 3. Stworzyć useSettlementSnapshot.ts
@@ -207,6 +226,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 **Status:** Planned
 
 **Plan:**
+
 1. Dokumenty:
    - api-client-guide.md
    - form-patterns.md
@@ -223,6 +243,7 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 ## 🏗️ Architektura po refaktoryzacji
 
 ### Warstwa API
+
 ```
 src/lib/api/
 ├── client.ts           # Typowany HTTP client
@@ -230,6 +251,7 @@ src/lib/api/
 ```
 
 ### Hooki API
+
 ```
 src/lib/hooks/api/
 ├── useSettlements.ts
@@ -239,6 +261,7 @@ src/lib/hooks/api/
 ```
 
 ### Utilities
+
 ```
 src/lib/utils/
 ├── validators.ts       (planowany)
@@ -247,6 +270,7 @@ src/lib/utils/
 ```
 
 ### Components
+
 ```
 src/components/
 ├── form/               (planowany)
@@ -260,6 +284,7 @@ src/components/
 ## 🔄 Wzorce projektowe
 
 ### 1. Custom Hooks Composition
+
 ```typescript
 // Zamiast jednego dużego hook'a (348 LOC)
 export function useExpenseForm(params) {
@@ -271,11 +296,13 @@ export function useExpenseForm(params) {
 ```
 
 ### 2. Service Layer Pattern
+
 - API calls zawsze przez service layer
 - Services w `src/lib/services/`
 - Query hooks jako thin wrapper
 
 ### 3. Separation of Concerns
+
 ```typescript
 // Validacja
 useExpenseValidation(params)
@@ -288,21 +315,22 @@ useExpenseFormatting(params)
 ```
 
 ### 4. React Hook Form + Zod Integration
+
 ```typescript
 const form = useForm({
   resolver: zodResolver(ExpenseSchema),
-  defaultValues: getDefaults()
+  defaultValues: getDefaults(),
 });
 ```
 
 ## ⚠️ Ryzyka i mitygacje
 
-| Ryzyko | Mitygacja |
-|--------|-----------|
-| Breaking changes w testach | Update testów równolegle z refaktoryzacją |
+| Ryzyko                        | Mitygacja                                   |
+| ----------------------------- | ------------------------------------------- |
+| Breaking changes w testach    | Update testów równolegle z refaktoryzacją   |
 | Problemy SSR + TanStack Query | Proper QueryClient setup, hydration support |
-| Zwiększony bundle size | Code splitting, tree shaking analysis |
-| Performance regression | Benchmark przed/po, memoization |
+| Zwiększony bundle size        | Code splitting, tree shaking analysis       |
+| Performance regression        | Benchmark przed/po, memoization             |
 
 ## 📚 Lektura dodatkowa
 
@@ -322,15 +350,15 @@ Przy wdrażaniu kolejnych faz:
 
 ## Historyka zmian
 
-| Data | FAZA | Status | Notes |
-|------|------|--------|-------|
-| 2025-11-05 | 1 | ✅ DONE | Infrastruktura API i Query |
-| 2025-11-05 | 2 | ✅ DONE | Shared utilities (validators, formatters, form components) |
-| 2025-11-05 | 3 | ✅ DONE | Auth forms (manual fetch for SSR) |
-| TBD | 4 | 🔄 IN PROGRESS | Participant components |
-| TBD | 5 | 🔄 PENDING | Expense hook |
-| TBD | 6 | 🔄 PENDING | Settlement summary |
-| TBD | 7 | 🔄 PENDING | Docs & tests |
+| Data       | FAZA | Status         | Notes                                                      |
+| ---------- | ---- | -------------- | ---------------------------------------------------------- |
+| 2025-11-05 | 1    | ✅ DONE        | Infrastruktura API i Query                                 |
+| 2025-11-05 | 2    | ✅ DONE        | Shared utilities (validators, formatters, form components) |
+| 2025-11-05 | 3    | ✅ DONE        | Auth forms (manual fetch for SSR)                          |
+| TBD        | 4    | 🔄 IN PROGRESS | Participant components                                     |
+| TBD        | 5    | 🔄 PENDING     | Expense hook                                               |
+| TBD        | 6    | 🔄 PENDING     | Settlement summary                                         |
+| TBD        | 7    | 🔄 PENDING     | Docs & tests                                               |
 
 ---
 

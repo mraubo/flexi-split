@@ -11,6 +11,7 @@ bun add react-hook-form @hookform/resolvers @tanstack/react-query
 ```
 
 **Wersjach:**
+
 - `react-hook-form@7.66.0` - Minimalizuje boilerplate formularzy
 - `@hookform/resolvers@5.2.2` - Integracja z Zod validators
 - `@tanstack/react-query@5.90.6` - Zarządzanie stanem serwera i caching
@@ -18,6 +19,7 @@ bun add react-hook-form @hookform/resolvers @tanstack/react-query
 ### 2. Typowany HTTP Client - `src/lib/api/client.ts`
 
 **Cechy:**
+
 - ✅ Obsługa RFC 7807 error format
 - ✅ Type-safe request/response handling
 - ✅ Automatyczne parsowanie JSON
@@ -34,7 +36,7 @@ const settlements = await apiClient.get("/api/settlements");
 
 // POST request
 const newSettlement = await apiClient.post("/api/settlements", {
-  title: "Trip to Italy"
+  title: "Trip to Italy",
 });
 
 // PUT request
@@ -48,16 +50,16 @@ await apiClient.delete("/api/settlements/123");
 
 **Konfiguracja:**
 
-| Opcja | Wartość | Opis |
-|-------|---------|------|
-| **Queries** |
-| staleTime | 5 min | Dane świeże przez 5 minut |
-| gcTime | 10 min | Utrzymuj cache przez 10 minut |
-| retry | 3 razy | Powtórz dla 5xx błędów |
-| refetchOnWindowFocus | true | Odśwież gdy wrócisz do okna |
-| refetchOnMount | "stale" | Odśwież tylko jeśli stale |
-| **Mutations** |
-| retry | 1 raz | Jedna ponowna próba dla mutations |
+| Opcja                | Wartość | Opis                              |
+| -------------------- | ------- | --------------------------------- |
+| **Queries**          |
+| staleTime            | 5 min   | Dane świeże przez 5 minut         |
+| gcTime               | 10 min  | Utrzymuj cache przez 10 minut     |
+| retry                | 3 razy  | Powtórz dla 5xx błędów            |
+| refetchOnWindowFocus | true    | Odśwież gdy wrócisz do okna       |
+| refetchOnMount       | "stale" | Odśwież tylko jeśli stale         |
+| **Mutations**        |
+| retry                | 1 raz   | Jedna ponowna próba dla mutations |
 
 **Singleton pattern:**
 
@@ -70,6 +72,7 @@ const queryClient = getQueryClient(); // Zawsze ten sam instance
 ### 4. React QueryClient Provider - `src/components/QueryClientProvider.tsx`
 
 **Nowy komponent React:**
+
 - Otacza aplikację QueryClientProviderem
 - Zarządza stanem query'ów dla całej aplikacji
 - Wspiera hydration w Astro SSR
@@ -77,10 +80,12 @@ const queryClient = getQueryClient(); // Zawsze ten sam instance
 ### 5. Zintegrowana QueryClient w Layoutach
 
 **Modified files:**
+
 - `src/layouts/Layout.astro` - dodano QueryClientProvider z `client:load`
 - `src/layouts/AuthLayout.astro` - dodano QueryClientProvider z `client:load`
 
 **Dlaczego `client:load`?**
+
 - Ładuje QueryClientProvider zaraz po stronie
 - Gwarantuje, że QueryClient jest dostępny dla wszystkich React componentów
 - Umożliwia hydration dla SSR routes
@@ -116,6 +121,7 @@ await closeMutation.mutateAsync();
 ```
 
 **Query Key Management:**
+
 - Centralizowana funkcja `settlementsQueryKeys` dla spójności
 - Automatyczne invalation po mutacjach
 - Optymalne cache management
@@ -144,6 +150,7 @@ await deleteMutation.mutateAsync();
 ```
 
 **Cascade invalidation:**
+
 - Dodanie/zmiana uczestnika invalicuje listę expenses
 - Usunięcie uczestnika invalicuje listę expenses
 - Gwarantuje spójność danych
@@ -170,6 +177,7 @@ src/
 ## Następne kroki
 
 FAZA 2: Shared Utilities
+
 - Wydzielenie wspólnych validatorów
 - Utworzenie reużywalnych form components
 - Utility funkcje do formatowania
@@ -191,6 +199,7 @@ bun run dev
 ### Przy używaniu nowych hook'ów:
 
 1. **Zawsze import z `src/lib/hooks/api/`**
+
    ```typescript
    import { useSettlements, useCreateSettlement } from "@/lib/hooks/api/useSettlements";
    ```
@@ -210,12 +219,15 @@ bun run dev
 ## Potencjalne problemy i rozwiązania
 
 ### Problem: QueryClient nie jest dostępny w React component
+
 **Rozwiązanie:** Upewnij się, że component jest wrappowany w `<QueryClientProvider client:load>`
 
 ### Problem: Mutation nie invalicuje danych
+
 **Rozwiązanie:** Sprawdź czy query key w `onSuccess` callback'u jest poprawny
 
 ### Problem: Infinite rerenders
+
 **Rozwiązanie:** Sprawdź czy dependency array w `useEffect` jest prawidłowy
 
 ## Metryki po FAZIE 1

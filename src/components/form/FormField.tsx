@@ -30,7 +30,7 @@ export function FormField({ id, label, error, required = false, helpText, childr
         })}
       </div>
 
-      <FormError id={`${id}-error`} message={error} />
+      <FormError id={`${id}-error`} message={error} testId={`error-${id}`} />
     </div>
   );
 }

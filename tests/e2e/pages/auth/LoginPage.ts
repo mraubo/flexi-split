@@ -34,8 +34,14 @@ export class LoginPage extends BasePage {
 
   // Complete login flow
   async login(email: string, password: string) {
+    // Wait for form to be fully hydrated (client:idle needs more time)
+    await this.buttonSubmit.waitFor({ state: "visible" });
+    await this.page.waitForTimeout(1000); // Extra wait for React hydration with client:idle
+
     await this.fillEmail(email);
+    await this.page.waitForTimeout(200);
     await this.fillPassword(password);
+    await this.page.waitForTimeout(200);
     await this.submit();
   }
 

@@ -36,7 +36,7 @@ export default function RegisterForm() {
     setError,
   } = useForm<RegisterInput>({
     resolver: zodResolver(RegisterSchema),
-    mode: "onBlur",
+    mode: "onSubmit",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -136,7 +136,7 @@ export default function RegisterForm() {
       )}
 
       {!isSuccess && (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="form-register">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="form-register" noValidate>
           <FormField id="email" label="Adres e-mail" error={errors.email?.message} required>
             <Input
               type="email"

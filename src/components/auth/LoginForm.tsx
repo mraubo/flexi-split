@@ -33,7 +33,7 @@ export default function LoginForm() {
     setError,
   } = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
-    mode: "onBlur",
+    mode: "onSubmit",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +104,7 @@ export default function LoginForm() {
         <p className="text-muted-foreground">Wprowadź swoje dane, aby uzyskać dostęp do rozliczeń</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="form-login">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="form-login" noValidate>
         {generalError && (
           <Alert variant="destructive" data-testid="alert-error">
             <AlertDescription>{generalError}</AlertDescription>
