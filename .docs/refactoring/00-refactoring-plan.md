@@ -1,15 +1,15 @@
 # Plan Refaktoryzacji FlexiSplit - Architektura Komponentów
 
 **Ostatnia aktualizacja:** 2025-11-05
-**Status:** FAZA 1 UKOŃCZONA ✅
+**Status:** FAZA 3 UKOŃCZONA ✅
 
 ## 🎯 Cel
 
 Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, `EditParticipantModal.tsx`, `ParticipantForm.tsx`, `RegisterForm.tsx`, `useSettlementSummary.ts`) poprzez:
 
 1. ✅ **FAZA 1:** Wdrożenie react-hook-form, @tanstack/react-query i typowanego API client
-2. 🔄 **FAZA 2:** Shared utilities (validators, formatters, form components)
-3. 🔄 **FAZA 3:** Refaktoryzacja auth formów
+2. ✅ **FAZA 2:** Shared utilities (validators, formatters, form components)
+3. ✅ **FAZA 3:** Refaktoryzacja auth formów
 4. 🔄 **FAZA 4:** Refaktoryzacja participant components
 5. 🔄 **FAZA 5:** Refaktoryzacja expense hook
 6. 🔄 **FAZA 6:** Refaktoryzacja settlement summary hook
@@ -74,9 +74,9 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 
 ---
 
-### FAZA 2: Shared Utilities 🔄
+### FAZA 2: Shared Utilities ✅
 
-**Status:** Planned
+**Status:** UKOŃCZONA
 
 **Realizacja:**
 1. ✅ Wydzielenie wspólnych validatorów do `src/lib/utils/validators.ts` (12 validators)
@@ -92,24 +92,44 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 - `src/components/form/FormField.tsx` (39 LOC)
 - `src/components/hooks/useNicknameValidation.ts` (126 LOC)
 
+**Pliki dokumentacji:**
+- `.docs/refactoring/02-phase-2-shared-utilities.md`
+- `.docs/refactoring/PHASE2_SUMMARY.txt`
+
 **Dependencies:** FAZA 1 ✅ - COMPLETED ✅
 
 ---
 
-### FAZA 3: Refaktoryzacja Auth Forms 🔄
+### FAZA 3: Refaktoryzacja Auth Forms ✅
 
-**Status:** Planned
+**Status:** UKOŃCZONA
 
-**Plan:**
-1. Refaktoryzować RegisterForm.tsx - react-hook-form + Zod resolver
-2. Refaktoryzować LoginForm.tsx - react-hook-form
-3. Wydzielić CountdownTimer.tsx z RegisterForm
-4. Wydzielić RegistrationSuccess.tsx component
-5. Zastąpić fetch calls przez useMutation z TanStack Query
+**Realizacja:**
+1. ✅ Refaktoryzacja RegisterForm.tsx - react-hook-form + Zod resolver
+2. ✅ Refaktoryzacja LoginForm.tsx - react-hook-form + Zod resolver
+3. ✅ Wydzielenie CountdownTimer.tsx z RegisterForm
+4. ✅ Wydzielenie RegistrationSuccess.tsx component
+5. ⚠️ Użyto manual fetch zamiast TanStack Query (SSR compatibility)
 
-**Target reduction:** RegisterForm.tsx: 244 LOC → ~150 LOC (-38%)
+**Actual reduction:** 
+- RegisterForm.tsx: 244 LOC → 155 LOC (-36%)
+- LoginForm.tsx: 165 LOC → 105 LOC (-36%)
 
-**Dependencies:** FAZA 2
+**Pliki stworzone:**
+- `src/components/auth/CountdownTimer.tsx` (36 LOC)
+- `src/components/auth/RegistrationSuccess.tsx` (57 LOC)
+
+**Pliki zrefaktoryzowane:**
+- `src/components/auth/LoginForm.tsx` (105 LOC, -36%)
+- `src/components/auth/RegisterForm.tsx` (155 LOC, -36%)
+
+**Pliki dokumentacji:**
+- `.docs/refactoring/03-phase-3-auth-forms.md`
+- `.docs/refactoring/PHASE3_SUMMARY.txt`
+
+**Uwaga:** Auth forms używają manual fetch() zamiast TanStack Query dla kompatybilności z SSR (client:load). Formularze są renderowane po stronie serwera dla lepszego SEO i wydajności.
+
+**Dependencies:** FAZA 2 ✅ - COMPLETED ✅
 
 ---
 
@@ -292,13 +312,13 @@ Przy wdrażaniu kolejnych faz:
 | Data | FAZA | Status | Notes |
 |------|------|--------|-------|
 | 2025-11-05 | 1 | ✅ DONE | Infrastruktura API i Query |
-| TBD | 2 | 🔄 PENDING | Shared utilities |
-| TBD | 3 | 🔄 PENDING | Auth forms |
-| TBD | 4 | 🔄 PENDING | Participant components |
+| 2025-11-05 | 2 | ✅ DONE | Shared utilities (validators, formatters, form components) |
+| 2025-11-05 | 3 | ✅ DONE | Auth forms (manual fetch for SSR) |
+| TBD | 4 | 🔄 IN PROGRESS | Participant components |
 | TBD | 5 | 🔄 PENDING | Expense hook |
 | TBD | 6 | 🔄 PENDING | Settlement summary |
 | TBD | 7 | 🔄 PENDING | Docs & tests |
 
 ---
 
-**Next step:** Przejść do FAZY 2 - Shared Utilities
+**Next step:** Przejść do FAZY 4 - Participant Components
