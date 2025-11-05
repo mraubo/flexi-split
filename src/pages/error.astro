@@ -7,7 +7,7 @@ export async function getStaticPaths() {
   return [];
 }
 
-const statusCode = Astro.params.statusCode ? parseInt(Astro.params.statusCode) : 500;
+const statusCode = 500;
 const config = getErrorConfig(statusCode);
 const intendedPath = getIntendedPath();
 ---

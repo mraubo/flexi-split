@@ -18,17 +18,16 @@ interface FormFieldProps {
 }
 
 export function FormField({ id, label, error, required = false, helpText, children }: FormFieldProps) {
+  const childProps: Record<string, unknown> = {
+    "aria-invalid": !!error,
+    "aria-describedby": error ? `${id}-error` : undefined,
+  };
+
   return (
     <div className="space-y-2">
       <FormLabel id={id} label={label} required={required} helpText={helpText} />
 
-      <div className="relative">
-        {React.cloneElement(children as React.ReactElement, {
-          id,
-          "aria-invalid": !!error,
-          "aria-describedby": error ? `${id}-error` : undefined,
-        })}
-      </div>
+      <div className="relative">{React.cloneElement(children as React.ReactElement, childProps)}</div>
 
       <FormError id={`${id}-error`} message={error} testId={`error-${id}`} />
     </div>

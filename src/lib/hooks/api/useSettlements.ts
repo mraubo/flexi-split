@@ -36,11 +36,11 @@ export function useSettlements(query: GetSettlementsQuery = {}) {
       if (query.limit !== undefined) {
         params.append("limit", String(query.limit));
       }
-      if (query.sortBy) {
-        params.append("sortBy", query.sortBy);
+      if (query.sort_by) {
+        params.append("sort_by", query.sort_by);
       }
-      if (query.sortOrder) {
-        params.append("sortOrder", query.sortOrder);
+      if (query.sort_order) {
+        params.append("sort_order", query.sort_order);
       }
 
       const endpoint = params.toString() ? `/api/settlements?${params.toString()}` : "/api/settlements";

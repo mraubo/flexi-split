@@ -12,7 +12,10 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   server: { port: 3000 },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      // @ts-expect-error - Tailwind CSS Vite plugin has type compatibility issues with newer Vite versions
+      tailwindcss(),
+    ],
   },
   adapter: node({
     mode: "standalone",

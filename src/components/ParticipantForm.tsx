@@ -59,7 +59,8 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
         reset();
 
         // Focus back to input
-        (ref || inputRef).current?.focus();
+        const inputElement = typeof ref === "function" ? inputRef.current : ref?.current;
+        inputElement?.focus();
       } catch (error: unknown) {
         // Handle specific error codes
         const err = error as { status?: number };
@@ -78,7 +79,8 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
           handleRemoteConflict(suggestion);
         } else {
           // Use centralized error message
-          setErrorMessage(getParticipantErrorMessage(error));
+          const apiError = error as { status?: number };
+          setErrorMessage(getParticipantErrorMessage(apiError));
         }
       } finally {
         setIsSubmitting(false);
