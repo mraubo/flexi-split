@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { parseAmountToCents, formatCentsToAmount } from "@/components/hooks/useExpenseForm";
+import { parseAmountToCents, formatCentsToAmount } from "@/lib/utils/formatters";
 import type { AmountCents } from "@/types";
 
 export interface AmountInputProps {

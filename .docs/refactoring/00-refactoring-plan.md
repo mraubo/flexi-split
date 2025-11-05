@@ -1,7 +1,7 @@
 # Plan Refaktoryzacji FlexiSplit - Architektura Komponentów
 
 **Ostatnia aktualizacja:** 2025-11-05
-**Status:** FAZA 4 UKOŃCZONA ✅
+**Status:** FAZA 5 UKOŃCZONA ✅
 
 ## 🎯 Cel
 
@@ -10,8 +10,8 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 1. ✅ **FAZA 1:** Wdrożenie react-hook-form, @tanstack/react-query i typowanego API client
 2. ✅ **FAZA 2:** Shared utilities (validators, formatters, form components)
 3. ✅ **FAZA 3:** Refaktoryzacja auth formów
-4. 🔄 **FAZA 4:** Refaktoryzacja participant components
-5. 🔄 **FAZA 5:** Refaktoryzacja expense hook
+4. ✅ **FAZA 4:** Refaktoryzacja participant components
+5. ✅ **FAZA 5:** Refaktoryzacja expense hook
 6. 🔄 **FAZA 6:** Refaktoryzacja settlement summary hook
 7. 🔄 **FAZA 7:** Dokumentacja i testy
 
@@ -183,23 +183,38 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 
 ---
 
-### FAZA 5: Refaktoryzacja Expense Hook 🔄
+### FAZA 5: Refaktoryzacja Expense Hook ✅
 
-**Status:** Planned
+**Status:** UKOŃCZONA
 
-**Plan:**
+**Realizacja:**
 
-1. Podzielić useExpenseForm.ts na:
-   - useExpenseValidation.ts - walidacja
-   - useExpenseApi.ts - API calls
-   - useExpenseFormatting.ts - formatowanie
-   - useExpenseForm.ts - orchestrator
-2. Wydzielić validators do lib/utils/
-3. Wydzielić formatters do lib/utils/
+1. ✅ Dodano `validatePayer()` do `lib/utils/validators.ts`
+2. ✅ Stworzono `lib/hooks/api/useExpenses.ts` z TanStack Query hooks
+3. ✅ Zrefaktorowano `useExpenseForm.ts` - użycie shared validators
+4. ✅ Zaktualizowano importy w `AmountInput.tsx` i `SharePreview.tsx`
+5. ✅ Wszystkie testy E2E przechodzą (43/43)
 
-**Target reduction:** useExpenseForm.ts: 348 LOC → ~120 LOC (-65%)
+**Actual reduction:** useExpenseForm.ts: 348 LOC → 303 LOC (-13%)
 
-**Dependencies:** FAZA 2
+**Pliki stworzone:**
+
+- `src/lib/hooks/api/useExpenses.ts` (117 LOC)
+
+**Pliki zmodyfikowane:**
+
+- `src/lib/utils/validators.ts` (+18 LOC - validatePayer)
+- `src/components/hooks/useExpenseForm.ts` (-45 LOC, -13%)
+- `src/components/expenses/AmountInput.tsx` (import change)
+- `src/components/expenses/SharePreview.tsx` (import change)
+
+**Pliki dokumentacji:**
+
+- `.docs/refactoring/05-phase-5-expense-form.md`
+
+**Uwaga:** Hook używa manual `fetch()` zamiast TanStack Query mutations dla SSR compatibility (wzorując się na auth i participant forms). API hooks są dostępne dla operacji read i przyszłych feature'ów.
+
+**Dependencies:** FAZA 2 ✅ - COMPLETED ✅
 
 ---
 
@@ -352,14 +367,14 @@ Przy wdrażaniu kolejnych faz:
 
 | Data       | FAZA | Status         | Notes                                                      |
 | ---------- | ---- | -------------- | ---------------------------------------------------------- |
-| 2025-11-05 | 1    | ✅ DONE        | Infrastruktura API i Query                                 |
-| 2025-11-05 | 2    | ✅ DONE        | Shared utilities (validators, formatters, form components) |
-| 2025-11-05 | 3    | ✅ DONE        | Auth forms (manual fetch for SSR)                          |
-| TBD        | 4    | 🔄 IN PROGRESS | Participant components                                     |
-| TBD        | 5    | 🔄 PENDING     | Expense hook                                               |
-| TBD        | 6    | 🔄 PENDING     | Settlement summary                                         |
-| TBD        | 7    | 🔄 PENDING     | Docs & tests                                               |
+| 2025-11-05 | 1    | ✅ DONE | Infrastruktura API i Query                                 |
+| 2025-11-05 | 2    | ✅ DONE | Shared utilities (validators, formatters, form components) |
+| 2025-11-05 | 3    | ✅ DONE | Auth forms (manual fetch for SSR)                          |
+| 2025-11-05 | 4    | ✅ DONE | Participant components                                     |
+| 2025-11-05 | 5    | ✅ DONE | Expense hook (validators + API hooks)                      |
+| TBD        | 6    | 🔄 PENDING | Settlement summary                                         |
+| TBD        | 7    | 🔄 PENDING | Docs & tests                                               |
 
 ---
 
-**Next step:** Przejść do FAZY 4 - Participant Components
+**Next step:** Przejść do FAZY 6 - Settlement Summary
