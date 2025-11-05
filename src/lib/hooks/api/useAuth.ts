@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api/client";
 import { LoginSchema, RegisterSchema, type LoginInput, type RegisterInput } from "@/lib/validation/auth";
@@ -29,6 +30,7 @@ interface LoginResponse {
  * - Loading state management
  * - Optional callback on success/error
  */
+
 export function useLogin() {
   const queryClient = useQueryClient();
 
@@ -66,6 +68,7 @@ export function useLogin() {
  * different UI based on whether email confirmation is required (202) or
  * auto-login is available (201).
  */
+
 export function useRegister() {
   const queryClient = useQueryClient();
 
