@@ -329,7 +329,7 @@ All validation schemas are in `src/lib/validation/`:
 
 ## Git Commit Behavior
 
-**IMPORTANT: Claude Code will NOT automatically commit changes.**
+**IMPORTANT: Claude Code will NOT automatically commit changes, only suggest commit messages**
 
 When code changes are complete:
 
