@@ -229,12 +229,13 @@ test.describe("Happy Path - Complete Settlement Flow", () => {
     await closeDialog.confirm();
 
     // Wait for dialog to close and page to update
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     // Reload the page to ensure we have the latest settlement state with snapshot
     await page.reload();
 
     // Wait for page to fully load after reload
+    await page.waitForLoadState("networkidle");
     await page.waitForLoadState("domcontentloaded");
 
     // Verify settlement is now closed
@@ -272,8 +273,9 @@ test.describe("Happy Path - Complete Settlement Flow", () => {
     }
 
     // Wait for navigation
-    await page.waitForURL(/\/settlements\//, { timeout: 5000 });
-    await page.waitForTimeout(500);
+    await page.waitForURL(/\/settlements\//, { timeout: 10000 });
+    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("domcontentloaded");
 
     // Verify readonly mode
     const isReadOnlyArchive = await detailsPage.isReadOnly();

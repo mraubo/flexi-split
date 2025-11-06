@@ -81,7 +81,12 @@ export class SettlementDetailsPage extends BasePage {
   async isReadOnly(): Promise<boolean> {
     // Check if readonly banner is visible
     const banner = this.page.locator('[data-testid="banner-readonly"]');
-    return await banner.isVisible().catch(() => false);
+    try {
+      await banner.waitFor({ state: "visible", timeout: 10000 });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async isParticipantsFormVisible(): Promise<boolean> {
