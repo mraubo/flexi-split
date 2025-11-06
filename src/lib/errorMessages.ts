@@ -1,7 +1,7 @@
 // Error message utilities for Polish translations
 
 export interface ApiError {
-  status: number;
+  status?: number;
   code?: string;
   message?: string;
   details?: unknown;

@@ -37,12 +37,6 @@ const mockExpenseRow = {
   last_edited_by: mockUserId,
 };
 
-const mockParticipants = [
-  { id: "participant-111", nickname: "alice" },
-  { id: "participant-222", nickname: "bob" },
-  { id: "participant-333", nickname: "charlie" },
-];
-
 const mockExpenseParticipantsData = [
   { expense_id: mockExpenseId, participants: { id: "participant-111", nickname: "alice" } },
   { expense_id: mockExpenseId, participants: { id: "participant-222", nickname: "bob" } },
@@ -236,7 +230,7 @@ describe("expenses.service", () => {
       const inMock = vi.fn();
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           // Check participant exists
@@ -333,25 +327,24 @@ describe("expenses.service", () => {
       const orderMock = vi.fn();
       const rangeMock = vi.fn();
 
-      fromMock
-        .mockReturnValueOnce({
-          // First call: fetch expenses with date filters
-          select: selectMock.mockReturnValue({
-            eq: eqMock.mockReturnValue({
-              order: orderMock.mockReturnValue({
-                range: rangeMock.mockReturnValue({
-                  gte: gteMock.mockReturnValue({
-                    lte: lteMock.mockResolvedValue({
-                      data: [],
-                      count: 0,
-                      error: null,
-                    }),
+      fromMock.mockReturnValueOnce({
+        // First call: fetch expenses with date filters
+        select: selectMock.mockReturnValue({
+          eq: eqMock.mockReturnValue({
+            order: orderMock.mockReturnValue({
+              range: rangeMock.mockReturnValue({
+                gte: gteMock.mockReturnValue({
+                  lte: lteMock.mockResolvedValue({
+                    data: [],
+                    count: 0,
+                    error: null,
                   }),
                 }),
               }),
             }),
           }),
-        });
+        }),
+      });
 
       // Act
       await getExpenses(mockSupabase, query, mockUserId);
@@ -413,9 +406,7 @@ describe("expenses.service", () => {
       };
 
       // Act & Assert
-      await expect(getExpenses(mockSupabase, query, mockUserId)).rejects.toThrow(
-        "Forbidden: insufficient permissions"
-      );
+      await expect(getExpenses(mockSupabase, query, mockUserId)).rejects.toThrow("Forbidden: insufficient permissions");
     });
 
     it("should throw error on database failure", async () => {
@@ -710,7 +701,7 @@ describe("expenses.service", () => {
       const inMock = vi.fn();
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           // Check payer exists
@@ -954,7 +945,7 @@ describe("expenses.service", () => {
       const inMock = vi.fn();
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           // Check payer exists
@@ -1004,7 +995,7 @@ describe("expenses.service", () => {
       };
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           // Check payer exists
@@ -1061,8 +1052,6 @@ describe("expenses.service", () => {
         description: "Updated dinner",
         participant_ids: [mockParticipantId, mockPayerId],
       };
-
-      const inMock = vi.fn();
 
       fromMock.mockReturnValue({
         select: vi.fn().mockReturnValue({
@@ -1126,9 +1115,9 @@ describe("expenses.service", () => {
       };
 
       // Act & Assert
-      await expect(
-        updateExpense(mockSupabase, mockSettlementId, mockExpenseId, command, mockUserId)
-      ).rejects.toThrow("Settlement not found");
+      await expect(updateExpense(mockSupabase, mockSettlementId, mockExpenseId, command, mockUserId)).rejects.toThrow(
+        "Settlement not found"
+      );
     });
 
     it("should throw error when settlement is closed", async () => {
@@ -1143,9 +1132,9 @@ describe("expenses.service", () => {
       };
 
       // Act & Assert
-      await expect(
-        updateExpense(mockSupabase, mockSettlementId, mockExpenseId, command, mockUserId)
-      ).rejects.toThrow("Settlement is closed - cannot update expenses");
+      await expect(updateExpense(mockSupabase, mockSettlementId, mockExpenseId, command, mockUserId)).rejects.toThrow(
+        "Settlement is closed - cannot update expenses"
+      );
     });
 
     it("should map RPC error code P0001 to expense not found", async () => {
@@ -1164,9 +1153,9 @@ describe("expenses.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        updateExpense(mockSupabase, mockSettlementId, mockExpenseId, command, mockUserId)
-      ).rejects.toThrow("Expense not found");
+      await expect(updateExpense(mockSupabase, mockSettlementId, mockExpenseId, command, mockUserId)).rejects.toThrow(
+        "Expense not found"
+      );
     });
   });
 
@@ -1206,12 +1195,7 @@ describe("expenses.service", () => {
         });
 
       // Act
-      const result = await readExpenseWithParticipants(
-        mockSupabase,
-        mockSettlementId,
-        mockExpenseId,
-        mockUserId
-      );
+      const result = await readExpenseWithParticipants(mockSupabase, mockSettlementId, mockExpenseId, mockUserId);
 
       // Assert
       expect(mockCheckAccess).toHaveBeenCalledWith(mockSupabase, mockSettlementId, mockUserId);
@@ -1294,12 +1278,7 @@ describe("expenses.service", () => {
         });
 
       // Act
-      const result = await readExpenseWithParticipants(
-        mockSupabase,
-        mockSettlementId,
-        mockExpenseId,
-        mockUserId
-      );
+      const result = await readExpenseWithParticipants(mockSupabase, mockSettlementId, mockExpenseId, mockUserId);
 
       // Assert
       expect(result.participants).toEqual([]);

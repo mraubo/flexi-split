@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
-import type { GetParticipantsQuery, ParticipantDTO } from "@/types";
+import type { GetParticipantsQuery } from "@/types";
 import {
   addParticipant,
   updateNickname,
@@ -66,7 +66,7 @@ describe("participants.service", () => {
       const updateMock = vi.fn();
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           // First call: fetch settlement
@@ -358,9 +358,9 @@ describe("participants.service", () => {
         });
 
       // Act & Assert
-      await expect(
-        addParticipant(mockSupabase, mockSettlementId, "owner", mockUserId, true)
-      ).rejects.toThrow("Owner already exists for this settlement");
+      await expect(addParticipant(mockSupabase, mockSettlementId, "owner", mockUserId, true)).rejects.toThrow(
+        "Owner already exists for this settlement"
+      );
     });
 
     it("should throw error when nickname already exists (case-insensitive)", async () => {
@@ -372,7 +372,7 @@ describe("participants.service", () => {
       const maybeSingleMock = vi.fn();
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           return {
@@ -424,7 +424,7 @@ describe("participants.service", () => {
       const updateMock = vi.fn();
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           return {
@@ -558,13 +558,7 @@ describe("participants.service", () => {
         });
 
       // Act
-      const result = await updateNickname(
-        mockSupabase,
-        mockSettlementId,
-        mockParticipantId,
-        newNickname,
-        mockUserId
-      );
+      const result = await updateNickname(mockSupabase, mockSettlementId, mockParticipantId, newNickname, mockUserId);
 
       // Assert
       expect(mockCheckAccess).toHaveBeenCalledWith(mockSupabase, mockSettlementId, mockUserId);
@@ -719,7 +713,6 @@ describe("participants.service", () => {
       const selectMock = vi.fn();
       const eqMock = vi.fn();
       const singleMock = vi.fn();
-      const countMock = vi.fn();
       const deleteMock = vi.fn();
 
       fromMock
@@ -791,9 +784,9 @@ describe("participants.service", () => {
       mockCheckAccess.mockResolvedValue({ exists: false, accessible: false });
 
       // Act & Assert
-      await expect(
-        removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)
-      ).rejects.toThrow("Settlement not found");
+      await expect(removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)).rejects.toThrow(
+        "Settlement not found"
+      );
     });
 
     it("should throw error when user lacks access", async () => {
@@ -801,9 +794,9 @@ describe("participants.service", () => {
       mockCheckAccess.mockResolvedValue({ exists: true, accessible: false });
 
       // Act & Assert
-      await expect(
-        removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)
-      ).rejects.toThrow("Forbidden: insufficient permissions");
+      await expect(removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)).rejects.toThrow(
+        "Forbidden: insufficient permissions"
+      );
     });
 
     it("should throw error when participant not found", async () => {
@@ -826,9 +819,9 @@ describe("participants.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)
-      ).rejects.toThrow("Participant not found");
+      await expect(removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)).rejects.toThrow(
+        "Participant not found"
+      );
     });
 
     it("should throw error when settlement is closed", async () => {
@@ -862,9 +855,9 @@ describe("participants.service", () => {
         });
 
       // Act & Assert
-      await expect(
-        removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)
-      ).rejects.toThrow("Settlement is closed: cannot remove participants from closed settlements");
+      await expect(removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)).rejects.toThrow(
+        "Settlement is closed: cannot remove participants from closed settlements"
+      );
     });
 
     it("should throw error when participant has expenses as payer", async () => {
@@ -874,7 +867,7 @@ describe("participants.service", () => {
       const singleMock = vi.fn();
 
       let callCount = 0;
-      fromMock.mockImplementation((table: string) => {
+      fromMock.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           return {
@@ -915,9 +908,9 @@ describe("participants.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)
-      ).rejects.toThrow("Cannot remove participant: participant has associated expenses");
+      await expect(removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)).rejects.toThrow(
+        "Cannot remove participant: participant has associated expenses"
+      );
     });
 
     it("should throw error when participant is in expense_participants", async () => {
@@ -969,9 +962,9 @@ describe("participants.service", () => {
         });
 
       // Act & Assert
-      await expect(
-        removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)
-      ).rejects.toThrow("Cannot remove participant: participant has associated expenses");
+      await expect(removeParticipant(mockSupabase, mockSettlementId, mockParticipantId, mockUserId)).rejects.toThrow(
+        "Cannot remove participant: participant has associated expenses"
+      );
     });
   });
 
@@ -1061,10 +1054,7 @@ describe("participants.service", () => {
     it("should list participants with default pagination", async () => {
       // Arrange
       const query: GetParticipantsQuery = {};
-      const participants = [
-        mockParticipantRow,
-        { ...mockParticipantRow, id: "participant-2", nickname: "alice" },
-      ];
+      const participants = [mockParticipantRow, { ...mockParticipantRow, id: "participant-2", nickname: "alice" }];
 
       const selectMock = vi.fn();
       const eqMock = vi.fn();

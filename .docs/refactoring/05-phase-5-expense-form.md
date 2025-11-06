@@ -232,6 +232,7 @@ import { calculateShareInfo } from "@/lib/utils/formatters";
 ✅ **Test Duration:** 38.4s
 
 **Key test coverage:**
+
 - Expense creation flow (`happy-path-complete-flow.spec.ts`)
 - Expense editing
 - Form validation
@@ -250,6 +251,7 @@ import { calculateShareInfo } from "@/lib/utils/formatters";
 ### 1. **Code Reusability**
 
 Validators and formatters are now centralized and can be reused across:
+
 - Other expense-related components
 - Backend validation (for consistency)
 - Unit tests
@@ -270,6 +272,7 @@ Validators and formatters are now centralized and can be reused across:
 ### 4. **API Layer Ready**
 
 The `useExpenses.ts` hooks provide a foundation for:
+
 - Future real-time updates via TanStack Query
 - Optimistic UI updates
 - Better cache management
@@ -278,6 +281,7 @@ The `useExpenses.ts` hooks provide a foundation for:
 ### 5. **Pattern Consistency**
 
 Follows established patterns from Phases 2, 3, and 4:
+
 - Shared validators in `lib/utils/validators.ts`
 - Shared formatters in `lib/utils/formatters.ts`
 - Manual `fetch()` for SSR compatibility in forms
@@ -293,6 +297,7 @@ Unlike participant forms that could potentially use TanStack Query mutations dir
 4. **Reliability** - Manual `fetch()` is more predictable in Astro SSR context
 
 The `useExpenses.ts` hooks are still valuable for:
+
 - Listing expenses (read operations)
 - Real-time updates (via invalidations after mutations)
 - Future optimistic UI implementations
@@ -304,18 +309,18 @@ If creating new expense-related forms or components:
 
 ```typescript
 // 1. Import validators
-import { validateAmount, validatePayer } from '@/lib/utils/validators';
+import { validateAmount, validatePayer } from "@/lib/utils/validators";
 
 // 2. Import formatters
-import { parseAmountToCents, formatCentsToAmount } from '@/lib/utils/formatters';
+import { parseAmountToCents, formatCentsToAmount } from "@/lib/utils/formatters";
 
 // 3. For data fetching (read operations)
-import { useExpenses, useExpense } from '@/lib/hooks/api/useExpenses';
+import { useExpenses, useExpense } from "@/lib/hooks/api/useExpenses";
 
 // 4. For mutations (create/update/delete), use manual fetch() in forms
-const response = await fetch('/api/settlements/...', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("/api/settlements/...", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify(command),
 });
 ```
@@ -323,9 +328,11 @@ const response = await fetch('/api/settlements/...', {
 ## Files Changed Summary
 
 **New Files:** 1
+
 - `src/lib/hooks/api/useExpenses.ts` (117 LOC)
 
 **Modified Files:** 4
+
 - `src/lib/utils/validators.ts` (+18 LOC)
 - `src/components/hooks/useExpenseForm.ts` (-45 LOC)
 - `src/components/expenses/AmountInput.tsx` (import change)
@@ -339,12 +346,14 @@ const response = await fetch('/api/settlements/...', {
 **Achieved:** -13% LOC reduction (348→303 LOC)
 
 **Why the difference?**
+
 1. Form state management logic cannot be eliminated (required for UX)
 2. useEffect hooks for edit mode and participant sync are essential
 3. Error mapping and field updates are necessary for good UX
 4. Manual `fetch()` pattern requires similar LOC to TanStack Query mutations
 
 **What we achieved:**
+
 - ✅ 100% elimination of validation code duplication
 - ✅ 100% elimination of formatting code duplication
 - ✅ Created reusable API hooks for future use
