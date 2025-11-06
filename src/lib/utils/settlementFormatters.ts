@@ -49,7 +49,7 @@ export interface Transfer {
 
 /**
  * Formats balances for display in settlement summary
- * 
+ *
  * @param balances - Record of participant IDs to balance amounts in cents
  * @param participantsMap - Map of participant IDs to nicknames
  * @returns Array of formatted balances sorted by amount (debtors first, then creditors)
@@ -80,7 +80,7 @@ export function formatBalances(
 
 /**
  * Formats transfers for display in settlement summary
- * 
+ *
  * @param transfers - Array of transfer objects from settlement snapshot
  * @param participantsMap - Map of participant IDs to nicknames
  * @returns Array of formatted transfers sorted by from/to nicknames
@@ -110,13 +110,11 @@ export function formatTransfers(
 
 /**
  * Calculates balance totals for control sum verification
- * 
+ *
  * @param balances - Record of participant IDs to balance amounts in cents
  * @returns Object containing sum of payables, receivables, and balance status
  */
-export function calculateBalanceTotals(
-  balances: Record<UUID, AmountCents> | undefined | null
-): BalanceTotals {
+export function calculateBalanceTotals(balances: Record<UUID, AmountCents> | undefined | null): BalanceTotals {
   if (!balances) {
     return { sumPayable: 0, sumReceivable: 0, isBalanced: true };
   }

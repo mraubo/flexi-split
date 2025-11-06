@@ -1,13 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
-import type {
-  GetSettlementsQuery,
-  CreateSettlementCommand,
-  SettlementsListResponse,
-  SettlementDetailsDTO,
-  SettlementSnapshotDTO,
-} from "@/types";
+import type { GetSettlementsQuery, CreateSettlementCommand } from "@/types";
 import {
   listSettlements,
   deleteSettlementSoft,
@@ -228,12 +222,7 @@ describe("settlements.service", () => {
       const query: GetSettlementsQuery = {};
       const settlementWithManyExpenses = {
         ...mockSettlementRow,
-        expenses: [
-          { amount_cents: 100 },
-          { amount_cents: 200 },
-          { amount_cents: 300 },
-          { amount_cents: 400 },
-        ],
+        expenses: [{ amount_cents: 100 }, { amount_cents: 200 }, { amount_cents: 300 }, { amount_cents: 400 }],
       };
       const selectMock = vi.fn();
       const isNullMock = vi.fn();
@@ -361,9 +350,7 @@ describe("settlements.service", () => {
       });
 
       // Act & Assert
-      await expect(listSettlements(mockSupabase, query, mockUserId)).rejects.toThrow(
-        "Database connection failed"
-      );
+      await expect(listSettlements(mockSupabase, query, mockUserId)).rejects.toThrow("Database connection failed");
     });
   });
 
@@ -524,9 +511,7 @@ describe("settlements.service", () => {
         });
 
       // Act & Assert
-      await expect(deleteSettlementSoft(mockSupabase, mockSettlementId, mockUserId)).rejects.toThrow(
-        "Update failed"
-      );
+      await expect(deleteSettlementSoft(mockSupabase, mockSettlementId, mockUserId)).rejects.toThrow("Update failed");
     });
   });
 
@@ -611,9 +596,7 @@ describe("settlements.service", () => {
       });
 
       // Act & Assert
-      await expect(getSettlementById(mockSupabase, mockSettlementId)).rejects.toThrow(
-        "Settlement not found"
-      );
+      await expect(getSettlementById(mockSupabase, mockSettlementId)).rejects.toThrow("Settlement not found");
     });
 
     it("should throw database error", async () => {
@@ -783,9 +766,9 @@ describe("settlements.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        checkSettlementParticipation(mockSupabase, mockSettlementId, mockUserId)
-      ).rejects.toThrow("RPC function check_settlement_participation failed: RPC failed");
+      await expect(checkSettlementParticipation(mockSupabase, mockSettlementId, mockUserId)).rejects.toThrow(
+        "RPC function check_settlement_participation failed: RPC failed"
+      );
     });
 
     it("should throw error when response is invalid", async () => {
@@ -796,9 +779,9 @@ describe("settlements.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        checkSettlementParticipation(mockSupabase, mockSettlementId, mockUserId)
-      ).rejects.toThrow("Invalid response from check_settlement_participation");
+      await expect(checkSettlementParticipation(mockSupabase, mockSettlementId, mockUserId)).rejects.toThrow(
+        "Invalid response from check_settlement_participation"
+      );
     });
   });
 
@@ -863,13 +846,7 @@ describe("settlements.service", () => {
           owner_id: mockUserId,
         },
       ]);
-      expect(mockAddParticipant).toHaveBeenCalledWith(
-        mockSupabase,
-        mockSettlementRow.id,
-        "john",
-        mockUserId,
-        true
-      );
+      expect(mockAddParticipant).toHaveBeenCalledWith(mockSupabase, mockSettlementRow.id, "john", mockUserId, true);
       expect(result.total_expenses_amount_cents).toBe(0);
       expect(result.participants_count).toBe(1);
     });
@@ -973,13 +950,7 @@ describe("settlements.service", () => {
       await createSettlement(mockSupabase, command, mockUserId);
 
       // Assert
-      expect(mockAddParticipant).toHaveBeenCalledWith(
-        mockSupabase,
-        mockSettlementRow.id,
-        "Owner",
-        mockUserId,
-        true
-      );
+      expect(mockAddParticipant).toHaveBeenCalledWith(mockSupabase, mockSettlementRow.id, "Owner", mockUserId, true);
     });
 
     it("should throw error when max open settlements exceeded", async () => {
@@ -1174,9 +1145,9 @@ describe("settlements.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        updateSettlementTitle(mockSupabase, mockSettlementId, "New Title", mockUserId)
-      ).rejects.toThrow("Settlement not found");
+      await expect(updateSettlementTitle(mockSupabase, mockSettlementId, "New Title", mockUserId)).rejects.toThrow(
+        "Settlement not found"
+      );
     });
 
     it("should throw error when user is not owner", async () => {
@@ -1200,9 +1171,9 @@ describe("settlements.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        updateSettlementTitle(mockSupabase, mockSettlementId, "New Title", mockUserId)
-      ).rejects.toThrow("Forbidden: insufficient permissions");
+      await expect(updateSettlementTitle(mockSupabase, mockSettlementId, "New Title", mockUserId)).rejects.toThrow(
+        "Forbidden: insufficient permissions"
+      );
     });
 
     it("should throw error when settlement is closed", async () => {
@@ -1226,9 +1197,9 @@ describe("settlements.service", () => {
       });
 
       // Act & Assert
-      await expect(
-        updateSettlementTitle(mockSupabase, mockSettlementId, "New Title", mockUserId)
-      ).rejects.toThrow("Unprocessable Entity: settlement is not open");
+      await expect(updateSettlementTitle(mockSupabase, mockSettlementId, "New Title", mockUserId)).rejects.toThrow(
+        "Unprocessable Entity: settlement is not open"
+      );
     });
   });
 

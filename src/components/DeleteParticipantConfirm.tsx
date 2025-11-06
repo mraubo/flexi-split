@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from "lucide-react";
-import { getParticipantErrorMessage } from "@/lib/errorMessages";
+import { getParticipantErrorMessage, type ApiError } from "@/lib/errorMessages";
 import type { ParticipantItemVM } from "@/types";
 
 interface DeleteParticipantConfirmProps {
@@ -45,8 +45,7 @@ export default function DeleteParticipantConfirm({
       onClose(); // Close dialog on success
     } catch (error: unknown) {
       // Use centralized error message
-      const apiError = error as unknown as typeof error;
-      setErrorMessage(getParticipantErrorMessage(apiError as { status?: number }));
+      setErrorMessage(getParticipantErrorMessage(error as ApiError));
     } finally {
       setIsDeleting(false);
     }

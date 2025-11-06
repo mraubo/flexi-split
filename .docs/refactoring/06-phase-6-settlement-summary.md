@@ -12,7 +12,7 @@ PHASE 6 refactors the settlement summary hook (`useSettlementSummary.ts`) to eli
 
 1. **Created Settlement Formatters** (`src/lib/utils/settlementFormatters.ts`)
    - Extracted balance formatting logic
-   - Extracted transfer formatting logic  
+   - Extracted transfer formatting logic
    - Extracted balance totals calculation logic
    - Type definitions for formatted data
 
@@ -72,16 +72,14 @@ export interface Transfer {
 export function formatBalances(
   balances: Record<UUID, AmountCents> | undefined | null,
   participantsMap: Record<UUID, string>
-): FormattedBalance[]
+): FormattedBalance[];
 
 export function formatTransfers(
   transfers: Transfer[] | undefined | null,
   participantsMap: Record<UUID, string>
-): FormattedTransfer[]
+): FormattedTransfer[];
 
-export function calculateBalanceTotals(
-  balances: Record<UUID, AmountCents> | undefined | null
-): BalanceTotals
+export function calculateBalanceTotals(balances: Record<UUID, AmountCents> | undefined | null): BalanceTotals;
 ```
 
 **Features:**
@@ -105,14 +103,14 @@ export function calculateBalanceTotals(
 **Usage Example:**
 
 ```typescript
-import { formatBalances, formatTransfers, calculateBalanceTotals } from '@/lib/utils/settlementFormatters';
+import { formatBalances, formatTransfers, calculateBalanceTotals } from "@/lib/utils/settlementFormatters";
 
-const participantsMap = { 'uuid-1': 'Alice', 'uuid-2': 'Bob' };
-const balances = { 'uuid-1': -5000, 'uuid-2': 5000 }; // cents
+const participantsMap = { "uuid-1": "Alice", "uuid-2": "Bob" };
+const balances = { "uuid-1": -5000, "uuid-2": 5000 }; // cents
 
 const formattedBalances = formatBalances(balances, participantsMap);
 // [
-//   { participantId: 'uuid-1', nickname: 'Alice', amountCents: -5000, 
+//   { participantId: 'uuid-1', nickname: 'Alice', amountCents: -5000,
 //     formattedAmount: '50,00 zł', sign: '-' },
 //   { participantId: 'uuid-2', nickname: 'Bob', amountCents: 5000,
 //     formattedAmount: '50,00 zł', sign: '+' }
@@ -157,7 +155,7 @@ onSuccess: (data) => {
   queryClient.invalidateQueries({
     queryKey: settlementsQueryKeys.snapshot(id), // Now uses query key factory
   });
-}
+};
 ```
 
 **Purpose:** Provides TanStack Query hooks for snapshot operations, ready for future use in components that can fully leverage query caching.
@@ -222,10 +220,7 @@ const formattedTransfers = useMemo(
   [settlementSnapshot?.transfers, participantsMap]
 );
 
-const totals = useMemo(
-  () => calculateBalanceTotals(settlementSnapshot?.balances),
-  [settlementSnapshot?.balances]
-);
+const totals = useMemo(() => calculateBalanceTotals(settlementSnapshot?.balances), [settlementSnapshot?.balances]);
 ```
 
 **Changes:**
@@ -251,7 +246,7 @@ const totals = useMemo(
 | Code duplication            | High   | None  | -100%   |
 | Shared formatters           | No     | Yes   | ✅      |
 | API hooks available         | No     | Yes   | ✅      |
-| E2E Tests                   | 43/43  | 43/43  | ✅ Pass |
+| E2E Tests                   | 43/43  | 43/43 | ✅ Pass |
 
 ### Lines Eliminated
 
@@ -269,6 +264,7 @@ const totals = useMemo(
 ✅ **Test Duration:** 38.9s
 
 **Key test coverage:**
+
 - Settlement closure flow (`happy-path-complete-flow.spec.ts` - STEP 5)
 - Balance calculations and display
 - Transfer calculations and display
@@ -286,6 +282,7 @@ const totals = useMemo(
 ### 1. **Code Reusability**
 
 Formatting utilities can now be reused across:
+
 - Different summary views
 - Export/print functionality
 - Email notifications with settlement summaries
@@ -309,6 +306,7 @@ Formatting utilities can now be reused across:
 ### 4. **API Layer Ready**
 
 The `useSettlementSnapshot` hook provides a foundation for:
+
 - Future real-time settlement updates
 - Optimistic UI updates when closing settlements
 - Better cache management for closed settlements
@@ -326,12 +324,14 @@ The `useSettlementSnapshot` hook provides a foundation for:
 Similar to Phase 5 (Expense Hook), `useSettlementSummary` maintains manual `fetch()` calls for SSR compatibility:
 
 **Why manual fetch?**
+
 1. **Component hydration** - SettlementDetailsPage uses `client:idle`
 2. **QueryClient context** - May not be available during SSR/hydration
 3. **Consistency** - Matches pattern from auth, participant, and expense hooks
 4. **Reliability** - Manual `fetch()` is more predictable in Astro SSR context
 
 **When to use TanStack Query hooks?**
+
 - Components that are always client-rendered (`client:load`)
 - Read operations in components with guaranteed QueryClient context
 - Future features that can leverage automatic refetching
@@ -345,26 +345,26 @@ If creating new settlement summary views or components:
 
 ```typescript
 // 1. Import formatters
-import { 
-  formatBalances, 
-  formatTransfers, 
-  calculateBalanceTotals 
-} from '@/lib/utils/settlementFormatters';
+import { formatBalances, formatTransfers, calculateBalanceTotals } from "@/lib/utils/settlementFormatters";
 
 // 2. For read operations (when QueryClient is available)
-import { useSettlementSnapshot } from '@/lib/hooks/api/useSettlements';
+import { useSettlementSnapshot } from "@/lib/hooks/api/useSettlements";
 
 // 3. Use formatters with any balance/transfer data
-const participantsMap = { /* ... */ };
-const balances = { /* ... */ };
+const participantsMap = {
+  /* ... */
+};
+const balances = {
+  /* ... */
+};
 
 const formatted = formatBalances(balances, participantsMap);
 const totals = calculateBalanceTotals(balances);
 
 // 4. For closing settlements, use manual fetch in forms
 const response = await fetch(`/api/settlements/${id}/close`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({}),
 });
 ```
@@ -372,9 +372,11 @@ const response = await fetch(`/api/settlements/${id}/close`, {
 ## Files Changed Summary
 
 **New Files:** 1
+
 - `src/lib/utils/settlementFormatters.ts` (136 LOC)
 
 **Modified Files:** 2
+
 - `src/lib/hooks/api/useSettlements.ts` (+16 LOC)
 - `src/components/hooks/useSettlementSummary.ts` (-61 LOC, -25%)
 
@@ -386,12 +388,14 @@ const response = await fetch(`/api/settlements/${id}/close`, {
 **Achieved:** -25% LOC reduction (241→180 LOC)
 
 **Why the difference?**
+
 1. Manual `fetch()` pattern requires similar LOC to original implementation
 2. State management logic cannot be eliminated (required for UX)
 3. useEffect hooks for data fetching are essential
 4. Error handling and loading states are necessary
 
 **What we achieved:**
+
 - ✅ 100% elimination of formatting code duplication
 - ✅ Created reusable settlement formatters
 - ✅ Created TanStack Query hooks for future use
