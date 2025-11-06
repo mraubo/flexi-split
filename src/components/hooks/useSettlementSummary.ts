@@ -9,9 +9,11 @@ import {
   type BalanceTotals,
 } from "@/lib/utils/settlementFormatters";
 
+export type { FormattedBalance, FormattedTransfer };
+
 interface SettlementSnapshotData {
   balances: Record<UUID, AmountCents>;
-  transfers: Array<{ from: UUID; to: UUID; amount_cents: AmountCents }>;
+  transfers: { from: UUID; to: UUID; amount_cents: AmountCents }[];
 }
 
 interface UseSettlementSummaryResult {
@@ -150,10 +152,7 @@ export function useSettlementSummary(settlementId: string, status: "open" | "clo
   );
 
   // Calculate totals for control sum using shared formatter
-  const totals = useMemo(
-    () => calculateBalanceTotals(settlementSnapshot?.balances),
-    [settlementSnapshot?.balances]
-  );
+  const totals = useMemo(() => calculateBalanceTotals(settlementSnapshot?.balances), [settlementSnapshot?.balances]);
 
   const reload = useCallback(() => {
     fetchSnapshot();

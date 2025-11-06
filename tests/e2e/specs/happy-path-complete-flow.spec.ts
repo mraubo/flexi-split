@@ -36,15 +36,15 @@ test.describe("Happy Path - Complete Settlement Flow", () => {
 
     await emailInput.click();
     await emailInput.fill("");
-    await emailInput.type(email, { delay: 50 });
+    await page.keyboard.type(email, { delay: 50 });
 
     await passwordInput.click();
     await passwordInput.fill("");
-    await passwordInput.type(password, { delay: 50 });
+    await page.keyboard.type(password, { delay: 50 });
 
     await confirmPasswordInput.click();
     await confirmPasswordInput.fill("");
-    await confirmPasswordInput.type(password, { delay: 50 });
+    await page.keyboard.type(password, { delay: 50 });
 
     await page.waitForTimeout(500);
 

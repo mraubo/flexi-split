@@ -12,27 +12,29 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 
 ### LOC Reduction in Target Components
 
-| Component | Before | After | Reduction | % |
-|-----------|--------|-------|-----------|---|
-| EditParticipantModal | 291 | 120 | -171 | -60% ⭐ |
-| ParticipantForm | 272 | 130 | -142 | -52% ⭐ |
-| RegisterForm | 244 | 155 | -89 | -36% |
-| LoginForm | 165 | 105 | -60 | -36% |
-| useSettlementSummary | 241 | 180 | -61 | -25% |
-| useExpenseForm | 348 | 303 | -45 | -13% |
-| **TOTAL** | **1,561** | **1,053** | **-508** | **-36.4%** |
+| Component            | Before    | After     | Reduction | %          |
+| -------------------- | --------- | --------- | --------- | ---------- |
+| EditParticipantModal | 291       | 120       | -171      | -60% ⭐    |
+| ParticipantForm      | 272       | 130       | -142      | -52% ⭐    |
+| RegisterForm         | 244       | 155       | -89       | -36%       |
+| LoginForm            | 165       | 105       | -60       | -36%       |
+| useSettlementSummary | 241       | 180       | -61       | -25%       |
+| useExpenseForm       | 348       | 303       | -45       | -13%       |
+| **TOTAL**            | **1,561** | **1,053** | **-508**  | **-36.4%** |
 
 **Target:** -40-50% reduction  
 **Achieved:** -36.4% reduction  
 **Result:** ⚠️ Slightly below target, but with better architecture
 
 ### Why Below Target?
+
 - **SSR Compatibility**: Manual `fetch()` in forms requires similar LOC to TanStack Query
 - **Type Safety**: Comprehensive type definitions add lines but improve safety
 - **Error Handling**: Robust error handling and user feedback require code
 - **Business Logic**: Core logic cannot be eliminated, only better organized
 
 ### What We Achieved Instead:
+
 - ✅ **Zero code duplication** (100% elimination in validators/formatters)
 - ✅ **Reusable infrastructure** (1,682 LOC of shared code)
 - ✅ **Type-safe API layer** (full TypeScript coverage)
@@ -41,39 +43,44 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 ## 🏗️ New Infrastructure Created
 
 ### Shared Utilities (606 LOC)
-| File | LOC | Purpose |
-|------|-----|---------|
-| validators.ts | 241 | Centralized validation logic for all forms |
-| formatters.ts | 232 | Currency, date, and text formatting utilities |
-| settlementFormatters.ts | 133 | Settlement-specific balance/transfer formatting |
-| **TOTAL** | **606** | **Zero duplication across codebase** |
+
+| File                    | LOC     | Purpose                                         |
+| ----------------------- | ------- | ----------------------------------------------- |
+| validators.ts           | 241     | Centralized validation logic for all forms      |
+| formatters.ts           | 232     | Currency, date, and text formatting utilities   |
+| settlementFormatters.ts | 133     | Settlement-specific balance/transfer formatting |
+| **TOTAL**               | **606** | **Zero duplication across codebase**            |
 
 ### API Hooks (543 LOC)
-| File | LOC | Purpose |
-|------|-----|---------|
-| useSettlements.ts | 169 | CRUD operations + snapshot + close |
-| useAuth.ts | 165 | Authentication operations |
-| useExpenses.ts | 114 | Expense CRUD operations |
-| useParticipants.ts | 95 | Participant CRUD operations |
-| **TOTAL** | **543** | **Consistent API access patterns** |
+
+| File               | LOC     | Purpose                            |
+| ------------------ | ------- | ---------------------------------- |
+| useSettlements.ts  | 169     | CRUD operations + snapshot + close |
+| useAuth.ts         | 165     | Authentication operations          |
+| useExpenses.ts     | 114     | Expense CRUD operations            |
+| useParticipants.ts | 95      | Participant CRUD operations        |
+| **TOTAL**          | **543** | **Consistent API access patterns** |
 
 ### Form Components (202 LOC)
-| File | LOC | Purpose |
-|------|-----|---------|
-| NicknameInput.tsx | 121 | Reusable nickname input with validation |
-| FormField.tsx | 35 | Generic form field wrapper |
-| FormLabel.tsx | 25 | Consistent form labels |
-| FormError.tsx | 21 | Standardized error display |
-| **TOTAL** | **202** | **UI consistency** |
+
+| File              | LOC     | Purpose                                 |
+| ----------------- | ------- | --------------------------------------- |
+| NicknameInput.tsx | 121     | Reusable nickname input with validation |
+| FormField.tsx     | 35      | Generic form field wrapper              |
+| FormLabel.tsx     | 25      | Consistent form labels                  |
+| FormError.tsx     | 21      | Standardized error display              |
+| **TOTAL**         | **202** | **UI consistency**                      |
 
 ### Custom Hooks (331 LOC)
-| File | LOC | Purpose |
-|------|-----|---------|
-| useParticipantNickname.ts | 185 | Nickname validation and state management |
-| useNicknameValidation.ts | 146 | Validation logic for nicknames |
-| **TOTAL** | **331** | **Reusable form logic** |
+
+| File                      | LOC     | Purpose                                  |
+| ------------------------- | ------- | ---------------------------------------- |
+| useParticipantNickname.ts | 185     | Nickname validation and state management |
+| useNicknameValidation.ts  | 146     | Validation logic for nicknames           |
+| **TOTAL**                 | **331** | **Reusable form logic**                  |
 
 ### Infrastructure Summary
+
 - **Total New Code:** 1,682 LOC
 - **Code Eliminated:** 508 LOC
 - **Net Change:** +1,174 LOC
@@ -83,36 +90,38 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 
 ### Original Goals vs Achievement
 
-| Goal | Target | Achieved | Status |
-|------|--------|----------|--------|
-| LOC Reduction (TOP 5) | -40-50% | -36.4% | ⚠️ Close |
-| Eliminate validation duplication | 100% | 100% | ✅ |
-| Centralize API calls | 100% | 100% | ✅ |
-| React Hook Form adoption | 100% | 67% | ⚠️ Partial* |
-| E2E Tests passing | 100% | 100% | ✅ |
-| Zero regressions | Yes | Yes | ✅ |
-| Build errors | 0 | 0 | ✅ |
+| Goal                             | Target  | Achieved | Status       |
+| -------------------------------- | ------- | -------- | ------------ |
+| LOC Reduction (TOP 5)            | -40-50% | -36.4%   | ⚠️ Close     |
+| Eliminate validation duplication | 100%    | 100%     | ✅           |
+| Centralize API calls             | 100%    | 100%     | ✅           |
+| React Hook Form adoption         | 100%    | 67%      | ⚠️ Partial\* |
+| E2E Tests passing                | 100%    | 100%     | ✅           |
+| Zero regressions                 | Yes     | Yes      | ✅           |
+| Build errors                     | 0       | 0        | ✅           |
 
-*Note: Auth and form hooks use manual fetch() for SSR compatibility, not react-hook-form. This is an architectural decision, not a failure to adopt.
+\*Note: Auth and form hooks use manual fetch() for SSR compatibility, not react-hook-form. This is an architectural decision, not a failure to adopt.
 
 ### Quality Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Code duplication | High | None | -100% |
-| Type safety | Partial | Full | +100% |
-| Validator reusability | 0 files | 3 files | ∞ |
-| Formatter reusability | 0 files | 2 files | ∞ |
-| API hooks | 0 | 4 | +4 |
-| Form components | 0 | 4 | +4 |
-| Custom hooks | 0 | 2 | +2 |
-| Test coverage | 43/43 | 43/43 | Maintained |
+| Metric                | Before  | After   | Improvement |
+| --------------------- | ------- | ------- | ----------- |
+| Code duplication      | High    | None    | -100%       |
+| Type safety           | Partial | Full    | +100%       |
+| Validator reusability | 0 files | 3 files | ∞           |
+| Formatter reusability | 0 files | 2 files | ∞           |
+| API hooks             | 0       | 4       | +4          |
+| Form components       | 0       | 4       | +4          |
+| Custom hooks          | 0       | 2       | +2          |
+| Test coverage         | 43/43   | 43/43   | Maintained  |
 
 ## 🚀 Phases Completed
 
 ### Phase 1: Foundations ✅
+
 **Duration:** ~2 hours  
 **Deliverables:**
+
 - Typed API client (apiClient.ts)
 - TanStack Query setup (queryClient.ts, QueryClientProvider)
 - Base API hooks (useSettlements, useParticipants)
@@ -120,8 +129,10 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 **Impact:** Foundation for all subsequent phases
 
 ### Phase 2: Shared Utilities ✅
+
 **Duration:** ~2 hours  
 **Deliverables:**
+
 - validators.ts (12 validators)
 - formatters.ts (13 formatters)
 - 3 form components (FormField, FormLabel, FormError)
@@ -130,8 +141,10 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 **Impact:** Eliminated all validation/formatting duplication
 
 ### Phase 3: Auth Forms ✅
+
 **Duration:** ~1.5 hours  
 **Deliverables:**
+
 - RegisterForm refactored (-36%)
 - LoginForm refactored (-36%)
 - CountdownTimer extracted
@@ -140,8 +153,10 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 **Impact:** Consistent form patterns established
 
 ### Phase 4: Participant Forms ✅
+
 **Duration:** ~45 minutes  
 **Deliverables:**
+
 - ParticipantForm refactored (-52%)
 - EditParticipantModal refactored (-60%)
 - useParticipantNickname hook created
@@ -150,8 +165,10 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 **Impact:** Highest LOC reduction achieved
 
 ### Phase 5: Expense Hook ✅
+
 **Duration:** ~45 minutes  
 **Deliverables:**
+
 - useExpenseForm refactored (-13%)
 - useExpenses API hooks created
 - validatePayer added to validators
@@ -160,8 +177,10 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 **Impact:** API hooks ready for future features
 
 ### Phase 6: Settlement Summary ✅
+
 **Duration:** ~45 minutes  
 **Deliverables:**
+
 - useSettlementSummary refactored (-25%)
 - settlementFormatters.ts created
 - useSettlementSnapshot API hook created
@@ -170,8 +189,10 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 **Impact:** Complete settlement summary infrastructure
 
 ### Phase 7: Documentation ✅
+
 **Duration:** ~1 hour  
 **Deliverables:**
+
 - This final summary
 - Architecture overview
 - Developer guide
@@ -238,19 +259,19 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 
 ## 📚 Documentation Delivered
 
-| Document | Lines | Purpose |
-|----------|-------|---------|
-| 00-refactoring-plan.md | ~400 | Master plan and status tracking |
-| 01-phase-1-foundations.md | ~350 | API client and TanStack Query setup |
-| 02-phase-2-shared-utilities.md | ~400 | Validators, formatters, components |
-| 03-phase-3-auth-forms.md | ~350 | Auth form refactoring details |
-| 04-phase-4-participant-forms.md | ~450 | Participant components refactoring |
-| 05-phase-5-expense-form.md | ~450 | Expense hook refactoring |
-| 06-phase-6-settlement-summary.md | ~500 | Settlement summary refactoring |
-| 07-final-summary.md | ~400 | This document |
-| architecture-overview.md | TBD | Architecture and patterns |
-| developer-guide.md | TBD | Practical usage examples |
-| **TOTAL** | **>3,300** | **Complete knowledge base** |
+| Document                         | Lines      | Purpose                             |
+| -------------------------------- | ---------- | ----------------------------------- |
+| 00-refactoring-plan.md           | ~400       | Master plan and status tracking     |
+| 01-phase-1-foundations.md        | ~350       | API client and TanStack Query setup |
+| 02-phase-2-shared-utilities.md   | ~400       | Validators, formatters, components  |
+| 03-phase-3-auth-forms.md         | ~350       | Auth form refactoring details       |
+| 04-phase-4-participant-forms.md  | ~450       | Participant components refactoring  |
+| 05-phase-5-expense-form.md       | ~450       | Expense hook refactoring            |
+| 06-phase-6-settlement-summary.md | ~500       | Settlement summary refactoring      |
+| 07-final-summary.md              | ~400       | This document                       |
+| architecture-overview.md         | TBD        | Architecture and patterns           |
+| developer-guide.md               | TBD        | Practical usage examples            |
+| **TOTAL**                        | **>3,300** | **Complete knowledge base**         |
 
 ## 🎓 Lessons Learned
 
@@ -377,6 +398,7 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 ## 📈 Project Statistics
 
 ### Time Investment
+
 - **Planning:** ~2 hours
 - **Implementation:** ~8 hours
 - **Testing:** ~1 hour
@@ -384,6 +406,7 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 - **Total:** ~13 hours (1.5 days)
 
 ### Code Changes
+
 - **Files Modified:** 13
 - **Files Created:** 16
 - **Lines Added:** ~2,200
@@ -392,6 +415,7 @@ Successfully refactored the top 5 most complex components in FlexiSplit, reducin
 - **Commits:** 7 (one per phase)
 
 ### Test Results
+
 - **E2E Tests:** 43/43 passing (100%)
 - **Test Duration:** ~39 seconds
 - **Regressions:** 0
@@ -408,6 +432,7 @@ The FlexiSplit refactoring project successfully transformed a codebase with sign
 5. **Clear patterns and practices** that scale to hundreds of components
 
 The modest LOC reduction (-36.4%) is offset by:
+
 - Dramatically improved code organization
 - Significantly better type safety
 - Much faster development velocity

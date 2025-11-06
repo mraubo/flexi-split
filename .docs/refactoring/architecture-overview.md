@@ -87,6 +87,7 @@ tests/
 **Responsibility:** User interface and user interactions
 
 **Components:**
+
 - Page components (top-level views)
 - Feature components (domain-specific UI)
 - Shared form components (reusable UI elements)
@@ -95,15 +96,16 @@ tests/
 **Pattern:** Component composition with custom hooks for state management
 
 **Example:**
+
 ```typescript
 // ParticipantForm.tsx uses shared components and hooks
 import { NicknameInput } from '@/components/form/NicknameInput';
 import { useParticipantNickname } from '@/components/hooks/useParticipantNickname';
 
 export function ParticipantForm({ onCreated }) {
-  const { nickname, validation, updateValidation, isValid } = 
+  const { nickname, validation, updateValidation, isValid } =
     useParticipantNickname(existingNicknames);
-  
+
   return (
     <form>
       <NicknameInput
@@ -121,6 +123,7 @@ export function ParticipantForm({ onCreated }) {
 **Responsibility:** Component state, form validation, and orchestration
 
 **Hooks:**
+
 - `useExpenseForm` - Expense form state and validation
 - `useSettlementSummary` - Settlement summary data and formatting
 - `useParticipantNickname` - Nickname validation state
@@ -129,18 +132,19 @@ export function ParticipantForm({ onCreated }) {
 **Pattern:** Hook composition - larger hooks delegate to smaller, focused hooks
 
 **Example:**
+
 ```typescript
 export function useExpenseForm(params) {
   // Uses shared validators
   const amountValidation = validateAmount(state.amountCents);
   const payerValidation = validatePayer(state.payerId, participants);
-  
+
   // Manual fetch for SSR compatibility
-  const response = await fetch('/api/settlements/.../expenses', {
-    method: 'POST',
+  const response = await fetch("/api/settlements/.../expenses", {
+    method: "POST",
     body: JSON.stringify(command),
   });
-  
+
   return { formState, updateField, submitForm };
 }
 ```
@@ -150,6 +154,7 @@ export function useExpenseForm(params) {
 **Responsibility:** Data fetching, caching, and mutations
 
 **Components:**
+
 - `apiClient` - Typed HTTP client with RFC 7807 error handling
 - `queryClient` - TanStack Query configuration
 - API hooks - `useSettlements`, `useParticipants`, `useExpenses`, `useAuth`
@@ -157,12 +162,13 @@ export function useExpenseForm(params) {
 **Pattern:** TanStack Query for data operations with query key factories
 
 **Example:**
+
 ```typescript
 // useParticipants.ts
 export const participantsQueryKeys = {
-  all: () => ['participants'],
+  all: () => ["participants"],
   bySettlement: (id) => [...participantsQueryKeys.all(), id],
-  list: (id) => [...participantsQueryKeys.bySettlement(id), 'list'],
+  list: (id) => [...participantsQueryKeys.bySettlement(id), "list"],
 };
 
 export function useParticipants(settlementId: UUID) {
@@ -179,6 +185,7 @@ export function useParticipants(settlementId: UUID) {
 **Responsibility:** Reusable logic for validation, formatting, and calculations
 
 **Utilities:**
+
 - **Validators** - Input validation with consistent error messages
 - **Formatters** - Currency, date, and text formatting
 - **Settlement Formatters** - Balance and transfer formatting
@@ -186,6 +193,7 @@ export function useParticipants(settlementId: UUID) {
 **Pattern:** Pure functions with clear inputs/outputs
 
 **Example:**
+
 ```typescript
 // validators.ts
 export const validateAmount = (amount?: number): { valid: boolean; error?: string } => {
@@ -213,6 +221,7 @@ export const formatCurrency = (amountCents: number, currency = "PLN"): string =>
 **Responsibility:** Business logic, database operations, and complex transactions
 
 **Services:**
+
 - Settlement services (CRUD, finalization)
 - Participant services (add, update, remove)
 - Expense services (CRUD)
@@ -224,6 +233,7 @@ export const formatCurrency = (amountCents: number, currency = "PLN"): string =>
 **Responsibility:** Data persistence, access control, and real-time features
 
 **Components:**
+
 - Supabase client
 - Generated TypeScript types
 - Database migrations
@@ -236,36 +246,38 @@ export const formatCurrency = (amountCents: number, currency = "PLN"): string =>
 **Purpose:** Break down complex hooks into smaller, focused hooks
 
 **Example:**
+
 ```typescript
 // Large hook delegates to smaller hooks
 export function useExpenseForm(params) {
   // Validation logic
   const validateForm = useCallback((state) => {
     const errors = {};
-    
+
     // Use shared validators
     const amountValidation = validateAmount(state.amountCents);
     if (!amountValidation.valid) {
       errors.amount = amountValidation.error;
     }
-    
+
     return { ...state, errors, isValid: Object.keys(errors).length === 0 };
   }, []);
-  
+
   // State management
   const [formState, setFormState] = useState(initialState);
-  
+
   // API operations (manual fetch for SSR)
   const submitForm = async () => {
     const response = await fetch(url, { method, body });
     // ...
   };
-  
+
   return { formState, updateField, submitForm };
 }
 ```
 
 **Benefits:**
+
 - Each hook has a single responsibility
 - Easier to test in isolation
 - Better code reuse
@@ -275,19 +287,21 @@ export function useExpenseForm(params) {
 **Purpose:** Centralized cache key management for TanStack Query
 
 **Example:**
+
 ```typescript
 export const settlementsQueryKeys = {
-  all: () => ['settlements'],
-  lists: () => [...settlementsQueryKeys.all(), 'list'],
+  all: () => ["settlements"],
+  lists: () => [...settlementsQueryKeys.all(), "list"],
   list: (filters) => [...settlementsQueryKeys.lists(), filters],
-  details: () => [...settlementsQueryKeys.all(), 'detail'],
+  details: () => [...settlementsQueryKeys.all(), "detail"],
   detail: (id) => [...settlementsQueryKeys.details(), id],
-  snapshots: () => [...settlementsQueryKeys.all(), 'snapshot'],
+  snapshots: () => [...settlementsQueryKeys.all(), "snapshot"],
   snapshot: (id) => [...settlementsQueryKeys.snapshots(), id],
 };
 ```
 
 **Benefits:**
+
 - Consistent cache keys across the app
 - Easy to invalidate related queries
 - Type-safe key generation
@@ -297,6 +311,7 @@ export const settlementsQueryKeys = {
 **Purpose:** Separate business logic from API endpoints
 
 **Example:**
+
 ```typescript
 // Service function
 export async function createParticipant(
@@ -306,11 +321,11 @@ export async function createParticipant(
 ): Promise<ParticipantDTO> {
   // Business logic here
   const { data, error } = await supabase
-    .from('participants')
+    .from("participants")
     .insert({ settlement_id: settlementId, nickname: command.nickname })
     .select()
     .single();
-    
+
   if (error) throw error;
   return data;
 }
@@ -325,6 +340,7 @@ export async function POST({ params, request, locals }) {
 ```
 
 **Benefits:**
+
 - Business logic testable independently
 - API endpoints stay thin
 - Logic reusable across endpoints
@@ -334,6 +350,7 @@ export async function POST({ params, request, locals }) {
 **Purpose:** Clear boundaries between layers
 
 **Layers:**
+
 1. **Components** - UI and user interactions
 2. **Hooks** - State management and orchestration
 3. **API** - Data fetching and mutations
@@ -341,6 +358,7 @@ export async function POST({ params, request, locals }) {
 5. **Database** - Data persistence
 
 **Benefits:**
+
 - Changes isolated to specific layers
 - Easier to reason about code
 - Better testability
@@ -350,25 +368,27 @@ export async function POST({ params, request, locals }) {
 **Purpose:** Ensure forms work reliably with Astro's SSR and island architecture
 
 **Pattern:**
+
 ```typescript
 // In forms and hooks used by forms
 const submitForm = async () => {
-  const response = await fetch('/api/...', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch("/api/...", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const errorData = await response.json();
     throw errorData;
   }
-  
+
   return response.json();
 };
 ```
 
 **Why not TanStack Query mutations?**
+
 - QueryClient context may not be available during SSR/hydration
 - Components use `client:idle` which means delayed hydration
 - Manual fetch is more predictable in Astro islands
@@ -377,6 +397,7 @@ const submitForm = async () => {
 ## Technology Stack
 
 ### Frontend
+
 - **Astro 5.13.7** - SSR framework with island architecture
 - **React 19** - UI library for interactive components
 - **TypeScript 5** - Type safety and developer experience
@@ -387,11 +408,13 @@ const submitForm = async () => {
 - **Zod 4** - Schema validation
 
 ### Backend
+
 - **Node.js 22.18.0** - Runtime environment
 - **Supabase** - PostgreSQL database, auth, and real-time
 - **PostgreSQL** - Relational database
 
 ### Development & Testing
+
 - **Bun 1.x** - Package manager and test runner (preferred)
 - **Vitest** - Unit testing framework
 - **Playwright** - E2E testing framework
@@ -406,23 +429,22 @@ const submitForm = async () => {
 **Purpose:** Typed HTTP client with consistent error handling
 
 **Features:**
+
 - RFC 7807 error responses
 - Type-safe request/response handling
 - Automatic JSON serialization/deserialization
 - Support for custom headers
 
 **Usage:**
+
 ```typescript
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from "@/lib/api/client";
 
 // GET request
-const settlements = await apiClient.get<SettlementDTO[]>('/api/settlements');
+const settlements = await apiClient.get<SettlementDTO[]>("/api/settlements");
 
 // POST request
-const newSettlement = await apiClient.post<SettlementDTO>(
-  '/api/settlements',
-  { title: 'Weekend Trip' }
-);
+const newSettlement = await apiClient.post<SettlementDTO>("/api/settlements", { title: "Weekend Trip" });
 ```
 
 ### Query Client (`src/lib/api/queryClient.ts`)
@@ -430,6 +452,7 @@ const newSettlement = await apiClient.post<SettlementDTO>(
 **Purpose:** TanStack Query configuration
 
 **Features:**
+
 - Global query defaults
 - Cache time configuration
 - Retry strategies
@@ -440,6 +463,7 @@ const newSettlement = await apiClient.post<SettlementDTO>(
 **Purpose:** Centralized validation logic
 
 **Functions:** 12 validators including:
+
 - `validateNickname` - Nickname format validation
 - `validateAmount` - Currency amount validation
 - `validateDate` - Date format validation
@@ -452,6 +476,7 @@ const newSettlement = await apiClient.post<SettlementDTO>(
 **Purpose:** Consistent data formatting across the app
 
 **Functions:** 13 formatters including:
+
 - `formatCurrency` - Currency display with locale
 - `formatDate` - Date display in Polish locale
 - `formatCentsToAmount` - Convert cents to display string
@@ -463,6 +488,7 @@ const newSettlement = await apiClient.post<SettlementDTO>(
 **Purpose:** Reusable form UI elements with consistent styling
 
 **Components:**
+
 - `FormField` - Generic field wrapper with label and error
 - `FormLabel` - Consistent label styling with required indicator
 - `FormError` - Error message display with ARIA support
@@ -547,6 +573,7 @@ User Action → Component
 Astro uses "islands" of interactivity - React components are hydrated independently.
 
 **Hydration Directives:**
+
 - `client:load` - Hydrate immediately
 - `client:idle` - Hydrate when browser idle
 - `client:visible` - Hydrate when visible
@@ -570,11 +597,12 @@ Astro uses "islands" of interactivity - React components are hydrated independen
 **Solution:** Use manual `fetch()` in form submission handlers.
 
 **Pattern:**
+
 ```typescript
 // ✅ Safe for SSR
 const submitForm = async () => {
-  const response = await fetch('/api/...', {
-    method: 'POST',
+  const response = await fetch("/api/...", {
+    method: "POST",
     body: JSON.stringify(data),
   });
   // ...
@@ -588,11 +616,13 @@ const submitForm = () => mutation.mutate(data);
 ### When to Use TanStack Query
 
 **Use for:**
+
 - Read operations (GET requests)
 - Components that are always `client:load`
 - Non-form mutations in fully hydrated components
 
 **Don't use for:**
+
 - Form submissions in `client:idle` components
 - Components that may render during SSR
 - Auth-related operations during initial load
@@ -602,12 +632,14 @@ const submitForm = () => mutation.mutate(data);
 ### 1. Type Safety
 
 **Always use generated types:**
+
 ```typescript
-import type { SettlementDTO, ParticipantDTO } from '@/types';
-import type { Database } from '@/db/database.types';
+import type { SettlementDTO, ParticipantDTO } from "@/types";
+import type { Database } from "@/db/database.types";
 ```
 
 **Use Zod for runtime validation:**
+
 ```typescript
 const CreateSettlementSchema = z.object({
   title: z.string().min(1).max(100),
@@ -619,6 +651,7 @@ const validated = CreateSettlementSchema.parse(input);
 ### 2. Error Handling
 
 **Use RFC 7807 format:**
+
 ```typescript
 {
   error: {
@@ -630,6 +663,7 @@ const validated = CreateSettlementSchema.parse(input);
 ```
 
 **Map errors to form fields:**
+
 ```typescript
 if (error.code === "invalid_payer") {
   updateField("payerId", undefined);
@@ -639,11 +673,13 @@ if (error.code === "invalid_payer") {
 ### 3. Code Organization
 
 **Keep hooks focused:**
+
 - One responsibility per hook
 - Compose larger hooks from smaller ones
 - Extract shared logic to utilities
 
 **Keep components simple:**
+
 - Delegate logic to hooks
 - Use shared components for consistency
 - Keep JSX readable
@@ -651,11 +687,13 @@ if (error.code === "invalid_payer") {
 ### 4. Testing Strategy
 
 **E2E Tests:**
+
 - Test complete user flows
 - Use Page Object Model
 - Run before deployment
 
 **Unit Tests (recommended):**
+
 - Test validators in isolation
 - Test formatters in isolation
 - Test service layer functions
@@ -663,14 +701,13 @@ if (error.code === "invalid_payer") {
 ### 5. Performance
 
 **Memoization:**
+
 ```typescript
-const formattedBalances = useMemo(
-  () => formatBalances(balances, participantsMap),
-  [balances, participantsMap]
-);
+const formattedBalances = useMemo(() => formatBalances(balances, participantsMap), [balances, participantsMap]);
 ```
 
 **Query caching:**
+
 ```typescript
 // TanStack Query automatically caches
 const { data } = useParticipants(settlementId);
@@ -678,9 +715,10 @@ const { data } = useParticipants(settlementId);
 ```
 
 **Code splitting:**
+
 ```typescript
 // Use dynamic imports for large components
-const HeavyComponent = lazy(() => import('./HeavyComponent'));
+const HeavyComponent = lazy(() => import("./HeavyComponent"));
 ```
 
 ## Conclusion

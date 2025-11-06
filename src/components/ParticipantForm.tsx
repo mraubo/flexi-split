@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { NicknameInput } from "@/components/form/NicknameInput";
 import { useParticipantNickname } from "@/components/hooks/useParticipantNickname";
-import { getParticipantErrorMessage } from "@/lib/errorMessages";
+import { getParticipantErrorMessage, type ApiError } from "@/lib/errorMessages";
 import type { CreateParticipantCommand, ParticipantDTO } from "@/types";
 
 interface ParticipantFormProps {
@@ -63,8 +63,8 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
         inputElement?.focus();
       } catch (error: unknown) {
         // Handle specific error codes
-        const err = error as { status?: number };
-        if (err.status === 409) {
+        const apiError = error as ApiError;
+        if (apiError.status === 409) {
           // Nickname conflict - generate suggestion and handle conflict
           const base = nickname.toLowerCase();
           let suffix = 1;
@@ -79,7 +79,6 @@ const ParticipantForm = forwardRef<HTMLInputElement, ParticipantFormProps>(
           handleRemoteConflict(suggestion);
         } else {
           // Use centralized error message
-          const apiError = error as { status?: number };
           setErrorMessage(getParticipantErrorMessage(apiError));
         }
       } finally {
