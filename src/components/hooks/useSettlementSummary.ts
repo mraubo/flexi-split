@@ -1,8 +1,21 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import type { SettlementSnapshotDTO, ApiError, UUID, AmountCents, ParticipantDTO } from "@/types";
+import type { UUID, ApiError, AmountCents, ParticipantDTO } from "@/types";
+import {
+  formatBalances,
+  formatTransfers,
+  calculateBalanceTotals,
+  type FormattedBalance,
+  type FormattedTransfer,
+  type BalanceTotals,
+} from "@/lib/utils/settlementFormatters";
+
+interface SettlementSnapshotData {
+  balances: Record<UUID, AmountCents>;
+  transfers: Array<{ from: UUID; to: UUID; amount_cents: AmountCents }>;
+}
 
 interface UseSettlementSummaryResult {
-  settlementSnapshot: SettlementSnapshotDTO | null;
+  settlementSnapshot: SettlementSnapshotData | null;
   loading: boolean;
   error: ApiError | null;
   formattedBalances: FormattedBalance[];
@@ -13,33 +26,10 @@ interface UseSettlementSummaryResult {
   reload: () => void;
 }
 
-export interface FormattedBalance {
-  participantId: UUID;
-  nickname: string;
-  amountCents: AmountCents;
-  formattedAmount: string;
-  sign: "+" | "-" | "0";
-}
-
-export interface FormattedTransfer {
-  fromId: UUID;
-  fromNickname: string;
-  toId: UUID;
-  toNickname: string;
-  amountCents: AmountCents;
-  formattedAmount: string;
-}
-
-interface BalanceTotals {
-  sumPayable: number;
-  sumReceivable: number;
-  isBalanced: boolean;
-}
-
 type ParticipantMap = Record<UUID, string>;
 
 export function useSettlementSummary(settlementId: string, status: "open" | "closed"): UseSettlementSummaryResult {
-  const [settlementSnapshot, setSettlementSnapshot] = useState<SettlementSnapshotDTO | null>(null);
+  const [settlementSnapshot, setSettlementSnapshot] = useState<SettlementSnapshotData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [isClosing, setIsClosing] = useState(false);
@@ -147,65 +137,23 @@ export function useSettlementSummary(settlementId: string, status: "open" | "clo
     [settlementId, fetchSnapshot]
   );
 
-  // Format balances for display
-  const formattedBalances = useMemo((): FormattedBalance[] => {
-    if (!settlementSnapshot?.balances) return [];
+  // Format balances for display using shared formatter
+  const formattedBalances = useMemo(
+    () => formatBalances(settlementSnapshot?.balances, participantsMap),
+    [settlementSnapshot?.balances, participantsMap]
+  );
 
-    return Object.entries(settlementSnapshot.balances)
-      .map(([participantId, amountCents]) => ({
-        participantId: participantId as UUID,
-        nickname: participantsMap[participantId] || "Nieznany uczestnik",
-        amountCents: amountCents as AmountCents,
-        formattedAmount: formatCurrency(Math.abs(amountCents)),
-        sign: (amountCents > 0 ? "+" : amountCents < 0 ? "-" : "0") as "+" | "-" | "0",
-      }))
-      .sort((a, b) => {
-        // Sort by amount (negative first, then positive, then zero)
-        if (a.amountCents !== b.amountCents) {
-          return a.amountCents - b.amountCents;
-        }
-        // Then by nickname for stable sort
-        return a.nickname.localeCompare(b.nickname, "pl");
-      });
-  }, [settlementSnapshot?.balances, participantsMap]);
+  // Format transfers for display using shared formatter
+  const formattedTransfers = useMemo(
+    () => formatTransfers(settlementSnapshot?.transfers, participantsMap),
+    [settlementSnapshot?.transfers, participantsMap]
+  );
 
-  // Format transfers for display
-  const formattedTransfers = useMemo((): FormattedTransfer[] => {
-    if (!settlementSnapshot?.transfers) return [];
-
-    return settlementSnapshot.transfers
-      .map((transfer) => ({
-        fromId: transfer.from,
-        fromNickname: participantsMap[transfer.from] || "Nieznany uczestnik",
-        toId: transfer.to,
-        toNickname: participantsMap[transfer.to] || "Nieznany uczestnik",
-        amountCents: transfer.amount_cents,
-        formattedAmount: formatCurrency(transfer.amount_cents),
-      }))
-      .sort((a, b) => {
-        // Sort by from nickname, then to nickname for stable sort
-        const fromCompare = a.fromNickname.localeCompare(b.fromNickname, "pl");
-        if (fromCompare !== 0) return fromCompare;
-        return a.toNickname.localeCompare(b.toNickname, "pl");
-      });
-  }, [settlementSnapshot?.transfers, participantsMap]);
-
-  // Calculate totals for control sum
-  const totals = useMemo((): BalanceTotals => {
-    if (!settlementSnapshot?.balances) {
-      return { sumPayable: 0, sumReceivable: 0, isBalanced: true };
-    }
-
-    const balances = Object.values(settlementSnapshot.balances) as number[];
-    const sumPayable = balances.filter((b) => b < 0).reduce((sum, b) => sum + Math.abs(b), 0);
-    const sumReceivable = balances.filter((b) => b > 0).reduce((sum, b) => sum + b, 0);
-
-    return {
-      sumPayable,
-      sumReceivable,
-      isBalanced: Math.abs(sumPayable - sumReceivable) < 1, // Allow for small floating point differences
-    };
-  }, [settlementSnapshot?.balances]);
+  // Calculate totals for control sum using shared formatter
+  const totals = useMemo(
+    () => calculateBalanceTotals(settlementSnapshot?.balances),
+    [settlementSnapshot?.balances]
+  );
 
   const reload = useCallback(() => {
     fetchSnapshot();
@@ -229,13 +177,4 @@ export function useSettlementSummary(settlementId: string, status: "open" | "clo
     isClosing,
     reload,
   };
-}
-
-// Utility function for currency formatting
-function formatCurrency(amountCents: number, currency = "PLN"): string {
-  const amount = amountCents / 100;
-  return new Intl.NumberFormat("pl-PL", {
-    style: "currency",
-    currency,
-  }).format(amount);
 }

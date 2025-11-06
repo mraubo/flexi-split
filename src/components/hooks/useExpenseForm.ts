@@ -8,6 +8,13 @@ import type {
   CreateExpenseCommand,
   UpdateExpenseCommand,
 } from "@/types";
+import {
+  validateAmount,
+  validatePayer,
+  validateParticipants,
+  validateDate,
+  validateDescription,
+} from "@/lib/utils/validators";
 
 // Form state type
 export interface ExpenseFormVM {
@@ -39,75 +46,6 @@ export interface UseExpenseFormResult {
   cancelForm: () => void;
   apiError: ApiError | null;
 }
-
-// Validation helpers
-const validateAmount = (amount?: number): string | null => {
-  if (!amount) return "Kwota jest wymagana";
-  if (amount <= 0) return "Kwota musi być większa od 0";
-  if (amount < 1) return "Minimalna kwota to 0,01 PLN";
-  return null;
-};
-
-const validatePayer = (participants: ExpenseParticipantMiniDTO[], payerId?: UUID): string | null => {
-  if (!payerId) return "Wybór płacącego jest wymagany";
-  const exists = participants.some((p) => p.id === payerId);
-  if (!exists) return "Wybrany płacący nie istnieje w rozliczeniu";
-  return null;
-};
-
-const validateParticipants = (participantIds: UUID[], participants: ExpenseParticipantMiniDTO[]): string | null => {
-  if (participantIds.length === 0) return "Wybierz co najmniej jednego uczestnika";
-  const allExist = participantIds.every((id) => participants.some((p) => p.id === id));
-  if (!allExist) return "Niektórzy wybrani uczestnicy nie istnieją w rozliczeniu";
-  return null;
-};
-
-const validateDate = (date?: DateString): string | null => {
-  if (!date) return "Data jest wymagana";
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  if (!dateRegex.test(date)) return "Nieprawidłowy format daty";
-  const parsedDate = new Date(date);
-  if (isNaN(parsedDate.getTime())) return "Nieprawidłowa data";
-  return null;
-};
-
-const validateDescription = (description?: string | null): string | null => {
-  if (description && description.length > 140) return "Opis może mieć maksymalnie 140 znaków";
-  return null;
-};
-
-// Calculate share count and per person amount
-export const calculateShareInfo = (amountCents?: number, selectedCount?: number) => {
-  if (!amountCents || !selectedCount || selectedCount === 0) {
-    return { shareCount: 0, perPersonAmount: 0 };
-  }
-
-  const shareCount = selectedCount;
-  const totalAmount = amountCents;
-  const perPersonAmount = Math.floor(totalAmount / shareCount);
-
-  return { shareCount, perPersonAmount };
-};
-
-// Parse amount string to cents
-export const parseAmountToCents = (value: string): number | undefined => {
-  if (!value.trim()) return undefined;
-
-  // Replace comma with dot for decimal separator
-  const normalizedValue = value.replace(",", ".");
-  const parsed = parseFloat(normalizedValue);
-
-  if (isNaN(parsed)) return undefined;
-
-  // Convert to cents and round to avoid floating point issues
-  return Math.round(parsed * 100);
-};
-
-// Format cents to display string
-export const formatCentsToAmount = (cents?: number): string => {
-  if (!cents) return "";
-  return (cents / 100).toFixed(2).replace(".", ",");
-};
 
 export function useExpenseForm(params: UseExpenseFormParams): UseExpenseFormResult {
   const { mode, settlementId, expenseId, participants, initialData, onSaved } = params;
@@ -152,20 +90,37 @@ export function useExpenseForm(params: UseExpenseFormParams): UseExpenseFormResu
     (state: ExpenseFormVM): ExpenseFormVM => {
       const errors: Record<string, string> = {};
 
-      const amountError = validateAmount(state.amountCents);
-      if (amountError) errors.amount = amountError;
+      // Use validators from lib/utils/validators
+      const amountValidation = validateAmount(state.amountCents);
+      if (!amountValidation.valid && amountValidation.error) {
+        errors.amount = amountValidation.error;
+      }
 
-      const payerError = validatePayer(participants, state.payerId);
-      if (payerError) errors.payer = payerError;
+      const payerValidation = validatePayer(state.payerId, participants);
+      if (!payerValidation.valid && payerValidation.error) {
+        errors.payer = payerValidation.error;
+      }
 
-      const participantsError = validateParticipants(state.participantIds, participants);
-      if (participantsError) errors.participants = participantsError;
+      const participantsValidation = validateParticipants(state.participantIds);
+      if (!participantsValidation.valid && participantsValidation.error) {
+        errors.participants = participantsValidation.error;
+      }
 
-      const dateError = validateDate(state.date);
-      if (dateError) errors.date = dateError;
+      // Additional check: all selected participants must exist
+      const allParticipantsExist = state.participantIds.every((id) => participants.some((p) => p.id === id));
+      if (!allParticipantsExist) {
+        errors.participants = "Niektórzy wybrani uczestnicy nie istnieją w rozliczeniu";
+      }
 
-      const descriptionError = validateDescription(state.description);
-      if (descriptionError) errors.description = descriptionError;
+      const dateValidation = validateDate(state.date);
+      if (!dateValidation.valid && dateValidation.error) {
+        errors.date = dateValidation.error;
+      }
+
+      const descriptionValidation = validateDescription(state.description);
+      if (!descriptionValidation.valid && descriptionValidation.error) {
+        errors.description = descriptionValidation.error;
+      }
 
       const isValid = Object.keys(errors).length === 0;
 
@@ -191,7 +146,7 @@ export function useExpenseForm(params: UseExpenseFormParams): UseExpenseFormResu
     [validateForm]
   );
 
-  // Submit form
+  // Submit form using manual fetch (SSR-compatible pattern)
   const submitForm = useCallback(async () => {
     if (!formState.isValid || formState.isSubmitting) return;
 

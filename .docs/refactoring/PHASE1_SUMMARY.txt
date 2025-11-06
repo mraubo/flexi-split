@@ -1,0 +1,157 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    FAZA 1: FUNDAMENT - UKOŃCZONA ✅                           ║
+║                   Infrastruktura API i Query Management                        ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+📅 Data: 2025-11-05
+📊 Status: ✅ UKOŃCZONA I PRZETESTOWANA
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📦 ZAINSTALOWANE ZALEŻNOŚCI:
+─────────────────────────────
+  ✅ react-hook-form@7.66.0
+  ✅ @hookform/resolvers@5.2.2
+  ✅ @tanstack/react-query@5.90.6
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📁 STWORZONE PLIKI:
+──────────────────
+
+1️⃣  src/lib/api/client.ts (123 linii)
+   • Typowany HTTP client z RFC 7807 error handling
+   • Wsparcie dla GET, POST, PUT, DELETE, PATCH
+   • Automatyczne parsowanie i error handling
+
+2️⃣  src/lib/api/queryClient.ts (86 linii)
+   • Konfiguracja TanStack Query
+   • Singleton pattern
+   • Sensowne domyślne ustawienia
+
+3️⃣  src/components/QueryClientProvider.tsx (23 linii)
+   • React wrapper dla TanStack QueryClientProvider
+   • Wsparcie dla Astro SSR
+
+4️⃣  src/lib/hooks/api/useSettlements.ts (152 linii)
+   • Custom hooks dla settlements CRUD
+   • Automatyczna cache invalidation
+   • Query key management
+
+5️⃣  src/lib/hooks/api/useParticipants.ts (95 linii)
+   • Custom hooks dla participants CRUD
+   • Cascade invalidation
+   • Query key management
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+✏️  ZMODYFIKOWANE PLIKI:
+──────────────────────
+
+  📄 src/layouts/Layout.astro
+     • Dodano QueryClientProvider z client:load
+
+  📄 src/layouts/AuthLayout.astro
+     • Dodano QueryClientProvider z client:load
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📚 DOKUMENTACJA:
+────────────────
+  📄 .docs/refactoring/00-refactoring-plan.md
+     • Ogólny plan refaktoryzacji
+     • Status wszystkich faz
+     • Metryki sukcesu
+
+  📄 .docs/refactoring/01-phase-1-foundations.md
+     • Szczegółowa dokumentacja FAZY 1
+     • Przykłady użycia
+     • Potencjalne problemy i rozwiązania
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+✅ SPRAWDZENIA:
+───────────────
+  ✅ Project builds successfully
+  ✅ All unit tests pass (37 tests)
+  ✅ No TypeScript errors
+  ✅ New hooks are properly typed
+  ✅ QueryClient is singleton pattern
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🚀 GOTOWE ROZWIĄZANIA:
+──────────────────────
+
+Typowany API Client:
+────────────────────
+  const settlements = await apiClient.get("/api/settlements");
+  const newSettlement = await apiClient.post("/api/settlements", { title: "..." });
+
+Custom Query Hooks:
+───────────────────
+  const { data: settlements } = useSettlements({ page: 1, limit: 10 });
+  const createMutation = useCreateSettlement();
+  const participants = useParticipants(settlementId);
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🎯 NASTĘPNY KROK:
+─────────────────
+FAZA 2: Shared Utilities
+  • Wydzielenie wspólnych validatorów
+  • Tworzenie reużywalnych form components
+  • Utility funkcje do formatowania
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📊 STATYSTYKI:
+──────────────
+  Stworzone linie kodu:    ~479 linii (bez dokumentacji)
+  Nowych plików:           5 (API + hooks + provider)
+  Zmodyfikowanych plików:  2 (layouts)
+  Dokumentacji:            2 pliki (.md)
+  Testy:                   ✅ Wszystkie przechodzą
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🔗 ZALEŻNOŚCI:
+──────────────
+FAZA 1 ✅ DONE
+  ↓
+FAZA 2: Shared Utilities 🔄 PENDING
+  ↓
+FAZA 3: Auth Forms 🔄 PENDING
+  ↓
+FAZA 4: Participant Components 🔄 PENDING
+  ↓
+FAZA 5: Expense Hook 🔄 PENDING
+  ↓
+FAZA 6: Settlement Summary 🔄 PENDING
+  ↓
+FAZA 7: Documentation & Tests 🔄 PENDING
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+⚠️  WAŻNE NOTATKI:
+──────────────────
+  • QueryClientProvider wymaga client:load w Astro layoutach
+  • ApiClient jest singletonem i powinien być reużywany
+  • Wszystkie API calls powinny używać nowych hook'ów
+  • Query invalidation jest automatyczna po mutacjach
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+👥 INSTRUKCJE DLA DEVELOPERÓW:
+───────────────────────────────
+  1. Czytaj .docs/refactoring/01-phase-1-foundations.md
+  2. Importuj hook'i z src/lib/hooks/api/
+  3. Używaj apiClient dla manual requests
+  4. Polegaj na automatycznej cache invalidation
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+✨ PODSUMOWANIE:
+────────────────
+FAZA 1 jest kompletna i przetestowana. Projekt builduje się bez błędów i wszystkie
+testy przechodzą. Infrastruktura jest gotowa do integracji z formami w FAZIE 2.

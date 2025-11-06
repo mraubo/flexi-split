@@ -1,0 +1,219 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    FAZA 2: SHARED UTILITIES - UKOŃCZONA ✅                     ║
+║                     Validators, Formatters, Form Components                     ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+📅 Data: 2025-11-05
+⏱️  Czas realizacji: ~2 godziny
+📊 Status: ✅ UKOŃCZONA I PRZETESTOWANA
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📦 STWORZONE UTILITIES:
+─────────────────────
+
+1️⃣  src/lib/utils/validators.ts (217 linii)
+   • validateNickname() - pattern, length validation
+   • validateNicknameUniqueness() - case-insensitive check
+   • generateNicknameSuggestion() - auto-suggest unique names
+   • validateAmount() - expense amount validation
+   • validateDate() - ISO date validation (YYYY-MM-DD)
+   • validateDescription() - max 140 characters
+   • validateParticipant(s) - participant selection
+   • validateSettlementTitle() - title validation
+   • validateEmail() - email format
+   • validatePassword() - password strength (8+ chars, letters + numbers)
+   • validatePasswordsMatch() - password confirmation
+   
+   Total: 12 validator functions
+
+2️⃣  src/lib/utils/formatters.ts (243 linii)
+   • formatCentsToAmount() - 2500 → "25,00"
+   • parseAmountToCents() - "25,50" → 2550 (handles both comma and dot)
+   • formatCurrency() - 2500 → "25,00 zł"
+   • formatDate() - Date → "5 lis 2025"
+   • formatDateTime() - Date → "5 lis 2025, 10:54"
+   • formatISODate() - "2025-11-05" → "5 lis 2025"
+   • formatDateForInput() - Date → "2025-11-05" (for input type="date")
+   • calculateShareInfo() - split expense calculation
+   • truncateText() - text truncation with "..."
+   • formatParticipantCount() - "5 uczestników" (grammatically correct)
+   • formatExpenseCount() - "5 wydatków" (grammatically correct)
+   • capitalize() - "hello" → "Hello"
+   • formatStatus() - "open" → "Otwarty"
+   
+   Total: 13 formatter functions
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📁 STWORZONE KOMPONENTY:
+───────────────────────
+
+3️⃣  src/components/form/ (3 komponenty)
+
+   FormError.tsx (19 linii)
+   • Displays validation errors with ARIA support
+   • Conditional rendering
+   • Live region announcements
+   
+   FormLabel.tsx (24 linii)
+   • Wraps shadcn/ui Label
+   • Shows required indicator (*)
+   • Optional help text
+   
+   FormField.tsx (39 linii)
+   • Combines Label + Input + Error
+   • Automatic ARIA attributes
+   • Flexible - works with any input element
+   • Clone element pattern for ARIA props
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🎯 REUSABLE HOOK:
+─────────────────
+
+4️⃣  src/components/hooks/useNicknameValidation.ts (126 linii)
+   • Local validation (pattern, length, uniqueness)
+   • Remote validation handling (409 Conflict)
+   • Suggestion generation
+   • State management for validation
+   
+   API:
+   - updateValidation(value)
+   - getValidationMessage(value)
+   - isValid(value)
+   - handleRemoteConflict(value)
+   - clearRemoteConflict()
+   - reset()
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+✅ SPRAWDZENIA:
+───────────────
+  ✅ Project builds successfully (no errors)
+  ✅ All unit tests pass (37 tests)
+  ✅ No TypeScript errors
+  ✅ Validators and formatters properly typed
+  ✅ Form components compatible with shadcn/ui
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🚀 UŻYCIE W PRAKTYCE:
+─────────────────────
+
+Validators:
+───────────
+import { validateNickname, validateAmount } from "@/lib/utils/validators";
+
+const result = validateNickname("john_doe");
+if (!result.valid) {
+  console.error(result.error); // "Nazwa może zawierać tylko małe litery..."
+}
+
+Formatters:
+──────────
+import { formatCurrency, parseAmountToCents } from "@/lib/utils/formatters";
+
+const cents = parseAmountToCents("25,50"); // 2550
+const display = formatCurrency(cents); // "25,50 zł"
+
+Form Components:
+────────────────
+import { FormField, FormError } from "@/components/form";
+import { Input } from "@/components/ui/input";
+
+<FormField id="nickname" label="Nazwa" error={error}>
+  <Input type="text" placeholder="np. john_doe" />
+</FormField>
+
+Custom Hook:
+────────────
+import { useNicknameValidation } from "@/components/hooks/useNicknameValidation";
+
+const { validation, updateValidation, isValid } = 
+  useNicknameValidation(existingNicknames);
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+📊 STATYSTYKI:
+──────────────
+  Stworzone linie kodu:    ~668 linii (utilities + components)
+  Nowych plików:           6 (2 utilities + 3 form components + 1 hook)
+  Zmodyfikowanych plików:  0
+  Dokumentacji:            1 plik (.md)
+  Testy:                   ✅ Wszystkie przechodzą
+  
+  Validators:              12 funkcji
+  Formatters:              13 funkcji
+  Form Components:         3 komponenty
+  Custom Hooks:            1 hook
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🔗 ZALEŻNOŚCI:
+──────────────
+FAZA 1 ✅ DONE
+  ↓
+FAZA 2 ✅ DONE
+  ↓
+FAZA 3: Auth Forms 🔄 READY TO START
+  ↓
+FAZA 4: Participant Components 🔄 PENDING
+  ↓
+FAZA 5: Expense Hook 🔄 PENDING
+  ↓
+FAZA 6: Settlement Summary 🔄 PENDING
+  ↓
+FAZA 7: Documentation & Tests 🔄 PENDING
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🎯 INTEGRACJA Z FAZĄ 1:
+───────────────────────
+Validators i formatters mogą być natychmiast używane z API hooks z FAZY 1:
+
+const { data: participants } = useParticipants(settlementId);
+const nicknameError = validateNickname(input);
+const formattedAmount = formatCurrency(amountCents);
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+⚠️  WAŻNE NOTATKI:
+──────────────────
+  • Validators zwracają {valid, error?} object
+  • Formatters obsługują lokalizację PL
+  • parseAmountToCents obsługuje zarówno przecinek jak i kropkę
+  • useNicknameValidation obsługuje local + remote validation
+  • Form components działają z shadcn/ui Input
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+✨ PODSUMOWANIE:
+────────────────
+FAZA 2 jest kompletna. Utworzyliśmy uniwersalne utilities, które będą używane
+w FAZACH 3-6. Validators i formatters mogą być reużywane w wielu miejscach.
+Custom hook useNicknameValidation pokazuje wzorzec dla innych validation hooks.
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+🎓 WZORCE ZAIMPLEMENTOWANE:
+────────────────────────────
+  ✓ Validator pattern (function returning {valid, error?})
+  ✓ Formatter pattern (pure functions for display logic)
+  ✓ Form component composition (Label + Input + Error)
+  ✓ Custom hook pattern (reusable validation logic)
+  ✓ Two-layer validation (local + remote)
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+👥 DLA DEVELOPERÓW:
+───────────────────
+  1. Importuj validators z src/lib/utils/validators.ts
+  2. Importuj formatters z src/lib/utils/formatters.ts
+  3. Używaj form components z src/components/form/
+  4. Reużywaj useNicknameValidation pattern dla innych validacji
+  5. Czytaj dokumentację: .docs/refactoring/02-phase-2-shared-utilities.md
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+👉 NASTĘPNY KROK: FAZA 3 - Refaktoryzacja Auth Forms

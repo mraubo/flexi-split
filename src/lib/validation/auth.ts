@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const LoginSchema = z.object({
-  email: z.string().email("Nieprawidłowy adres e-mail"),
+  email: z.string().email({ message: "Nieprawidłowy adres e-mail" }),
   password: z
     .string()
     .min(8, "Hasło musi mieć co najmniej 8 znaków")
@@ -13,7 +13,7 @@ export type LoginOutput = z.output<typeof LoginSchema>;
 
 export const RegisterSchema = z
   .object({
-    email: z.string().email("Nieprawidłowy adres e-mail"),
+    email: z.string().email({ message: "Nieprawidłowy adres e-mail" }),
     password: z
       .string()
       .min(8, "Hasło musi mieć co najmniej 8 znaków")
@@ -33,7 +33,7 @@ export type RegisterInput = z.input<typeof RegisterSchema>;
 export type RegisterOutput = z.output<typeof RegisterSchema>;
 
 export const ForgotPasswordSchema = z.object({
-  email: z.string().email("Nieprawidłowy adres e-mail"),
+  email: z.string().email({ message: "Nieprawidłowy adres e-mail" }),
 });
 
 export type ForgotPasswordInput = z.input<typeof ForgotPasswordSchema>;
