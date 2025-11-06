@@ -146,7 +146,7 @@ export const validateParticipant = (participantId?: string): { valid: boolean; e
  */
 export const validatePayer = (
   payerId?: string,
-  participants?: Array<{ id: string }>
+  participants?: { id: string }[]
 ): { valid: boolean; error?: string } => {
   if (!payerId) {
     return { valid: false, error: "Wybór płacącego jest wymagany" };

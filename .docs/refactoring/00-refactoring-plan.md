@@ -17,16 +17,16 @@ Refaktoryzacja TOP 5 najbardziej złożonych komponentów (`useExpenseForm.ts`, 
 
 ## 📊 Metryki sukcesu
 
-| Metrika                                      | Target  | Achieved | Status |
-| -------------------------------------------- | ------- | -------- | ------ |
-| Redukcja LOC w TOP 5 komponentach            | -40-50% | -36.4%   | ⚠️ Close |
-| Eliminacja duplikacji kodu walidacji         | 100%    | 100%     | ✅ Complete |
-| Centralizacja API calls                      | 100%    | 100%     | ✅ Complete |
-| Wszystkie formularze używają react-hook-form | 100%    | 67%*     | ⚠️ Partial |
-| Testy E2E przechodzą                         | 100%    | 100%     | ✅ Complete |
-| Stworzona reusable infrastructure            | N/A     | 1,682 LOC| ✅ Bonus |
+| Metrika                                      | Target  | Achieved  | Status      |
+| -------------------------------------------- | ------- | --------- | ----------- |
+| Redukcja LOC w TOP 5 komponentach            | -40-50% | -36.4%    | ⚠️ Close    |
+| Eliminacja duplikacji kodu walidacji         | 100%    | 100%      | ✅ Complete |
+| Centralizacja API calls                      | 100%    | 100%      | ✅ Complete |
+| Wszystkie formularze używają react-hook-form | 100%    | 67%\*     | ⚠️ Partial  |
+| Testy E2E przechodzą                         | 100%    | 100%      | ✅ Complete |
+| Stworzona reusable infrastructure            | N/A     | 1,682 LOC | ✅ Bonus    |
 
-*Note: Manual `fetch()` used in forms for SSR compatibility (architectural decision)
+\*Note: Manual `fetch()` used in forms for SSR compatibility (architectural decision)
 
 ## 📁 Struktura dokumentacji
 
@@ -395,8 +395,8 @@ Przy wdrażaniu kolejnych faz:
 
 ## Historyka zmian
 
-| Data       | FAZA | Status         | Notes                                                      |
-| ---------- | ---- | -------------- | ---------------------------------------------------------- |
+| Data       | FAZA | Status  | Notes                                                      |
+| ---------- | ---- | ------- | ---------------------------------------------------------- |
 | 2025-11-05 | 1    | ✅ DONE | Infrastruktura API i Query                                 |
 | 2025-11-05 | 2    | ✅ DONE | Shared utilities (validators, formatters, form components) |
 | 2025-11-05 | 3    | ✅ DONE | Auth forms (manual fetch for SSR)                          |
@@ -410,11 +410,12 @@ Przy wdrażaniu kolejnych faz:
 **Status:** ✅ **PROJECT COMPLETE** - All 7 phases successfully finished!
 
 **Final Results:**
+
 - 508 LOC eliminated from TOP 5 components (-36.4%)
 - 1,682 LOC of reusable infrastructure created
 - 100% elimination of code duplication
 - 43/43 E2E tests passing
 - Zero regressions
-- >3,300 lines of documentation
+- > 3,300 lines of documentation
 
 **Recommendation:** Ready for production deployment

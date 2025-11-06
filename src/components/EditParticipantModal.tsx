@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getParticipantErrorMessage } from "@/lib/errorMessages";
+import { getParticipantErrorMessage, type ApiError } from "@/lib/errorMessages";
 import type { UpdateParticipantCommand, ParticipantItemVM, ParticipantDTO } from "@/types";
 
 interface EditParticipantModalProps {
@@ -99,8 +99,8 @@ export default function EditParticipantModal({
       onClose(); // Close modal on success
     } catch (error: unknown) {
       // Handle specific error codes
-      const err = error as { status?: number };
-      if (err.status === 409) {
+      const apiError = error as ApiError;
+      if (apiError.status === 409) {
         // Nickname conflict - generate suggestion and handle conflict
         const base = nickname.toLowerCase();
         let suffix = 1;
@@ -121,7 +121,6 @@ export default function EditParticipantModal({
         handleRemoteConflict(suggestion);
       } else {
         // Use centralized error message
-        const apiError = error as { status?: number };
         setErrorMessage(getParticipantErrorMessage(apiError));
       }
     } finally {

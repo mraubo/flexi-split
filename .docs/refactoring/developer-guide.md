@@ -37,17 +37,9 @@ import { z } from "zod";
 import { UUID_PATTERN } from "./common";
 
 export const createMyFeatureCommandSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Nazwa jest wymagana")
-    .max(100, "Nazwa nie może być dłuższa niż 100 znaków"),
-  value: z.coerce
-    .number()
-    .int("Wartość musi być liczbą całkowitą")
-    .positive("Wartość musi być dodatnia"),
-  participantId: z
-    .string()
-    .regex(UUID_PATTERN, "Nieprawidłowy identyfikator uczestnika"),
+  name: z.string().min(1, "Nazwa jest wymagana").max(100, "Nazwa nie może być dłuższa niż 100 znaków"),
+  value: z.coerce.number().int("Wartość musi być liczbą całkowitą").positive("Wartość musi być dodatnia"),
+  participantId: z.string().regex(UUID_PATTERN, "Nieprawidłowy identyfikator uczestnika"),
 });
 
 export type CreateMyFeatureCommand = z.infer<typeof createMyFeatureCommandSchema>;
@@ -127,10 +119,7 @@ export function useMyFeatureForm(settlementId: UUID, onSuccess?: () => void) {
       e.preventDefault();
 
       // Mark all fields as touched
-      const allTouched = Object.keys(state).reduce(
-        (acc, key) => ({ ...acc, [key]: true }),
-        {}
-      );
+      const allTouched = Object.keys(state).reduce((acc, key) => ({ ...acc, [key]: true }), {});
       const validated = validateForm({ ...state, touched: allTouched });
 
       if (Object.keys(validated.errors).length > 0) {
@@ -336,41 +325,44 @@ import {
   validateDescription,
 } from "@/lib/utils/validators";
 
-const validateForm = useCallback((state: ExpenseFormVM): ExpenseFormVM => {
-  const errors: Record<string, string> = {};
+const validateForm = useCallback(
+  (state: ExpenseFormVM): ExpenseFormVM => {
+    const errors: Record<string, string> = {};
 
-  // Validate amount
-  const amountValidation = validateAmount(state.amountCents);
-  if (!amountValidation.valid && amountValidation.error) {
-    errors.amount = amountValidation.error;
-  }
+    // Validate amount
+    const amountValidation = validateAmount(state.amountCents);
+    if (!amountValidation.valid && amountValidation.error) {
+      errors.amount = amountValidation.error;
+    }
 
-  // Validate payer
-  const payerValidation = validatePayer(state.payerId, participants);
-  if (!payerValidation.valid && payerValidation.error) {
-    errors.payer = payerValidation.error;
-  }
+    // Validate payer
+    const payerValidation = validatePayer(state.payerId, participants);
+    if (!payerValidation.valid && payerValidation.error) {
+      errors.payer = payerValidation.error;
+    }
 
-  // Validate participants
-  const participantsValidation = validateParticipants(state.participantIds);
-  if (!participantsValidation.valid && participantsValidation.error) {
-    errors.participants = participantsValidation.error;
-  }
+    // Validate participants
+    const participantsValidation = validateParticipants(state.participantIds);
+    if (!participantsValidation.valid && participantsValidation.error) {
+      errors.participants = participantsValidation.error;
+    }
 
-  // Validate date
-  const dateValidation = validateDate(state.date);
-  if (!dateValidation.valid && dateValidation.error) {
-    errors.date = dateValidation.error;
-  }
+    // Validate date
+    const dateValidation = validateDate(state.date);
+    if (!dateValidation.valid && dateValidation.error) {
+      errors.date = dateValidation.error;
+    }
 
-  // Validate description
-  const descriptionValidation = validateDescription(state.description);
-  if (!descriptionValidation.valid && descriptionValidation.error) {
-    errors.description = descriptionValidation.error;
-  }
+    // Validate description
+    const descriptionValidation = validateDescription(state.description);
+    if (!descriptionValidation.valid && descriptionValidation.error) {
+      errors.description = descriptionValidation.error;
+    }
 
-  return { ...state, errors };
-}, [participants]);
+    return { ...state, errors };
+  },
+  [participants]
+);
 ```
 
 ### Creating Custom Validators
@@ -385,10 +377,7 @@ export interface ValidationResult {
   error?: string;
 }
 
-export const validateCustomField = (
-  value?: string,
-  options?: SomeOptions
-): ValidationResult => {
+export const validateCustomField = (value?: string, options?: SomeOptions): ValidationResult => {
   // Early return for missing required values
   if (!value || value.trim() === "") {
     return { valid: false, error: "Pole jest wymagane" };
@@ -588,9 +577,7 @@ export function useMyFeatures(settlementId: UUID) {
   return useQuery({
     queryKey: myFeatureQueryKeys.list(settlementId),
     queryFn: async () => {
-      const response = await apiClient.get<{ data: MyFeatureDTO[] }>(
-        `/api/settlements/${settlementId}/my-feature`
-      );
+      const response = await apiClient.get<{ data: MyFeatureDTO[] }>(`/api/settlements/${settlementId}/my-feature`);
       return response.data;
     },
     enabled: !!settlementId,
@@ -608,9 +595,7 @@ export function useMyFeature(settlementId: UUID, featureId: UUID, enabled = true
   return useQuery({
     queryKey: myFeatureQueryKeys.detail(settlementId, featureId),
     queryFn: async () => {
-      const response = await apiClient.get<MyFeatureDTO>(
-        `/api/settlements/${settlementId}/my-feature/${featureId}`
-      );
+      const response = await apiClient.get<MyFeatureDTO>(`/api/settlements/${settlementId}/my-feature/${featureId}`);
       return response;
     },
     enabled: enabled && !!settlementId && !!featureId,
@@ -631,10 +616,7 @@ export function useCreateMyFeature(settlementId: UUID) {
 
   return useMutation({
     mutationFn: async (command: CreateMyFeatureCommand) => {
-      const response = await apiClient.post<MyFeatureDTO>(
-        `/api/settlements/${settlementId}/my-feature`,
-        command
-      );
+      const response = await apiClient.post<MyFeatureDTO>(`/api/settlements/${settlementId}/my-feature`, command);
       return response;
     },
     onSuccess: () => {
@@ -662,13 +644,7 @@ export function useUpdateMyFeature(settlementId: UUID) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      featureId,
-      command,
-    }: {
-      featureId: UUID;
-      command: UpdateMyFeatureCommand;
-    }) => {
+    mutationFn: async ({ featureId, command }: { featureId: UUID; command: UpdateMyFeatureCommand }) => {
       const response = await apiClient.put<MyFeatureDTO>(
         `/api/settlements/${settlementId}/my-feature/${featureId}`,
         command
@@ -775,11 +751,13 @@ export function MyFeatureList({ settlementId }: { settlementId: UUID }) {
 **Why not use useMutation everywhere?**
 
 The project discovered that TanStack Query mutations can fail in Astro's island architecture when:
+
 1. Component uses `client:idle` hydration
 2. QueryClientProvider may not be available during initial render
 3. Error: "No QueryClient set, use QueryClientProvider to set one"
 
 **Solution:**
+
 - **Read operations**: Use `useQuery` hooks (caching benefits)
 - **Write operations in forms**: Use manual `fetch()` (reliability in all contexts)
 
@@ -790,34 +768,37 @@ The project discovered that TanStack Query mutations can fail in Astro's island 
 export function useExpenseForm(settlementId: UUID, onSuccess?: () => void) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
 
-    try {
-      const response = await fetch(`/api/settlements/${settlementId}/expenses`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(command),
-      });
+      try {
+        const response = await fetch(`/api/settlements/${settlementId}/expenses`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(command),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw {
-          status: response.status,
-          code: data.error?.code || "UNKNOWN_ERROR",
-          message: data.error?.message || "Wystąpił nieoczekiwany błąd",
-        };
+        if (!response.ok) {
+          throw {
+            status: response.status,
+            code: data.error?.code || "UNKNOWN_ERROR",
+            message: data.error?.message || "Wystąpił nieoczekiwany błąd",
+          };
+        }
+
+        onSuccess?.();
+      } catch (err) {
+        setSubmitError(err as ApiError);
+      } finally {
+        setIsSubmitting(false);
       }
-
-      onSuccess?.();
-    } catch (err) {
-      setSubmitError(err as ApiError);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [settlementId, onSuccess]);
+    },
+    [settlementId, onSuccess]
+  );
 
   return { handleSubmit, isSubmitting, submitError };
 }
@@ -846,23 +827,21 @@ export function useMyFeatures(settlementId: UUID) {
   return useQuery({
     queryKey: myFeatureQueryKeys.list(settlementId),
     queryFn: async () => {
-      const response = await apiClient.get<{ data: MyFeatureDTO[] }>(
-        `/api/settlements/${settlementId}/my-feature`
-      );
+      const response = await apiClient.get<{ data: MyFeatureDTO[] }>(`/api/settlements/${settlementId}/my-feature`);
       return response.data;
     },
     // Enable query only when settlementId is available
     enabled: !!settlementId,
-    
+
     // Cache for 5 minutes before marking as stale
     staleTime: 5 * 60 * 1000,
-    
+
     // Retry failed requests up to 3 times
     retry: 3,
-    
+
     // Refetch on window focus for fresh data
     refetchOnWindowFocus: true,
-    
+
     // Don't refetch on component mount if data is fresh
     refetchOnMount: false,
   });
@@ -894,6 +873,7 @@ export function MyFeatureCard({ settlementId, featureId }: Props) {
 ### 1. Type Safety
 
 #### Always use generated types
+
 ```typescript
 // ✅ CORRECT: Use generated database types
 import type { Database } from "@/db/database.types";
@@ -904,6 +884,7 @@ const expense: any = await fetchExpense();
 ```
 
 #### Define explicit DTOs
+
 ```typescript
 // ✅ CORRECT: Define clear DTOs in src/types.ts
 export interface CreateExpenseCommand {
@@ -923,6 +904,7 @@ export async function createExpense(command: CreateExpenseCommand): Promise<Expe
 ### 2. Error Handling
 
 #### Use RFC 7807 error format
+
 ```typescript
 // ✅ CORRECT: Return standardized error responses
 import { createErrorResponse, ERROR_CODES } from "@/lib/api";
@@ -941,6 +923,7 @@ try {
 ```
 
 #### Handle errors in hooks
+
 ```typescript
 // ✅ CORRECT: Provide clear error states
 export function useMyFeatureForm() {
@@ -960,6 +943,7 @@ export function useMyFeatureForm() {
 ```
 
 #### Display user-friendly errors
+
 ```typescript
 // ✅ CORRECT: Show helpful error messages
 {submitError && (
@@ -977,6 +961,7 @@ export function useMyFeatureForm() {
 ### 3. Code Organization
 
 #### Group related files
+
 ```
 src/lib/hooks/api/
   ├── useSettlements.ts     # Settlement queries
@@ -985,6 +970,7 @@ src/lib/hooks/api/
 ```
 
 #### Use barrel exports
+
 ```typescript
 // src/lib/hooks/api/index.ts
 export * from "./useSettlements";
@@ -996,6 +982,7 @@ import { useSettlements, useParticipants, useExpenses } from "@/lib/hooks/api";
 ```
 
 #### Separate concerns
+
 ```typescript
 // ✅ CORRECT: Clear separation
 // src/lib/services/expenses.service.ts - Business logic
@@ -1010,6 +997,7 @@ import { useSettlements, useParticipants, useExpenses } from "@/lib/hooks/api";
 ### 4. Testing
 
 #### Write testable code
+
 ```typescript
 // ✅ CORRECT: Pure function, easy to test
 export function calculateShareInfo(amountCents: AmountCents, shareCount: number) {
@@ -1025,6 +1013,7 @@ export function calculateShareInfo(amountCents: AmountCents, shareCount: number)
 ```
 
 #### Mock API calls with MSW
+
 ```typescript
 // tests/unit/hooks/useExpenses.test.ts
 import { server } from "@/test/setup";
@@ -1045,6 +1034,7 @@ it("fetches expenses successfully", async () => {
 ```
 
 #### Test edge cases
+
 ```typescript
 // ✅ CORRECT: Test validation edge cases
 describe("validateAmount", () => {
@@ -1069,15 +1059,14 @@ describe("validateAmount", () => {
 ### 5. Performance
 
 #### Memoize expensive calculations
+
 ```typescript
 // ✅ CORRECT: Use useMemo for expensive operations
-const formattedBalances = useMemo(
-  () => formatBalances(balances, participantsMap),
-  [balances, participantsMap]
-);
+const formattedBalances = useMemo(() => formatBalances(balances, participantsMap), [balances, participantsMap]);
 ```
 
 #### Optimize re-renders
+
 ```typescript
 // ✅ CORRECT: Use useCallback for stable function references
 const handleChange = useCallback(
@@ -1089,6 +1078,7 @@ const handleChange = useCallback(
 ```
 
 #### Lazy load heavy components
+
 ```typescript
 // ✅ CORRECT: Lazy load charts or heavy visualizations
 const ExpenseChart = lazy(() => import("@/components/expenses/ExpenseChart"));
@@ -1101,6 +1091,7 @@ const ExpenseChart = lazy(() => import("@/components/expenses/ExpenseChart"));
 ### 6. SSR Compatibility
 
 #### Check for window/document
+
 ```typescript
 // ✅ CORRECT: Guard browser-only APIs
 if (typeof window !== "undefined") {
@@ -1109,6 +1100,7 @@ if (typeof window !== "undefined") {
 ```
 
 #### Use appropriate hydration
+
 ```typescript
 // client:load - Load and hydrate immediately
 <ExpenseList client:load expenses={expenses} />
@@ -1123,6 +1115,7 @@ if (typeof window !== "undefined") {
 ### 7. Accessibility
 
 #### Use semantic HTML
+
 ```typescript
 // ✅ CORRECT: Semantic and accessible
 <form onSubmit={handleSubmit}>
@@ -1140,6 +1133,7 @@ if (typeof window !== "undefined") {
 ```
 
 #### Provide ARIA labels
+
 ```typescript
 // ✅ CORRECT: Clear labels for screen readers
 <button

@@ -1,7 +1,10 @@
 import { z } from "zod";
 
+// Basic email regex pattern
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const LoginSchema = z.object({
-  email: z.string().email({ message: "Nieprawidłowy adres e-mail" }),
+  email: z.string().regex(EMAIL_REGEX, "Nieprawidłowy adres e-mail"),
   password: z
     .string()
     .min(8, "Hasło musi mieć co najmniej 8 znaków")
@@ -13,7 +16,7 @@ export type LoginOutput = z.output<typeof LoginSchema>;
 
 export const RegisterSchema = z
   .object({
-    email: z.string().email({ message: "Nieprawidłowy adres e-mail" }),
+    email: z.string().regex(EMAIL_REGEX, "Nieprawidłowy adres e-mail"),
     password: z
       .string()
       .min(8, "Hasło musi mieć co najmniej 8 znaków")
@@ -33,7 +36,7 @@ export type RegisterInput = z.input<typeof RegisterSchema>;
 export type RegisterOutput = z.output<typeof RegisterSchema>;
 
 export const ForgotPasswordSchema = z.object({
-  email: z.string().email({ message: "Nieprawidłowy adres e-mail" }),
+  email: z.string().regex(EMAIL_REGEX, "Nieprawidłowy adres e-mail"),
 });
 
 export type ForgotPasswordInput = z.input<typeof ForgotPasswordSchema>;
