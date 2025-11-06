@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import { BasePage } from "../BasePage";
 
 export class ParticipantsPage extends BasePage {
@@ -21,9 +21,28 @@ export class ParticipantsPage extends BasePage {
 
   // Complete add participant flow
   async addParticipant(nickname: string) {
+    // Wait for form to be fully hydrated (similar to auth forms)
+    await this.buttonAddParticipant.waitFor({ state: "visible" });
+    await this.page.waitForTimeout(500); // Extra wait for React hydration
+
+    // Get current count before adding
+    const countBefore = await this.getParticipantsCount();
+
     await this.fillNickname(nickname);
+    await this.page.waitForTimeout(100);
     await this.submitParticipant();
-    // Wait for the form to reset and the participant to appear in the list
+
+    // Wait for the new participant to appear in the list (count should increase)
+    await this.page.waitForFunction(
+      (expectedCount) => {
+        const items = document.querySelectorAll('[data-testid^="participant-item-"]');
+        return items.length === expectedCount;
+      },
+      countBefore + 1,
+      { timeout: 3000 }
+    );
+
+    // Extra wait for form to fully reset
     await this.page.waitForTimeout(300);
   }
 

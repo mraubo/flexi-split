@@ -1,10 +1,12 @@
-import { Page, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { SettlementsListPage } from "../pages/settlements/SettlementsListPage";
 import { SettlementDetailsPage } from "../pages/settlements/SettlementDetailsPage";
 import { NewSettlementDialog } from "../pages/settlements/components/NewSettlementDialog";
 import { ParticipantsPage } from "../pages/participants/ParticipantsPage";
-import { ExpenseFormPage, ExpenseData } from "../pages/expenses/ExpenseFormPage";
-import { TestDataGenerator } from "./testDataGenerator";
+import type { ExpenseData } from "../pages/expenses/ExpenseFormPage";
+import { ExpenseFormPage } from "../pages/expenses/ExpenseFormPage";
+import * as TestDataGenerator from "./testDataGenerator";
 
 /**
  * Settlement setup helpers for E2E tests

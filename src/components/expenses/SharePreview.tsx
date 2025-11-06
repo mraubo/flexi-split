@@ -1,6 +1,5 @@
-import React from "react";
 import { formatCurrency } from "@/types";
-import { calculateShareInfo } from "@/components/hooks/useExpenseForm";
+import { calculateShareInfo } from "@/lib/utils/formatters";
 import type { AmountCents } from "@/types";
 
 export interface SharePreviewProps {

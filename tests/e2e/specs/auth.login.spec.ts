@@ -55,6 +55,10 @@ test.describe("Authentication - Login", () => {
     const nonExistentEmail = "nonexistent@test.local";
     const testPassword = "ValidPassword123!";
 
+    // Wait for form to be fully hydrated (client:idle needs more time)
+    await loginPage.buttonSubmit.waitFor({ state: "visible" });
+    await loginPage.page.waitForTimeout(1000); // Extra wait for React hydration with client:idle
+
     // Fill form slowly with clicks to ensure React state updates after hydration
     await loginPage.inputEmail.click();
     await loginPage.inputEmail.fill(nonExistentEmail);
@@ -66,24 +70,32 @@ test.describe("Authentication - Login", () => {
 
     await loginPage.submit();
 
-    // Wait for backend response
-    await loginPage.page.waitForTimeout(2000);
+    // Wait for alert error to become visible
+    await loginPage.alertError.waitFor({ state: "visible", timeout: 5000 });
 
-    const hasAlert = await loginPage.alertError.isVisible().catch(() => false);
+    const hasAlert = await loginPage.alertError.isVisible();
     expect(hasAlert).toBe(true);
   });
 
   test("should display error message with empty password field", async () => {
-    // Fill email but leave password empty
+    // Wait for form to be fully hydrated (client:idle needs more time)
+    await loginPage.buttonSubmit.waitFor({ state: "visible" });
+    await loginPage.page.waitForTimeout(1000); // Extra wait for React hydration with client:idle
+
+    // Fill email only, leave password empty
     await loginPage.fillEmail(validEmail);
-    await loginPage.fillPassword("");
+    await loginPage.page.waitForTimeout(200);
+
+    // Don't fill password field - leave it empty to trigger validation
+
+    // Submit form to trigger validation
     await loginPage.submit();
 
-    // Wait for client-side validation to trigger
-    await loginPage.page.waitForTimeout(500);
+    // Wait for error to become visible
+    await loginPage.errorPassword.waitFor({ state: "visible", timeout: 3000 });
 
     // Should display password validation error
-    const errorPassword = await loginPage.errorPassword.isVisible().catch(() => false);
+    const errorPassword = await loginPage.errorPassword.isVisible();
     expect(errorPassword).toBe(true);
 
     if (errorPassword) {

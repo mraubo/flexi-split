@@ -1,8 +1,9 @@
-import { Page, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { RegisterPage } from "../pages/auth/RegisterPage";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { SettlementsListPage } from "../pages/settlements/SettlementsListPage";
-import { TestDataGenerator } from "./testDataGenerator";
+import * as TestDataGenerator from "./testDataGenerator";
 
 /**
  * Authentication helpers for E2E tests
