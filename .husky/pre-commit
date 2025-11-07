@@ -1,2 +1,2 @@
-nvm use
+. "$HOME/.nvm/nvm.sh" && nvm use
 bunx lint-staged

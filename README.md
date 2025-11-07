@@ -46,6 +46,7 @@ Key runtime/config files:
 nvm use
 bun install
 bunx supabase init
+bunx husky init
 ```
 
 If environment variables are needed, copy the example file and adjust values:
@@ -75,6 +76,33 @@ bun run build
 ```bash
 bun run preview
 ```
+
+### Git Hooks (Husky)
+
+This project uses **Husky** to automate code quality checks via Git hooks:
+
+**Pre-commit hook** — Runs on every commit:
+
+```bash
+nvm use
+bunx lint-staged
+```
+
+- Formats and lints only **staged files** (fast ⚡)
+- Uses Prettier for formatting, ESLint for linting
+- Configuration in `package.json` under `lint-staged`
+
+**Pre-push hook** — Runs before every push:
+
+```bash
+nvm use
+bun run test:ts
+bun run test:unit:coverage
+```
+
+- Runs TypeScript type checking
+- Runs unit tests with coverage report
+- Ensures code quality before pushing to remote
 
 ### Linting and formatting
 
