@@ -9,6 +9,7 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typecheck": "astro check",
     "format": "prettier --write .",
     "test": "vitest",
     "test:unit": "vitest run",
@@ -19,7 +20,6 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:codegen": "playwright codegen localhost:4321",
     "test:all": "npm run test:unit && npm run test:e2e",
-    "test:ts": "astro check",
     "dev:e2e": "astro dev --mode test",
     "prepare": "husky"
   },
