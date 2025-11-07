@@ -19,7 +19,9 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:codegen": "playwright codegen localhost:4321",
     "test:all": "npm run test:unit && npm run test:e2e",
-    "dev:e2e": "astro dev --mode test"
+    "test:ts": "astro check",
+    "dev:e2e": "astro dev --mode test",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -87,6 +89,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
+      "prettier --write",
       "eslint --fix"
     ],
     "*.{json,css,md}": [

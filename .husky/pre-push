@@ -1,0 +1,3 @@
+. "$HOME/.nvm/nvm.sh" && nvm use
+bun run test:ts
+bun run test:unit:coverage
