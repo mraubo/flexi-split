@@ -1,0 +1,211 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run linter
+        run: bun run lint
+
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run unit tests with coverage
+        run: bun run test:unit:coverage
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: unit-test-coverage
+          path: coverage/
+          retention-days: 7
+
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    environment: integration
+    
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
+      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      CI: true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: bunx playwright install chromium --with-deps
+
+      - name: Run E2E tests
+        run: bun run test:e2e
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: e2e-test-results
+          path: tests/results/
+          retention-days: 7
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: playwright-report
+          path: tests/reports/
+          retention-days: 7
+
+  status-comment:
+    name: PR Status Comment
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, e2e-test]
+    if: success()
+    
+    steps:
+      - name: Download unit test coverage
+        uses: actions/download-artifact@v6
+        with:
+          name: unit-test-coverage
+          path: coverage/
+
+      - name: Download E2E test results
+        uses: actions/download-artifact@v6
+        with:
+          name: e2e-test-results
+          path: tests/results/
+
+      - name: Extract coverage summary
+        id: coverage
+        run: |
+          if [ -f "coverage/coverage-summary.json" ]; then
+            STATEMENTS=$(jq -r '.total.statements.pct' coverage/coverage-summary.json)
+            BRANCHES=$(jq -r '.total.branches.pct' coverage/coverage-summary.json)
+            FUNCTIONS=$(jq -r '.total.functions.pct' coverage/coverage-summary.json)
+            LINES=$(jq -r '.total.lines.pct' coverage/coverage-summary.json)
+            echo "statements=$STATEMENTS" >> $GITHUB_OUTPUT
+            echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
+            echo "functions=$FUNCTIONS" >> $GITHUB_OUTPUT
+            echo "lines=$LINES" >> $GITHUB_OUTPUT
+          else
+            echo "statements=N/A" >> $GITHUB_OUTPUT
+            echo "branches=N/A" >> $GITHUB_OUTPUT
+            echo "functions=N/A" >> $GITHUB_OUTPUT
+            echo "lines=N/A" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract E2E test results
+        id: e2e
+        run: |
+          if [ -f "tests/results/results.json" ]; then
+            PASSED=$(jq -r '.stats.expected' tests/results/results.json)
+            FAILED=$(jq -r '.stats.unexpected' tests/results/results.json)
+            SKIPPED=$(jq -r '.stats.skipped' tests/results/results.json)
+            FLAKY=$(jq -r '.stats.flaky' tests/results/results.json)
+            TOTAL=$((PASSED + FAILED + SKIPPED))
+            echo "passed=$PASSED" >> $GITHUB_OUTPUT
+            echo "failed=$FAILED" >> $GITHUB_OUTPUT
+            echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+            echo "flaky=$FLAKY" >> $GITHUB_OUTPUT
+            echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          else
+            echo "passed=0" >> $GITHUB_OUTPUT
+            echo "failed=0" >> $GITHUB_OUTPUT
+            echo "skipped=0" >> $GITHUB_OUTPUT
+            echo "flaky=0" >> $GITHUB_OUTPUT
+            echo "total=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or update PR comment
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## ✅ Pull Request CI - All Checks Passed
+            
+            **Run ID:** [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ### 📊 Unit Test Coverage
+            
+            | Metric     | Coverage |
+            |------------|----------|
+            | Statements | ${{ steps.coverage.outputs.statements }}% |
+            | Branches   | ${{ steps.coverage.outputs.branches }}% |
+            | Functions  | ${{ steps.coverage.outputs.functions }}% |
+            | Lines      | ${{ steps.coverage.outputs.lines }}% |
+            
+            ### 🎭 E2E Test Results
+            
+            - **Total Tests:** ${{ steps.e2e.outputs.total }}
+            - **Passed:** ✅ ${{ steps.e2e.outputs.passed }}
+            - **Failed:** ❌ ${{ steps.e2e.outputs.failed }}
+            - **Skipped:** ⏭️ ${{ steps.e2e.outputs.skipped }}
+            - **Flaky:** ⚠️ ${{ steps.e2e.outputs.flaky }}
+            
+            ### 📦 Artifacts
+            
+            - [Unit Test Coverage Report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [E2E Test Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [Playwright HTML Report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ---
+            *Last updated: ${{ github.event.pull_request.updated_at }}*
