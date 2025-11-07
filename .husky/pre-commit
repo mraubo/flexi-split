@@ -1,1 +1,2 @@
+nvm use
 bunx lint-staged
