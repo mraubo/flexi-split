@@ -1,36 +1,48 @@
 import type { Locator } from "@playwright/test";
 import { BasePage } from "../BasePage";
+import { AddParticipantDialog } from "./components/AddParticipantDialog";
 
 export class ParticipantsPage extends BasePage {
   // Locators
-  readonly formParticipant: Locator = this.page.locator('[data-testid="form-participant"]');
-  readonly inputNickname: Locator = this.page.locator('[data-testid="input-nickname"]');
   readonly buttonAddParticipant: Locator = this.page.locator('[data-testid="button-add-participant"]');
-  readonly textValidationError: Locator = this.page.locator('[data-testid="text-validation-error"]');
+  readonly buttonAddFirstParticipant: Locator = this.page.locator('[data-testid="button-add-first-participant"]');
   readonly listParticipants: Locator = this.page.locator('[data-testid="list-participants"]');
   readonly headingParticipants: Locator = this.page.locator('[data-testid="heading-participants"]');
 
-  // Form interactions
-  async fillNickname(nickname: string) {
-    await this.inputNickname.fill(nickname);
+  // Dialog helper
+  getAddParticipantDialog(): AddParticipantDialog {
+    return new AddParticipantDialog(this.page);
   }
 
-  async submitParticipant() {
-    await this.buttonAddParticipant.click();
+  // Open dialog (handles both empty state and normal state)
+  async openAddParticipantDialog(): Promise<AddParticipantDialog> {
+    const dialog = this.getAddParticipantDialog();
+
+    // Check which button is visible and click it
+    const isEmptyState = await this.buttonAddFirstParticipant.isVisible().catch(() => false);
+
+    if (isEmptyState) {
+      await this.buttonAddFirstParticipant.click();
+    } else {
+      await this.buttonAddParticipant.click();
+    }
+
+    // Wait for dialog to open
+    await dialog.dialog.waitFor({ state: "visible", timeout: 3000 });
+
+    return dialog;
   }
 
-  // Complete add participant flow
+  // Complete add participant flow with dialog
   async addParticipant(nickname: string) {
-    // Wait for form to be fully hydrated (similar to auth forms)
-    await this.buttonAddParticipant.waitFor({ state: "visible" });
-    await this.page.waitForTimeout(500); // Extra wait for React hydration
-
     // Get current count before adding
     const countBefore = await this.getParticipantsCount();
 
-    await this.fillNickname(nickname);
-    await this.page.waitForTimeout(100);
-    await this.submitParticipant();
+    // Open dialog
+    const dialog = await this.openAddParticipantDialog();
+
+    // Fill and submit via dialog
+    await dialog.addParticipant(nickname);
 
     // Wait for the new participant to appear in the list (count should increase)
     await this.page.waitForFunction(
@@ -42,7 +54,7 @@ export class ParticipantsPage extends BasePage {
       { timeout: 3000 }
     );
 
-    // Extra wait for form to fully reset
+    // Extra wait for UI to settle
     await this.page.waitForTimeout(300);
   }
 
@@ -59,18 +71,6 @@ export class ParticipantsPage extends BasePage {
       `[data-testid="participant-item-${id}"] [data-testid="button-delete-participant"]`
     );
     await deleteButton.click();
-  }
-
-  // Assertions helpers
-  async hasValidationError(): Promise<boolean> {
-    return await this.textValidationError.isVisible().catch(() => false);
-  }
-
-  async getValidationErrorText(): Promise<string | null> {
-    if (await this.hasValidationError()) {
-      return await this.textValidationError.textContent();
-    }
-    return null;
   }
 
   async getParticipantsHeadingText(): Promise<string> {

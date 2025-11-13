@@ -112,9 +112,8 @@ test.describe("Happy Path - Complete Settlement Flow", () => {
 
     // Navigate to participants step
     await detailsPage.goToStep("participants");
-    await expect(participantsPage.formParticipant).toBeVisible();
 
-    // Add first participant
+    // Add first participant (will open dialog)
     await participantsPage.addParticipant(participants[0]);
     let count = await participantsPage.getParticipantsCount();
     expect(count).toBe(2); // owner + 1 added

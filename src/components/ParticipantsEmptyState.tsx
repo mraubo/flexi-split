@@ -16,7 +16,7 @@ export default function ParticipantsEmptyState({ onCta }: ParticipantsEmptyState
         Rozpocznij od dodania uczestników do rozliczenia. Możesz dodać maksymalnie 10 osób. Uczestnicy będą mogli być
         przypisani do wydatków w kolejnych krokach.
       </p>
-      <Button onClick={onCta} className="inline-flex items-center">
+      <Button onClick={onCta} className="inline-flex items-center" data-testid="button-add-first-participant">
         <Users className="h-4 w-4 mr-2" />
         Dodaj pierwszego uczestnika
       </Button>

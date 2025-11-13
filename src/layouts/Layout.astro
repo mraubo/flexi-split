@@ -34,11 +34,11 @@ const { title = "FlexiSplit" } = Astro.props;
     <QueryClientProvider client:load>
       <Header title={title} />
 
-      <main class="flex-1 pb-24">
+      <main class="flex-1 pb-24 md:pb-0">
         <slot />
       </main>
 
-      <Footer />
+      {!Astro.locals.user && <Footer />}
 
       <BottomNav />
     </QueryClientProvider>

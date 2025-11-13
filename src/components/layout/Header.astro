@@ -1,5 +1,6 @@
 ---
 import LogoutButton from "../auth/LogoutButton";
+import { navigationItems } from "../../lib/navigation";
 
 interface Props {
   title?: string;
@@ -17,6 +18,24 @@ const { title = "FlexiSplit" } = Astro.props;
         </a>
       </div>
 
+      <!-- Desktop Navigation (hidden on mobile) -->
+      {
+        Astro.locals.user && (
+          <nav class="hidden md:flex items-center space-x-4">
+            {navigationItems.map((item) => (
+              <a
+                href={item.href}
+                class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={item.ariaLabel}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        )
+      }
+
+      <!-- User Navigation -->
       <nav class="flex items-center space-x-4">
         {
           Astro.locals.user ? (
