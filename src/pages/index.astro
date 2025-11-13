@@ -1,121 +1,441 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+
+export const prerender = true;
 ---
 
 <Layout>
-  <div class="container mx-auto px-4 py-12" data-testid="home-page">
-    <!-- Welcome Section -->
-    <section class="flex flex-col items-center justify-center min-h-[60vh] text-center" data-testid="welcome-section">
-      <h1 class="text-4xl md:text-5xl font-bold mb-4" data-testid="welcome-title">Rozlicz koszty ze znajomymi</h1>
+  <div data-testid="home-page">
+    <!-- Hero Section with Gradient Background -->
+    <section
+      class="relative overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white"
+      data-testid="welcome-section"
+    >
+      <!-- Decorative Background Elements -->
+      <div class="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-purple-900/20"></div>
 
-      <p class="text-lg text-muted-foreground mb-8 max-w-2xl" data-testid="welcome-message">
-        FlexiSplit ułatwia dzielenie się kosztami podczas wyjazdów i imprez. Stwórz rozliczenie, dodaj uczestników i
-        wydatki, a my obliczymy optymalną strukturę przelewów.
-      </p>
+      <div class="container relative mx-auto px-4 py-20 md:py-32">
+        <div class="flex flex-col items-center justify-center text-center">
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight" data-testid="welcome-title">
+            Rozlicz koszty ze znajomymi
+          </h1>
 
-      <!-- Features List -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl">
-        <div class="p-6 rounded-lg border" data-testid="feature-easy">
-          <h3 class="font-semibold mb-2">Łatwe w użyciu</h3>
-          <p class="text-sm text-muted-foreground">Intuicyjny interfejs, dostępny na wszystkich urządzeniach</p>
-        </div>
+          <p class="text-xl md:text-2xl text-purple-100 mb-12 max-w-3xl leading-relaxed" data-testid="welcome-message">
+            FlexiSplit ułatwia dzielenie się kosztami podczas wyjazdów i imprez. Stwórz rozliczenie, dodaj uczestników i
+            wydatki, a my obliczymy optymalną strukturę przelewów.
+          </p>
 
-        <div class="p-6 rounded-lg border" data-testid="feature-optimize">
-          <h3 class="font-semibold mb-2">Optymalne rozliczenie</h3>
-          <p class="text-sm text-muted-foreground">Algorytm minimalizuje liczbę przelewów</p>
-        </div>
+          <!-- CTA Buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 mb-16" data-testid="cta-buttons">
+            <a
+              href="/auth/register"
+              class="px-10 py-4 rounded-[1.4rem] bg-white text-purple-700 font-semibold text-lg hover:bg-purple-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+              data-testid="button-register"
+            >
+              Zarejestruj się
+            </a>
 
-        <div class="p-6 rounded-lg border" data-testid="feature-track">
-          <h3 class="font-semibold mb-2">Śledź wszystko</h3>
-          <p class="text-sm text-muted-foreground">Przejrzysta historia wszystkich wydatków</p>
+            <a
+              href="/auth/login"
+              class="px-10 py-4 rounded-[1.4rem] border-2 border-white/30 backdrop-blur-sm bg-white/10 text-white font-semibold text-lg hover:bg-white/20 transition-all"
+              data-testid="button-login"
+            >
+              Zaloguj się
+            </a>
+          </div>
+
+          <!-- Feature Highlights -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full">
+            <div
+              class="p-8 rounded-[1.4rem] bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/15 transition-all"
+              data-testid="feature-easy"
+            >
+              <div class="text-4xl mb-4">📱</div>
+              <h3 class="font-bold text-xl mb-3">Łatwe w użyciu</h3>
+              <p class="text-purple-100 leading-relaxed">Intuicyjny interfejs, dostępny na wszystkich urządzeniach</p>
+            </div>
+
+            <div
+              class="p-8 rounded-[1.4rem] bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/15 transition-all"
+              data-testid="feature-optimize"
+            >
+              <div class="text-4xl mb-4">🎯</div>
+              <h3 class="font-bold text-xl mb-3">Optymalne rozliczenie</h3>
+              <p class="text-purple-100 leading-relaxed">Algorytm minimalizuje liczbę przelewów</p>
+            </div>
+
+            <div
+              class="p-8 rounded-[1.4rem] bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/15 transition-all"
+              data-testid="feature-track"
+            >
+              <div class="text-4xl mb-4">📊</div>
+              <h3 class="font-bold text-xl mb-3">Śledź wszystko</h3>
+              <p class="text-purple-100 leading-relaxed">Przejrzysta historia wszystkich wydatków</p>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- CTA Buttons -->
-      <div class="flex flex-col sm:flex-row gap-4" data-testid="cta-buttons">
-        <a
-          href="/auth/register"
-          class="px-8 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
-          data-testid="button-register"
-        >
-          Zarejestruj się
-        </a>
+    <!-- Use Cases Section -->
+    <section class="py-20 bg-background" data-testid="use-cases-section">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">Idealne do rozliczania</h2>
+          <p class="text-xl text-muted-foreground max-w-2xl mx-auto">FlexiSplit sprawdzi się w każdej sytuacji</p>
+        </div>
 
-        <a
-          href="/auth/login"
-          class="px-8 py-3 rounded-lg border border-primary text-primary font-medium hover:bg-primary/10 transition-colors"
-          data-testid="button-login"
-        >
-          Zaloguj się
-        </a>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <!-- Use Case 1: Trips -->
+          <div
+            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all group"
+            data-testid="use-case-trips"
+          >
+            <div class="text-6xl mb-6 group-hover:scale-110 transition-transform">🏖️</div>
+            <h3 class="font-bold text-2xl mb-4">Wyjazdy ze znajomymi</h3>
+            <p class="text-muted-foreground leading-relaxed">
+              Hotel, benzynę, wspólne zakupy - wszystko w jednym miejscu. Rozlicz wyjazd bez stresu.
+            </p>
+          </div>
+
+          <!-- Use Case 2: Shared Living -->
+          <div
+            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all group"
+            data-testid="use-case-living"
+          >
+            <div class="text-6xl mb-6 group-hover:scale-110 transition-transform">🏠</div>
+            <h3 class="font-bold text-2xl mb-4">Wspólne mieszkanie</h3>
+            <p class="text-muted-foreground leading-relaxed">
+              Czynsz, rachunki, zakupy - podzielcie koszty sprawiedliwie. Koniec z niejasnościami.
+            </p>
+          </div>
+
+          <!-- Use Case 3: Family Events -->
+          <div
+            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all group"
+            data-testid="use-case-events"
+          >
+            <div class="text-6xl mb-6 group-hover:scale-110 transition-transform">🎉</div>
+            <h3 class="font-bold text-2xl mb-4">Imprezy rodzinne</h3>
+            <p class="text-muted-foreground leading-relaxed">
+              Wesele, urodziny, grill - każdy wie dokładnie, ile powinien przelać.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- How It Works Section -->
-    <section class="py-12 mt-8 border-t" data-testid="how-it-works-section">
-      <h2 class="text-2xl font-bold mb-8 text-center" data-testid="how-title">Jak to działa?</h2>
-
-      <div class="max-w-3xl mx-auto space-y-6" data-testid="steps-list">
-        <div class="flex gap-4" data-testid="step-1">
-          <div
-            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
-            data-testid="step-1-number"
-          >
-            1
-          </div>
-          <div>
-            <h3 class="font-semibold mb-1" data-testid="step-1-title">Utwórz rozliczenie</h3>
-            <p class="text-sm text-muted-foreground" data-testid="step-1-desc">
-              Podaj nazwę rozliczenia, np. "Wyjazd do Grecji" lub "Wynajem mieszkania"
-            </p>
-          </div>
+    <section id="jak-to-dziala" class="py-20 bg-muted/30" data-testid="how-it-works-section">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4" data-testid="how-title">Jak to działa?</h2>
+          <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Zacznij rozliczać wydatki w czterech prostych krokach
+          </p>
         </div>
 
-        <div class="flex gap-4" data-testid="step-2">
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8" data-testid="steps-list">
+          <!-- Step 1 -->
           <div
-            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
-            data-testid="step-2-number"
+            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+            data-testid="step-1"
           >
-            2
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
+                data-testid="step-1-number"
+              >
+                1
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-xl mb-2" data-testid="step-1-title">Utwórz rozliczenie</h3>
+                <p class="text-muted-foreground leading-relaxed" data-testid="step-1-desc">
+                  Podaj nazwę rozliczenia, np. "Wyjazd do Grecji" lub "Wynajem mieszkania"
+                </p>
+              </div>
+            </div>
           </div>
-          <div>
-            <h3 class="font-semibold mb-1" data-testid="step-2-title">Dodaj uczestników</h3>
-            <p class="text-sm text-muted-foreground" data-testid="step-2-desc">
-              Zaproś znajomych i przypisz im pseudonimy (max 10 osób)
-            </p>
+
+          <!-- Step 2 -->
+          <div
+            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+            data-testid="step-2"
+          >
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
+                data-testid="step-2-number"
+              >
+                2
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-xl mb-2" data-testid="step-2-title">Dodaj uczestników</h3>
+                <p class="text-muted-foreground leading-relaxed" data-testid="step-2-desc">
+                  Zaproś znajomych i przypisz im pseudonimy (max 10 osób)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div
+            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+            data-testid="step-3"
+          >
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
+                data-testid="step-3-number"
+              >
+                3
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-xl mb-2" data-testid="step-3-title">Rejestruj wydatki</h3>
+                <p class="text-muted-foreground leading-relaxed" data-testid="step-3-desc">
+                  Dodawaj wydatki: kto zapłacił i jak podzielić koszt
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div
+            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+            data-testid="step-4"
+          >
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
+                data-testid="step-4-number"
+              >
+                4
+              </div>
+              <div class="flex-1">
+                <h3 class="font-bold text-xl mb-2" data-testid="step-4-title">Wyświetl podsumowanie</h3>
+                <p class="text-muted-foreground leading-relaxed" data-testid="step-4-desc">
+                  Sprawdź salda i przelewy. Możesz skopiować podsumowanie!
+                </p>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div class="flex gap-4" data-testid="step-3">
-          <div
-            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
-            data-testid="step-3-number"
-          >
-            3
-          </div>
-          <div>
-            <h3 class="font-semibold mb-1" data-testid="step-3-title">Rejestruj wydatki</h3>
-            <p class="text-sm text-muted-foreground" data-testid="step-3-desc">
-              Dodawaj wydatki: kto zapłacił i jak podzielić koszt
-            </p>
-          </div>
+    <!-- Why FlexiSplit Section -->
+    <section class="py-20 bg-background" data-testid="why-section">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">Dlaczego FlexiSplit?</h2>
+          <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Prosty, uczciwy i przejrzysty sposób na rozliczanie wydatków
+          </p>
         </div>
 
-        <div class="flex gap-4" data-testid="step-4">
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Benefit 1 -->
           <div
-            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold"
-            data-testid="step-4-number"
+            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            data-testid="benefit-1"
           >
-            4
+            <div class="flex-shrink-0 text-3xl">✅</div>
+            <div>
+              <h3 class="font-bold text-lg mb-2">Bez kont dla uczestników</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Tylko Ty musisz mieć konto. Uczestnicy są dodawani jako pseudonimy - żadnej rejestracji ani logowania.
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 class="font-semibold mb-1" data-testid="step-4-title">Wyświetl podsumowanie</h3>
-            <p class="text-sm text-muted-foreground" data-testid="step-4-desc">
-              Sprawdź salda i przelewy. Możesz skopiować podsumowanie!
+
+          <!-- Benefit 2 -->
+          <div
+            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            data-testid="benefit-2"
+          >
+            <div class="flex-shrink-0 text-3xl">✅</div>
+            <div>
+              <h3 class="font-bold text-lg mb-2">Minimalna liczba przelewów</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Nasz algorytm oblicza najmniejszą możliwą liczbę transakcji. Mniej przelewów, mniej zachodu.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit 3 -->
+          <div
+            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            data-testid="benefit-3"
+          >
+            <div class="flex-shrink-0 text-3xl">✅</div>
+            <div>
+              <h3 class="font-bold text-lg mb-2">Sprawiedliwy podział</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Równy podział z deterministyczną alokacją reszty groszy. Bez sporów o to, kto ma zapłacić o 1 zł więcej.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit 4 -->
+          <div
+            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            data-testid="benefit-4"
+          >
+            <div class="flex-shrink-0 text-3xl">✅</div>
+            <div>
+              <h3 class="font-bold text-lg mb-2">Niemodyfikowalne archiwum</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Zamknięte rozliczenie nie może być zmienione. Pełna przejrzystość i pewność, że historia wydatków
+                pozostanie nienaruszona.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit 5 -->
+          <div
+            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            data-testid="benefit-5"
+          >
+            <div class="flex-shrink-0 text-3xl">✅</div>
+            <div>
+              <h3 class="font-bold text-lg mb-2">Projektowane dla mobile</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Dodawaj wydatki w podróży, z telefonu, w czasie rzeczywistym. Responsywny design na każdym urządzeniu.
+              </p>
+            </div>
+          </div>
+
+          <!-- Benefit 6 -->
+          <div
+            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            data-testid="benefit-6"
+          >
+            <div class="flex-shrink-0 text-3xl">✅</div>
+            <div>
+              <h3 class="font-bold text-lg mb-2">Łatwy eksport</h3>
+              <p class="text-muted-foreground leading-relaxed">
+                Skopiuj podsumowanie jednym kliknięciem i wyślij uczestnikom przez komunikator lub email.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 bg-muted/30" data-testid="faq-section">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">Najczęściej zadawane pytania</h2>
+          <p class="text-xl text-muted-foreground max-w-2xl mx-auto">Wszystko, co powinieneś wiedzieć o FlexiSplit</p>
+        </div>
+
+        <div class="max-w-3xl mx-auto space-y-4">
+          <!-- FAQ Item 1 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-1">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Czy uczestnicy muszą mieć konta?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Nie! Tylko właściciel rozliczenia potrzebuje konta. Uczestnicy są dodawani jako pseudonimy (max 10 osób).
+              Nie muszą się rejestrować ani logować.
             </p>
-          </div>
+          </details>
+
+          <!-- FAQ Item 2 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-2">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Ile osób może uczestniczyć w rozliczeniu?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Maksymalnie 10 osób na jedno rozliczenie. To ograniczenie zapewnia, że rozliczenia pozostają proste i
+              czytelne.
+            </p>
+          </details>
+
+          <!-- FAQ Item 3 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-3">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Czy mogę edytować zamknięte rozliczenie?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Nie. Zamknięcie rozliczenia jest nieodwracalne i tworzy snapshot tylko do odczytu. To gwarantuje, że nikt
+              nie może manipulować historią wydatków po finalizacji.
+            </p>
+          </details>
+
+          <!-- FAQ Item 4 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-4">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Jak działa podział kosztów?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Domyślnie równy podział na wszystkich uczestników (lub wybranych). Gdy wydatek nie dzieli się równo,
+              reszta groszy jest przydzielana deterministycznie według ustalonego algorytmu.
+            </p>
+          </details>
+
+          <!-- FAQ Item 5 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-5">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Czy FlexiSplit obsługuje różne waluty?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Obecnie obsługujemy tylko PLN (złoty polski). Wsparcie dla innych walut może zostać dodane w przyszłości.
+            </p>
+          </details>
+
+          <!-- FAQ Item 6 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-6">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Czy FlexiSplit integruje się z bankiem?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Nie. FlexiSplit generuje listę optymalnych przelewów, które wykonujesz samodzielnie w swoim banku. Nie
+              mamy dostępu do Twojego konta bankowego.
+            </p>
+          </details>
+
+          <!-- FAQ Item 7 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-7">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Ile kosztuje FlexiSplit?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              FlexiSplit jest obecnie darmowy. Możesz tworzyć nieograniczoną liczbę rozliczeń bez żadnych opłat.
+            </p>
+          </details>
+
+          <!-- FAQ Item 8 -->
+          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-8">
+            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
+              <span>Czy moje dane są bezpieczne?</span>
+              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">
+              Tak. Używamy Supabase do bezpiecznego przechowywania danych z szyfrowaniem. Tylko Ty masz dostęp do swoich
+              rozliczeń. Implementujemy także kontrolę dostępu na poziomie bazy danych (RLS).
+            </p>
+          </details>
         </div>
       </div>
     </section>
   </div>
 </Layout>
+
+<style>
+  /* Grid pattern for hero background */
+  .bg-grid-white\/\[0\.05\] {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+</style>

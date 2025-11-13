@@ -10,6 +10,7 @@ import cloudflare from "@astrojs/cloudflare";
 // https://astro.build/config
 export default defineConfig({
   output: "server",
+  prerender: false,
   integrations: [react(), sitemap()],
   server: { port: 3000 },
   vite: {
