@@ -78,7 +78,14 @@ export const prerender = true;
       </div>
     </section>
 
-    <!-- Use Cases Section -->
+    <!-- Wave Divider -->
+    <div class="relative h-16 bg-background">
+      <svg class="absolute bottom-0 w-full h-16 text-background" viewBox="0 0 1440 54" preserveAspectRatio="none">
+        <path fill="currentColor" d="M0,0 C480,54 960,54 1440,0 L1440,54 L0,54 Z"></path>
+      </svg>
+    </div>
+
+    <!-- Use Cases Section - with gradient accents -->
     <section class="py-20 bg-background" data-testid="use-cases-section">
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -87,11 +94,12 @@ export const prerender = true;
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <!-- Use Case 1: Trips -->
+          <!-- Use Case 1: Trips - Blue gradient -->
           <div
-            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all group"
+            class="relative p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-2xl transition-all group overflow-hidden"
             data-testid="use-case-trips"
           >
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
             <div class="text-6xl mb-6 group-hover:scale-110 transition-transform">🏖️</div>
             <h3 class="font-bold text-2xl mb-4">Wyjazdy ze znajomymi</h3>
             <p class="text-muted-foreground leading-relaxed">
@@ -99,11 +107,12 @@ export const prerender = true;
             </p>
           </div>
 
-          <!-- Use Case 2: Shared Living -->
+          <!-- Use Case 2: Shared Living - Green gradient -->
           <div
-            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all group"
+            class="relative p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-2xl transition-all group overflow-hidden"
             data-testid="use-case-living"
           >
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-green-500 to-emerald-500"></div>
             <div class="text-6xl mb-6 group-hover:scale-110 transition-transform">🏠</div>
             <h3 class="font-bold text-2xl mb-4">Wspólne mieszkanie</h3>
             <p class="text-muted-foreground leading-relaxed">
@@ -111,11 +120,12 @@ export const prerender = true;
             </p>
           </div>
 
-          <!-- Use Case 3: Family Events -->
+          <!-- Use Case 3: Family Events - Purple gradient -->
           <div
-            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all group"
+            class="relative p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-2xl transition-all group overflow-hidden"
             data-testid="use-case-events"
           >
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="text-6xl mb-6 group-hover:scale-110 transition-transform">🎉</div>
             <h3 class="font-bold text-2xl mb-4">Imprezy rodzinne</h3>
             <p class="text-muted-foreground leading-relaxed">
@@ -126,7 +136,7 @@ export const prerender = true;
       </div>
     </section>
 
-    <!-- How It Works Section -->
+    <!-- How It Works Section - with connecting lines -->
     <section id="jak-to-dziala" class="py-20 bg-muted/30" data-testid="how-it-works-section">
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -136,87 +146,95 @@ export const prerender = true;
           </p>
         </div>
 
-        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8" data-testid="steps-list">
-          <!-- Step 1 -->
+        <div class="max-w-4xl mx-auto relative">
+          <!-- Connecting line (hidden on mobile, visible on desktop) -->
           <div
-            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
-            data-testid="step-1"
+            class="hidden md:block absolute top-24 left-1/2 w-px h-[calc(100%-12rem)] bg-gradient-to-b from-primary via-primary to-primary/20 -translate-x-1/2"
           >
-            <div class="flex items-start gap-4">
-              <div
-                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
-                data-testid="step-1-number"
-              >
-                1
-              </div>
-              <div class="flex-1">
-                <h3 class="font-bold text-xl mb-2" data-testid="step-1-title">Utwórz rozliczenie</h3>
-                <p class="text-muted-foreground leading-relaxed" data-testid="step-1-desc">
-                  Podaj nazwę rozliczenia, np. "Wyjazd do Grecji" lub "Wynajem mieszkania"
-                </p>
-              </div>
-            </div>
           </div>
 
-          <!-- Step 2 -->
-          <div
-            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
-            data-testid="step-2"
-          >
-            <div class="flex items-start gap-4">
-              <div
-                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
-                data-testid="step-2-number"
-              >
-                2
-              </div>
-              <div class="flex-1">
-                <h3 class="font-bold text-xl mb-2" data-testid="step-2-title">Dodaj uczestników</h3>
-                <p class="text-muted-foreground leading-relaxed" data-testid="step-2-desc">
-                  Zaproś znajomych i przypisz im pseudonimy (max 10 osób)
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 3 -->
-          <div
-            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
-            data-testid="step-3"
-          >
-            <div class="flex items-start gap-4">
-              <div
-                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
-                data-testid="step-3-number"
-              >
-                3
-              </div>
-              <div class="flex-1">
-                <h3 class="font-bold text-xl mb-2" data-testid="step-3-title">Rejestruj wydatki</h3>
-                <p class="text-muted-foreground leading-relaxed" data-testid="step-3-desc">
-                  Dodawaj wydatki: kto zapłacił i jak podzielić koszt
-                </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8" data-testid="steps-list">
+            <!-- Step 1 -->
+            <div
+              class="relative p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+              data-testid="step-1"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="flex-shrink-0 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-2xl shadow-lg ring-4 ring-background relative z-10"
+                  data-testid="step-1-number"
+                >
+                  1
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-xl mb-2" data-testid="step-1-title">Utwórz rozliczenie</h3>
+                  <p class="text-muted-foreground leading-relaxed" data-testid="step-1-desc">
+                    Podaj nazwę rozliczenia, np. "Wyjazd do Grecji" lub "Wynajem mieszkania"
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Step 4 -->
-          <div
-            class="p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
-            data-testid="step-4"
-          >
-            <div class="flex items-start gap-4">
-              <div
-                class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl shadow-md"
-                data-testid="step-4-number"
-              >
-                4
+            <!-- Step 2 -->
+            <div
+              class="relative p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+              data-testid="step-2"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="flex-shrink-0 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-2xl shadow-lg ring-4 ring-muted/30 relative z-10"
+                  data-testid="step-2-number"
+                >
+                  2
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-xl mb-2" data-testid="step-2-title">Dodaj uczestników</h3>
+                  <p class="text-muted-foreground leading-relaxed" data-testid="step-2-desc">
+                    Zaproś znajomych i przypisz im pseudonimy (max 10 osób)
+                  </p>
+                </div>
               </div>
-              <div class="flex-1">
-                <h3 class="font-bold text-xl mb-2" data-testid="step-4-title">Wyświetl podsumowanie</h3>
-                <p class="text-muted-foreground leading-relaxed" data-testid="step-4-desc">
-                  Sprawdź salda i przelewy. Możesz skopiować podsumowanie!
-                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div
+              class="relative p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+              data-testid="step-3"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="flex-shrink-0 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-2xl shadow-lg ring-4 ring-background relative z-10"
+                  data-testid="step-3-number"
+                >
+                  3
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-xl mb-2" data-testid="step-3-title">Rejestruj wydatki</h3>
+                  <p class="text-muted-foreground leading-relaxed" data-testid="step-3-desc">
+                    Dodawaj wydatki: kto zapłacił i jak podzielić koszt
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div
+              class="relative p-8 rounded-[1.4rem] border-2 bg-card shadow-lg hover:shadow-xl transition-all"
+              data-testid="step-4"
+            >
+              <div class="flex items-start gap-4">
+                <div
+                  class="flex-shrink-0 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-2xl shadow-lg ring-4 ring-muted/30 relative z-10"
+                  data-testid="step-4-number"
+                >
+                  4
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-xl mb-2" data-testid="step-4-title">Wyświetl podsumowanie</h3>
+                  <p class="text-muted-foreground leading-relaxed" data-testid="step-4-desc">
+                    Sprawdź salda i przelewy. Możesz skopiować podsumowanie!
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -224,7 +242,7 @@ export const prerender = true;
       </div>
     </section>
 
-    <!-- Why FlexiSplit Section -->
+    <!-- Why FlexiSplit Section - Bento Box Style with colored icons -->
     <section class="py-20 bg-background" data-testid="why-section">
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -234,57 +252,77 @@ export const prerender = true;
           </p>
         </div>
 
-        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-          <!-- Benefit 1 -->
+        <!-- Bento Grid Layout - Pattern from screenshot -->
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Row 1: Large (2 cols) + Small (1 col) -->
+          <!-- Benefit 1 - Larger, spans 2 columns -->
           <div
-            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            class="md:col-span-2 flex gap-6 p-8 rounded-[1.4rem] border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white hover:shadow-2xl transition-all group"
             data-testid="benefit-1"
           >
-            <div class="flex-shrink-0 text-3xl">✅</div>
-            <div>
-              <h3 class="font-bold text-lg mb-2">Bez kont dla uczestników</h3>
+            <div
+              class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform"
+            >
+              👥
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-xl mb-3">Bez kont dla uczestników</h3>
               <p class="text-muted-foreground leading-relaxed">
                 Tylko Ty musisz mieć konto. Uczestnicy są dodawani jako pseudonimy - żadnej rejestracji ani logowania.
+                Idealne dla spontanicznych wyjazdów!
               </p>
             </div>
           </div>
 
           <!-- Benefit 2 -->
           <div
-            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
-            data-testid="benefit-2"
+            class="flex gap-6 p-8 rounded-[1.4rem] border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-white hover:shadow-2xl transition-all group"
+            data-testid="benefit-5"
           >
-            <div class="flex-shrink-0 text-3xl">✅</div>
-            <div>
-              <h3 class="font-bold text-lg mb-2">Minimalna liczba przelewów</h3>
+            <div
+              class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform"
+            >
+              📱
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-xl mb-3">Projektowane dla mobile</h3>
               <p class="text-muted-foreground leading-relaxed">
-                Nasz algorytm oblicza najmniejszą możliwą liczbę transakcji. Mniej przelewów, mniej zachodu.
+                Dodawaj wydatki w podróży, z telefonu, w czasie rzeczywistym.
               </p>
             </div>
           </div>
 
+          <!-- Row 2: Small (1 col) + Large (2 cols) -->
           <!-- Benefit 3 -->
           <div
-            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            class="flex gap-6 p-8 rounded-[1.4rem] border-2 border-green-200 bg-gradient-to-br from-green-50 to-white hover:shadow-2xl transition-all group"
             data-testid="benefit-3"
           >
-            <div class="flex-shrink-0 text-3xl">✅</div>
-            <div>
-              <h3 class="font-bold text-lg mb-2">Sprawiedliwy podział</h3>
+            <div
+              class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform"
+            >
+              ⚖️
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-xl mb-3">Sprawiedliwy podział</h3>
               <p class="text-muted-foreground leading-relaxed">
-                Równy podział z deterministyczną alokacją reszty groszy. Bez sporów o to, kto ma zapłacić o 1 zł więcej.
+                Równy podział z deterministyczną alokacją reszty groszy.
               </p>
             </div>
           </div>
 
-          <!-- Benefit 4 -->
+          <!-- Benefit 4 - Larger, spans 2 columns -->
           <div
-            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            class="md:col-span-2 flex gap-6 p-8 rounded-[1.4rem] border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-white hover:shadow-2xl transition-all group"
             data-testid="benefit-4"
           >
-            <div class="flex-shrink-0 text-3xl">✅</div>
-            <div>
-              <h3 class="font-bold text-lg mb-2">Niemodyfikowalne archiwum</h3>
+            <div
+              class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform"
+            >
+              🔒
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-xl mb-3">Niemodyfikowalne archiwum</h3>
               <p class="text-muted-foreground leading-relaxed">
                 Zamknięte rozliczenie nie może być zmienione. Pełna przejrzystość i pewność, że historia wydatków
                 pozostanie nienaruszona.
@@ -292,30 +330,39 @@ export const prerender = true;
             </div>
           </div>
 
+          <!-- Row 3: Two equal boxes (each taking space naturally) -->
           <!-- Benefit 5 -->
           <div
-            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
-            data-testid="benefit-5"
+            class="flex gap-6 p-8 rounded-[1.4rem] border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all group"
+            data-testid="benefit-2"
           >
-            <div class="flex-shrink-0 text-3xl">✅</div>
-            <div>
-              <h3 class="font-bold text-lg mb-2">Projektowane dla mobile</h3>
+            <div
+              class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform"
+            >
+              ⚡
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-xl mb-3">Minimalna liczba przelewów</h3>
               <p class="text-muted-foreground leading-relaxed">
-                Dodawaj wydatki w podróży, z telefonu, w czasie rzeczywistym. Responsywny design na każdym urządzeniu.
+                Nasz algorytm oblicza najmniejszą możliwą liczbę transakcji.
               </p>
             </div>
           </div>
 
           <!-- Benefit 6 -->
           <div
-            class="flex gap-4 p-6 rounded-[1.4rem] border bg-card hover:shadow-lg transition-all"
+            class="flex gap-6 p-8 rounded-[1.4rem] border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-white hover:shadow-2xl transition-all group"
             data-testid="benefit-6"
           >
-            <div class="flex-shrink-0 text-3xl">✅</div>
-            <div>
-              <h3 class="font-bold text-lg mb-2">Łatwy eksport</h3>
+            <div
+              class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform"
+            >
+              📤
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-xl mb-3">Łatwy eksport</h3>
               <p class="text-muted-foreground leading-relaxed">
-                Skopiuj podsumowanie jednym kliknięciem i wyślij uczestnikom przez komunikator lub email.
+                Skopiuj podsumowanie jednym kliknięciem i wyślij uczestnikom.
               </p>
             </div>
           </div>
@@ -323,7 +370,7 @@ export const prerender = true;
       </div>
     </section>
 
-    <!-- FAQ Section -->
+    <!-- FAQ Section - with icons and numbers -->
     <section class="py-20 bg-muted/30" data-testid="faq-section">
       <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -333,96 +380,160 @@ export const prerender = true;
 
         <div class="max-w-3xl mx-auto space-y-4">
           <!-- FAQ Item 1 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-1">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Czy uczestnicy muszą mieć konta?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-1"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm font-bold"
+                >01</span
+              >
+              <span class="flex-shrink-0 text-2xl">👤</span>
+              <span class="flex-1">Czy uczestnicy muszą mieć konta?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
               Nie! Tylko właściciel rozliczenia potrzebuje konta. Uczestnicy są dodawani jako pseudonimy (max 10 osób).
               Nie muszą się rejestrować ani logować.
             </p>
           </details>
 
           <!-- FAQ Item 2 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-2">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Ile osób może uczestniczyć w rozliczeniu?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-2"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold"
+                >02</span
+              >
+              <span class="flex-shrink-0 text-2xl">👥</span>
+              <span class="flex-1">Ile osób może uczestniczyć w rozliczeniu?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
               Maksymalnie 10 osób na jedno rozliczenie. To ograniczenie zapewnia, że rozliczenia pozostają proste i
               czytelne.
             </p>
           </details>
 
           <!-- FAQ Item 3 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-3">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Czy mogę edytować zamknięte rozliczenie?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-3"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold"
+                >03</span
+              >
+              <span class="flex-shrink-0 text-2xl">🔒</span>
+              <span class="flex-1">Czy mogę edytować zamknięte rozliczenie?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
               Nie. Zamknięcie rozliczenia jest nieodwracalne i tworzy snapshot tylko do odczytu. To gwarantuje, że nikt
               nie może manipulować historią wydatków po finalizacji.
             </p>
           </details>
 
           <!-- FAQ Item 4 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-4">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Jak działa podział kosztów?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-4"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold"
+                >04</span
+              >
+              <span class="flex-shrink-0 text-2xl">⚖️</span>
+              <span class="flex-1">Jak działa podział kosztów?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
               Domyślnie równy podział na wszystkich uczestników (lub wybranych). Gdy wydatek nie dzieli się równo,
               reszta groszy jest przydzielana deterministycznie według ustalonego algorytmu.
             </p>
           </details>
 
           <!-- FAQ Item 5 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-5">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Czy FlexiSplit obsługuje różne waluty?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-5"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold"
+                >05</span
+              >
+              <span class="flex-shrink-0 text-2xl">💰</span>
+              <span class="flex-1">Czy FlexiSplit obsługuje różne waluty?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
               Obecnie obsługujemy tylko PLN (złoty polski). Wsparcie dla innych walut może zostać dodane w przyszłości.
             </p>
           </details>
 
           <!-- FAQ Item 6 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-6">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Czy FlexiSplit integruje się z bankiem?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-6"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-sm font-bold"
+                >06</span
+              >
+              <span class="flex-shrink-0 text-2xl">🏦</span>
+              <span class="flex-1">Czy FlexiSplit integruje się z bankiem?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
               Nie. FlexiSplit generuje listę optymalnych przelewów, które wykonujesz samodzielnie w swoim banku. Nie
               mamy dostępu do Twojego konta bankowego.
             </p>
           </details>
 
           <!-- FAQ Item 7 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-7">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Ile kosztuje FlexiSplit?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-7"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-sm font-bold"
+                >07</span
+              >
+              <span class="flex-shrink-0 text-2xl">💳</span>
+              <span class="flex-1">Ile kosztuje FlexiSplit?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
               FlexiSplit jest obecnie darmowy. Możesz tworzyć nieograniczoną liczbę rozliczeń bez żadnych opłat.
             </p>
           </details>
 
           <!-- FAQ Item 8 -->
-          <details class="group rounded-[1.4rem] border bg-card p-6 hover:shadow-lg transition-all" data-testid="faq-8">
-            <summary class="flex justify-between items-center cursor-pointer list-none font-semibold text-lg">
-              <span>Czy moje dane są bezpieczne?</span>
-              <span class="text-2xl group-open:rotate-45 transition-transform">+</span>
+          <details
+            class="group rounded-[1.4rem] border-2 bg-card hover:shadow-lg transition-all cursor-pointer"
+            data-testid="faq-8"
+          >
+            <summary class="flex items-center gap-4 list-none font-semibold text-lg p-6">
+              <span
+                class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold"
+                >08</span
+              >
+              <span class="flex-shrink-0 text-2xl">🔐</span>
+              <span class="flex-1">Czy moje dane są bezpieczne?</span>
+              <span class="text-2xl text-muted-foreground group-open:rotate-45 transition-transform">+</span>
             </summary>
-            <p class="mt-4 text-muted-foreground leading-relaxed">
-              Tak. Używamy Supabase do bezpiecznego przechowywania danych z szyfrowaniem. Tylko Ty masz dostęp do swoich
-              rozliczeń. Implementujemy także kontrolę dostępu na poziomie bazy danych (RLS).
+            <p class="px-6 pb-6 pt-2 ml-16 text-muted-foreground leading-relaxed">
+              Tak. Twoje dane są chronione i zaszyfrowane. Tylko Ty masz dostęp do swoich rozliczeń - nikt inny nie może
+              ich zobaczyć ani edytować.
             </p>
           </details>
         </div>
