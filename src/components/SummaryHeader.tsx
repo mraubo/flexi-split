@@ -32,7 +32,7 @@ export default function SummaryHeader({
       {/* Title and Status */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-3 mb-2">
-          <h2 className="text-2xl font-bold text-gray-900 truncate">{settlement.title}</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Podsumowanie</h2>
           {isClosed && <Lock className="h-5 w-5 text-gray-400" />}
         </div>
 

@@ -137,7 +137,7 @@ export default function ParticipantsViewShell({
 
       {/* Main Content */}
       {viewModel.participantsCount > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="md:bg-white md:rounded-lg md:shadow-sm md:border md:border-gray-200 md:p-6">
           <div className="space-y-6">
             {/* Add Participant Button */}
             {!viewModel.isLocked && (

@@ -33,11 +33,11 @@ export default function BalancesSection({ balances }: BalancesSectionProps) {
       </div>
 
       {/* Balances List */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {balances.map((balance) => (
           <div
             key={balance.participantId}
-            className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             data-testid={`balance-item-${balance.participantId}`}
           >
             <div className="flex items-center gap-3">
@@ -49,7 +49,7 @@ export default function BalancesSection({ balances }: BalancesSectionProps) {
               <span className="font-medium text-gray-900">{balance.nickname}</span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pl-8 sm:pl-0">
               <span
                 className={`font-semibold text-lg ${
                   balance.sign === "+" ? "text-green-600" : balance.sign === "-" ? "text-red-600" : "text-gray-500"

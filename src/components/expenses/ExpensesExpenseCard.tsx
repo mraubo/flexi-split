@@ -81,10 +81,10 @@ export default function ExpensesExpenseCard({
   return (
     <>
       <Card className="hover:shadow-md transition-shadow" data-testid={`card-expense-${expense.id}`}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+        <CardContent className="p-5 sm:p-4">
+          <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                 <div className="font-medium text-gray-900">{expense.payerNickname}</div>
                 <div className="text-lg font-semibold text-gray-900">{formatCurrency(expense.amountCents)}</div>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -99,7 +99,7 @@ export default function ExpensesExpenseCard({
             </div>
 
             {!isReadOnly && (expense.canEdit || expense.canDelete) && (
-              <div className="ml-4">
+              <div className="flex-shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
