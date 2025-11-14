@@ -4,9 +4,13 @@ export const CreateParticipantCommandSchema = z
   .object({
     nickname: z
       .string()
-      .min(3, "nickname must be at least 3 characters")
+      .min(2, "nickname must be at least 2 characters")
       .max(30, "nickname must be at most 30 characters")
-      .regex(/^[a-z0-9_-]+$/, "nickname can only contain lowercase letters, numbers, underscores and hyphens"),
+      .regex(/^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ ._+\-!#$%&'*/=?^`{|}~@]+$/, "nickname contains invalid characters")
+      .transform((val) => val.trim())
+      .refine((val) => val.length >= 2, {
+        message: "nickname must be at least 2 characters after trimming spaces",
+      }),
   })
   .strict();
 
@@ -17,9 +21,13 @@ export const UpdateParticipantCommandSchema = z
   .object({
     nickname: z
       .string()
-      .min(3, "nickname must be at least 3 characters")
+      .min(2, "nickname must be at least 2 characters")
       .max(30, "nickname must be at most 30 characters")
-      .regex(/^[a-z0-9_-]+$/, "nickname can only contain lowercase letters, numbers, underscores and hyphens"),
+      .regex(/^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ ._+\-!#$%&'*/=?^`{|}~@]+$/, "nickname contains invalid characters")
+      .transform((val) => val.trim())
+      .refine((val) => val.length >= 2, {
+        message: "nickname must be at least 2 characters after trimming spaces",
+      }),
   })
   .strict();
 
