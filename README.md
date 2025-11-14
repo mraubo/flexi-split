@@ -1,6 +1,6 @@
 # Flexi Split
 
-![Status](https://img.shields.io/badge/status-WIP-orange) ![Astro](https://img.shields.io/badge/Astro-5.13.7-0f172a?logo=astro) ![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react) ![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.13-38B2AC?logo=tailwindcss) ![Bun](https://img.shields.io/badge/Bun-1.x-000000?logo=bun) ![Node](https://img.shields.io/badge/Node.js-22.18.0-339933?logo=node.js)
+![Status](https://img.shields.io/badge/status-production-brightgreen) ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Astro](https://img.shields.io/badge/Astro-5.13.7-0f172a?logo=astro) ![React](https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react) ![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-4.1.13-38B2AC?logo=tailwindcss) ![Bun](https://img.shields.io/badge/Bun-1.x-000000?logo=bun) ![Node](https://img.shields.io/badge/Node.js-22.18.0-339933?logo=node.js)
 
 ## Table of Contents
 
@@ -271,7 +271,16 @@ Notes:
 
 ## Project status
 
-Version `0.0.1` — work in progress. Expect frequent changes.
+**Version 1.0.0** — Production release! 🎉
+
+The application is now live and stable, ready for real-world use. This release includes:
+
+- Complete settlement management system
+- Robust authentication and authorization
+- Mobile-responsive UI with Tailwind CSS 4
+- Comprehensive test coverage (unit and E2E)
+- Production-ready architecture with Astro SSR
+- Full feature set: settlements, participants, expenses, and finalization
 
 ### Recent Refactoring Initiative
 
