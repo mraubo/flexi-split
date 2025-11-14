@@ -146,7 +146,7 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 break-words" data-testid="heading-settlement-title">
+            <h1 className="text-2xl font-bold text-gray-900 wrap-break-words" data-testid="heading-settlement-title">
               {settlement.title}
             </h1>
             {!isReadOnly && (

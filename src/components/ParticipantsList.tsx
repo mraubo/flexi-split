@@ -61,7 +61,7 @@ export default function ParticipantsList({ items, onEdit, onDelete, isOwner, isL
             </div>
 
             {(participant.canEdit || participant.canDelete) && !isLocked && (
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0" data-testid="button-participant-menu">

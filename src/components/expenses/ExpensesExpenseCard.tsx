@@ -99,7 +99,7 @@ export default function ExpensesExpenseCard({
             </div>
 
             {!isReadOnly && (expense.canEdit || expense.canDelete) && (
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

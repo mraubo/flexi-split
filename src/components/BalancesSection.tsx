@@ -41,7 +41,7 @@ export default function BalancesSection({ balances }: BalancesSectionProps) {
             data-testid={`balance-item-${balance.participantId}`}
           >
             <div className="flex items-center gap-3">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 {balance.sign === "+" && <TrendingUp className="h-5 w-5 text-green-600" />}
                 {balance.sign === "-" && <TrendingDown className="h-5 w-5 text-red-600" />}
                 {balance.sign === "0" && <Minus className="h-5 w-5 text-gray-500" />}

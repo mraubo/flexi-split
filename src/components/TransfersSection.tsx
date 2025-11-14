@@ -40,7 +40,7 @@ export default function TransfersSection({ transfers }: TransfersSectionProps) {
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 min-w-0">
               <div className="flex items-center gap-2 text-sm" data-testid="text-transfer-info">
                 <span className="font-medium text-gray-900 truncate">{transfer.fromNickname}</span>
-                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <ArrowRight className="h-4 w-4 text-gray-400 shrink-0" />
                 <span className="font-medium text-gray-900 truncate">{transfer.toNickname}</span>
               </div>
 
