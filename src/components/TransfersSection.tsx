@@ -34,24 +34,24 @@ export default function TransfersSection({ transfers }: TransfersSectionProps) {
         {transfers.map((transfer, index) => (
           <div
             key={`${transfer.fromId}-${transfer.toId}-${index}`}
-            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-5 sm:p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
             data-testid={`transfer-item-${index}`}
           >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 min-w-0">
               <div className="flex items-center gap-2 text-sm" data-testid="text-transfer-info">
                 <span className="font-medium text-gray-900 truncate">{transfer.fromNickname}</span>
-                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <ArrowRight className="h-4 w-4 text-gray-400 shrink-0" />
                 <span className="font-medium text-gray-900 truncate">{transfer.toNickname}</span>
               </div>
 
-              <div className="text-lg font-semibold text-blue-600 ml-2">{transfer.formattedAmount}</div>
+              <div className="text-lg font-semibold text-blue-600 sm:ml-2">{transfer.formattedAmount}</div>
             </div>
 
             <Button
               onClick={() => handleCopyTransfer(transfer)}
               variant="ghost"
               size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+              className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 self-end sm:self-auto"
               title="Kopiuj przelew"
               data-testid={`button-copy-transfer-${index}`}
             >

@@ -39,7 +39,7 @@ export async function addParticipantsToSettlement(page: Page, nicknames: string[
   const participantsPage = new ParticipantsPage(page);
 
   // Verify we're on the participants step
-  await expect(participantsPage.formParticipant).toBeVisible();
+  await expect(participantsPage.headingParticipants).toBeVisible();
 
   // Add each participant
   for (const nickname of nicknames) {

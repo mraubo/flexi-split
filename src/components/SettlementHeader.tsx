@@ -88,7 +88,8 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      {/* Title and Edit Button */}
       <div className="flex-1 min-w-0">
         {isEditing ? (
           <div className="space-y-2">
@@ -145,7 +146,7 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 truncate" data-testid="heading-settlement-title">
+            <h1 className="text-2xl font-bold text-gray-900 wrap-break-words" data-testid="heading-settlement-title">
               {settlement.title}
             </h1>
             {!isReadOnly && (
@@ -164,7 +165,8 @@ export default function SettlementHeader({ settlement, isReadOnly, onUpdated, on
         )}
       </div>
 
-      <div className="ml-4 flex items-center gap-2 shrink-0">
+      {/* Status Badge and Counters */}
+      <div className="flex items-center gap-3 flex-wrap">
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             settlement.status === "open" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"

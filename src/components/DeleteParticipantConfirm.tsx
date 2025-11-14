@@ -66,7 +66,7 @@ export default function DeleteParticipantConfirm({
       <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <AlertTriangle className="h-6 w-6 text-red-500" />
             </div>
             <div>

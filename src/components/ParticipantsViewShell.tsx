@@ -1,8 +1,10 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useParticipants, createParticipantsListVM } from "@/components/hooks/useParticipants";
-import ParticipantForm from "./ParticipantForm";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import ParticipantsList from "./ParticipantsList";
 import ParticipantsEmptyState from "./ParticipantsEmptyState";
+import AddParticipantDialog from "./AddParticipantDialog";
 import EditParticipantModal from "./EditParticipantModal";
 import DeleteParticipantConfirm from "./DeleteParticipantConfirm";
 import { getSettlementErrorMessage } from "@/lib/errorMessages";
@@ -29,11 +31,9 @@ export default function ParticipantsViewShell({
   );
 
   // Modal state
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editingParticipant, setEditingParticipant] = useState<ParticipantItemVM | null>(null);
   const [deletingParticipant, setDeletingParticipant] = useState<ParticipantItemVM | null>(null);
-
-  // Ref to focus on participant form input
-  const formInputRef = useRef<HTMLInputElement>(null);
 
   // Handle loading state
   if (loading) {
@@ -81,8 +81,13 @@ export default function ParticipantsViewShell({
 
   const participantsListVM = createParticipantsListVM(participants, isOwner, viewModel.isLocked);
 
+  const handleAddParticipantClick = () => {
+    setAddDialogOpen(true);
+  };
+
   const handleParticipantCreated = () => {
     // Participant added successfully - hook will reload the list
+    setAddDialogOpen(false);
   };
 
   const handleParticipantUpdated = () => {
@@ -127,37 +132,50 @@ export default function ParticipantsViewShell({
 
       {/* Empty State */}
       {viewModel.participantsCount === 0 && !viewModel.isLocked && (
-        <ParticipantsEmptyState
-          onCta={() => {
-            formInputRef.current?.focus();
-          }}
-        />
+        <ParticipantsEmptyState onCta={handleAddParticipantClick} />
       )}
 
       {/* Main Content */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="space-y-6">
-          {/* Add Participant Form */}
-          <ParticipantForm
-            ref={formInputRef}
-            onCreated={handleParticipantCreated}
-            disabled={!participantsListVM.canCreate}
-            existingNicknames={participants.map((p) => p.nickname)}
-            addParticipant={add}
-          />
+      {viewModel.participantsCount > 0 && (
+        <div className="md:bg-white md:rounded-lg md:shadow-sm md:border md:border-gray-200 md:p-6">
+          <div className="space-y-6">
+            {/* Add Participant Button */}
+            {!viewModel.isLocked && (
+              <div className="flex justify-end">
+                <Button
+                  onClick={handleAddParticipantClick}
+                  disabled={!participantsListVM.canCreate}
+                  className="inline-flex items-center"
+                  data-testid="button-add-participant"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Dodaj uczestnika
+                </Button>
+              </div>
+            )}
 
-          {/* Participants List */}
-          <ParticipantsList
-            items={participantsListVM.items}
-            onEdit={handleEditParticipant}
-            onDelete={handleDeleteParticipant}
-            isOwner={isOwner}
-            isLocked={viewModel.isLocked}
-          />
+            {/* Participants List */}
+            <ParticipantsList
+              items={participantsListVM.items}
+              onEdit={handleEditParticipant}
+              onDelete={handleDeleteParticipant}
+              isOwner={isOwner}
+              isLocked={viewModel.isLocked}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Modals */}
+      <AddParticipantDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        existingNicknames={participants.map((p) => p.nickname)}
+        onCreated={handleParticipantCreated}
+        disabled={!participantsListVM.canCreate}
+        addParticipant={add}
+      />
+
       <EditParticipantModal
         participant={editingParticipant}
         existingNicknames={participants.map((p) => p.nickname)}

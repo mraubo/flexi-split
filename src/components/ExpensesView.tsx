@@ -66,6 +66,13 @@ export default function ExpensesView({ settlementId, isOwner = false, isReadOnly
     refetch(); // Refresh the list
   };
 
+  // Calculate total expenses amount - must be before any conditional returns
+  const totalAmount = useMemo(() => {
+    return groups.reduce((total, group) => {
+      return total + group.items.reduce((groupTotal, expense) => groupTotal + expense.amountCents, 0);
+    }, 0);
+  }, [groups]);
+
   // Handle clear filter
   const handleClearFilter = () => {
     setQueryState((prev) => ({
@@ -94,10 +101,22 @@ export default function ExpensesView({ settlementId, isOwner = false, isReadOnly
   // Show empty state when filtered results are empty
   const hasNoFilteredExpenses = groups.length === 0 && !loading && queryState.participantId && !hasNoParticipants;
 
+  // Format currency
+  const formatCurrency = (cents: number): string => {
+    const amount = cents / 100;
+    return new Intl.NumberFormat("pl-PL", {
+      style: "currency",
+      currency: "PLN",
+    }).format(amount);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Koszty</h2>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Koszty</h2>
+          {groups.length > 0 && <p className="text-sm text-gray-500">Suma wydatków: {formatCurrency(totalAmount)}</p>}
+        </div>
         {isOwner && !isReadOnly && !hasNoParticipants && (
           <Button
             onClick={() => window.location.assign(`/settlements/${settlementId}/expenses/new`)}

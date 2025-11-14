@@ -1,0 +1,40 @@
+---
+export const prerender = true;
+---
+
+<footer class="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  <div class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <!-- Brand Section -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold">FlexiSplit</h3>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Prosta i przejrzysta aplikacja do rozliczania wspólnych wydatków podczas wyjazdów i imprez.
+        </p>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="space-y-4">
+        <h4 class="text-sm font-semibold">Nawigacja</h4>
+        <nav class="flex flex-col md:flex-row md:gap-4 space-y-2 md:space-y-0">
+          <a href="#jak-to-dziala" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Jak to działa
+          </a>
+          <a href="/auth/register" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Zarejestruj się
+          </a>
+          <a href="/auth/login" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Zaloguj się
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="mt-12 pt-8 border-t">
+      <p class="text-sm text-muted-foreground text-center">
+        © {new Date().getFullYear()} FlexiSplit. Wszystkie prawa zastrzeżone.
+      </p>
+    </div>
+  </div>
+</footer>

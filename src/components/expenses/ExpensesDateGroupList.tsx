@@ -16,7 +16,7 @@ export default function ExpensesDateGroupList({
   isReadOnly,
 }: ExpensesDateGroupListProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 md:space-y-6">
       {groups.map((group) => (
         <div key={group.date.toISOString()}>
           <ExpensesDateGroupHeader date={group.date} />
