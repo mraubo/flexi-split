@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { title = "FlexiSplit" } = Astro.props;
+const isHomePage = Astro.url.pathname === "/";
 ---
 
 <!doctype html>
@@ -38,7 +39,7 @@ const { title = "FlexiSplit" } = Astro.props;
         <slot />
       </main>
 
-      {!Astro.locals.user && <Footer />}
+      {isHomePage && <Footer class={Astro.locals.user ? "pb-10 md:pb-0" : ""} />}
 
       <BottomNav />
     </QueryClientProvider>
